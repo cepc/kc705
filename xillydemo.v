@@ -1,4 +1,4 @@
-`include "juxd/ClockDividerInteger.v"
+`include "ClockDividerInteger.v"
 module xillydemo
 (
   input        PCIE_PERST_B_LS,

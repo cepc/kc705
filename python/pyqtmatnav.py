@@ -1,12 +1,3 @@
-"""
-Pixel Map in PyQt
-Some Code borrowed from stackoverflow.com
-"""
-
-__author__ = "Liejian Chen <chenlj@ihep.ac.cn>"
-__created__ = "31/03/2017"
-
-
 import sys, os, random
 
 from PyQt5.QtCore import *
@@ -22,6 +13,8 @@ from matplotlib.figure import Figure
 import numpy as np
 import pixeldata
 
+simulateEnable = True
+
 class AppForm(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
@@ -34,6 +27,12 @@ class AppForm(QMainWindow):
         self.textbox.setText('100')
         self.pd = pixeldata.PixelData()
         self.on_draw()
+
+        #Updating State
+        self.timer = QTimer()
+        self.timer.start(10)
+        self.timer.timeout.connect(self.on_draw)
+        self.timer.timeout.connect(self.update)
 
     def save_plot(self):
         file_choices = "PNG (*.png)|*.png"
@@ -213,6 +212,10 @@ class AppForm(QMainWindow):
             action.setCheckable(True)
         return action
 
+    def update(self):
+        upnevent = int(self.textbox.text())
+        if simulateEnable:
+            self.textbox.setText(str(upnevent+1))
 
 def main():
     app = QApplication(sys.argv)

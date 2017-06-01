@@ -7,6 +7,8 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 from PyQt5 import QtGui, QtCore, QtWidgets, uic, Qt
 import os, sys
+from cgi import escape
+import threading
 
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -15,6 +17,7 @@ from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationTo
 from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 import pydaq
+from qtthreadutils import invoke_in_main_thread
 import numpy as np
 
 form_class = uic.loadUiType("runcontrol.ui")[0]
@@ -23,7 +26,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        self.dataTaker = pydaq.DataTaker()
+        self.dataTaker = pydaq.DataTaker(MyEventListener(self))
 
         # scale factor for high dpi screens
         sf = self.logicalDpiX() / 96
@@ -53,7 +56,19 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.timer.timeout.connect(self.update_state)
         self.timer.start(1000)
 
+        # logging
+        self.textEdit.document().setDefaultStyleSheet("""
+        .error {color: red}
+        .warning {color: orange}
+        .debug {color: grey}
+        .info {color: black}
+        """)
+        self.textEdit.setReadOnly(True)
+        self.textEdit.setUndoRedoEnabled(False)
+
         self.update_state()
+
+
 
     def setupStyle(self, sf):
         self.setStyleSheet("""
@@ -79,6 +94,11 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
                 left: """+str(int(7*sf))+"""px;
                 padding: 0 """+str(int(3*sf))+"""px 0 """+str(int(3*sf))+"""px;
             }
+
+/*            QMenuBar {
+                border-bottom: """+str(int(2*sf))+"""px groove #ADADAD;
+                padding: """+str(int(2*sf))+"""px;
+            }*/
         """)
 
     def btnStartRun_clicked(self, arg):
@@ -88,6 +108,25 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
     def btnStopRun_clicked(self, arg):
         self.dataTaker.stop_run()
         self.update_state()
+
+    def logMessage(self, level, thread_name, string):
+        # print(string)
+
+        prev_cursor = self.textEdit.textCursor()
+        self.textEdit.moveCursor(Qt.QTextCursor.End)
+
+        #self.textEdit.insertPlainText(thread_name + "\t" + string + "\n")
+        message = escape(string, True) + "\n"
+        classNames = {
+            pydaq.LOG_DEBUG: 'debug',
+            pydaq.LOG_INFO: 'info',
+            pydaq.LOG_WARNING: 'warning',
+            pydaq.LOG_ERROR: 'error',
+        }
+        className = classNames[level]
+        self.textEdit.insertPlainText(thread_name + "\t")
+        self.textEdit.insertHtml('<div class="%s">%s</div><br>' % (className, message))
+        self.textEdit.setTextCursor(prev_cursor)
 
     def update_state(self):
         state = self.dataTaker.get_state()
@@ -116,6 +155,15 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
             self.axes.draw_artist(self.image)
             self.canvas.update()
+
+
+class MyEventListener(pydaq.EventListener):
+    def __init__(self, window):
+        self._window = window
+
+    def logMessage(self, level, string):
+        thread = threading.current_thread()
+        invoke_in_main_thread(self._window.logMessage, level, thread.name, string)
 
 
 def main():

@@ -14,6 +14,12 @@ import numpy as np
 
 STATE_STOPPED = 'STATE_STOPPED'
 STATE_RUNNING = 'STATE_RUNNING'
+LOG_DEBUG = 1
+LOG_INFO = 2
+LOG_WARNING = 3
+LOG_ERROR = 4
+
+# internal
 CMD_END_RUN = 99
 
 
@@ -27,11 +33,12 @@ def fake_data():
 
 class DataTakingThread(threading.Thread):
     """ Internal class, this is the thread that generates fake data. """
-    def __init__(self):
+    def __init__(self, eventListener):
         super().__init__()
         self.run_number = 100
         self.data_lock = threading.Lock()
         self.queue = Queue()
+        self._eventListener = eventListener or EventListener()
         self._start_next_run()
 
     def _start_next_run(self):
@@ -40,8 +47,11 @@ class DataTakingThread(threading.Thread):
         self.accumulated_events = np.zeros(shape=(48, 16))
         self.last_events = deque(maxlen=100)
         self.run_number += 1
+        self._eventListener.logMessage(LOG_INFO, "Starting run %d" % self.run_number)
 
     def run(self):
+        self._eventListener.logMessage(LOG_DEBUG, "DataTakingThread.run()")
+
         while True:
             if not self.queue.empty():
                 cmd = self.queue.get()
@@ -56,9 +66,37 @@ class DataTakingThread(threading.Thread):
                 self.last_events.append(hits)
 
                 if self.nevents > 50000:
+                    self._eventListener.logMessage(LOG_INFO, "Maximum number of events reached, going to next run")
                     # start next run
                     self._start_next_run()
 
+# %feature("director")
+class EventListener:
+    """ This allows the DAQ code to report back to the UI.  We cannot use
+        callbacks or Qt signals with SWIG.  Instead we have a
+        `class EventListener` in C++ (like this), and create a subclass
+        in Python.  We pass this object in when constructing our SWIG
+        object, like:
+
+            el = MyEventListener()
+            d = daq.Daq(el)
+
+        and then we can use it from C++.  The way it is set up is that it can
+        be called from any thread on the C++ side, and the python code takes
+        care of sending the messages to the right thread.
+
+        In principle this should work by using "directors" in SWIG, see:
+        http://rjp.io/2013/05/07/swigdirectors-subclassing-from-python/
+        I haven't tried it yet, though.
+    """
+
+    # def stateChanged(self):
+    #     pass
+
+    def logMessage(self, level, string):
+        """ Logs a message.  `level` can be LOG_WARNING, LOG_INFO, LOG_WARN
+            or LOG_ERROR. """
+        pass
 
 class DataTaker:
     """ Mockup of the class that handles the data taking.
@@ -75,14 +113,22 @@ class DataTaker:
         something happened (a run ended, or a error occurred).
         """
 
-    def __init__(self):
+    def __init__(self, eventListener=None):
         self.state = STATE_STOPPED
         self.thread = None
+        self._eventListener = eventListener or EventListener()
+
+        self._eventListener.logMessage(LOG_DEBUG, "In DataTaker.__init__")
+
+        self._eventListener.logMessage(LOG_DEBUG, "This is what a debug message looks like")
+        self._eventListener.logMessage(LOG_INFO, "This is what an info looks like")
+        self._eventListener.logMessage(LOG_WARNING, "This is what a warning looks like")
+        self._eventListener.logMessage(LOG_ERROR, "This is what an error looks like")
 
     def start_run(self):
         """ Starts a new run. """
         assert self.state == STATE_STOPPED
-        self.thread = DataTakingThread()
+        self.thread = DataTakingThread(self._eventListener)
         self.thread.start()
         self.state = STATE_RUNNING
 

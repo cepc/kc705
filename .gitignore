@@ -1,0 +1,12 @@
+.vscode/
+
+# Python
+*.pyc
+*.pyd
+
+# Swig generated
+swig/build
+swig/daq.py
+swig/daq2.py
+swig/*_wrap.cxx
+swig/*_wrap.h

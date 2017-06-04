@@ -2,25 +2,47 @@
 Sends fake data to the C++ DAQ module.
 """
 
-import signal
-import win32pipe, win32file, win32con
 import numpy as np
+import signal
+import win32con
+import win32file
+import win32pipe
+
+import fakedata
 
 # Lets us exit with CTRL+C
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-# Set up a named pipe
-p = win32pipe.CreateNamedPipe(r'\\.\pipe\test_pipe',
-    win32pipe.PIPE_ACCESS_DUPLEX,
-    win32pipe.PIPE_TYPE_MESSAGE | win32pipe.PIPE_WAIT,
-    1, 65536, 65536, 300, None)
+while True:
 
-win32pipe.ConnectNamedPipe(p, None)
+    # Set up a named pipe
+    print ("Opening pipe")
+    p = win32pipe.CreateNamedPipe(r'\\.\pipe\test_pipe',
+        win32pipe.PIPE_ACCESS_DUPLEX,
+        win32pipe.PIPE_TYPE_MESSAGE | win32pipe.PIPE_WAIT,
+        1, 65536, 65536, 300, None)
 
-# create fake data and send it to the pipe
-buf = np.zeros(100, dtype=np.int8)
-buf[0] = 0xF0
-buf[1:-1:1] = 0xAA
-print(buf.tobytes())
+    win32pipe.ConnectNamedPipe(p, None)
 
-win32file.WriteFile(p, buf.tobytes())
+    try:
+        i = -1
+        while True:
+            i += 1
+            if i % 100 == 0:
+                print('sending event', i)
+            win32file.WriteFile(p, b'\xF0')
+            eventdata = fakedata.create_binary_map()
+            bits = np.packbits(eventdata)
+            win32file.WriteFile(p, bits.tobytes())
+            win32file.WriteFile(p, b'\xAA')
+    except win32file.error as exc:
+        if exc.winerror == 232:
+            # pipe has been closed
+            print("Connection closed, restarting")
+            continue
+        # different error, don't handle
+        raise
+    finally:
+        print("Closing pipe")
+        win32file.CloseHandle(p)
+

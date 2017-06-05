@@ -1,6 +1,6 @@
 
-# from ctypes import windll
-# windll.shcore.SetProcessDpiAwareness(False)
+from ctypes import windll
+windll.shcore.SetProcessDpiAwareness(True)
 
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -16,7 +16,11 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
-import pydaq
+
+
+#import pydaq as daq
+import daq2 as daq
+
 from qtthreadutils import invoke_in_main_thread
 import numpy as np
 
@@ -26,7 +30,9 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        self.dataTaker = pydaq.DataTaker(MyEventListener(self))
+        # keep this object alive by saving a reference
+        self.events = MyEventListener(self)
+        self.dataTaker = daq.DataTaker(self.events)
 
         # scale factor for high dpi screens
         sf = self.logicalDpiX() / 96
@@ -110,7 +116,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.update_state()
 
     def logMessage(self, level, thread_name, string):
-        # print(string)
+        print(string)
 
         prev_cursor = self.textEdit.textCursor()
         self.textEdit.moveCursor(Qt.QTextCursor.End)
@@ -118,10 +124,10 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         #self.textEdit.insertPlainText(thread_name + "\t" + string + "\n")
         message = escape(string, True) + "\n"
         classNames = {
-            pydaq.LOG_DEBUG: 'debug',
-            pydaq.LOG_INFO: 'info',
-            pydaq.LOG_WARNING: 'warning',
-            pydaq.LOG_ERROR: 'error',
+            daq.LOG_DEBUG: 'debug',
+            daq.LOG_INFO: 'info',
+            daq.LOG_WARNING: 'warning',
+            daq.LOG_ERROR: 'error',
         }
         className = classNames[level]
         self.textEdit.insertPlainText(thread_name + "\t")
@@ -129,25 +135,29 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.textEdit.setTextCursor(prev_cursor)
 
     def update_state(self):
+        print ("In update_state")
         state = self.dataTaker.get_state()
-        self.lblState.setText(state)
-        self.statusBar().showMessage(state)
-        self.btnStartRun.setEnabled(state == pydaq.STATE_STOPPED)
-        self.btnStopRun.setEnabled(state == pydaq.STATE_RUNNING)
+        self.lblState.setText(str(state))
+        self.statusBar().showMessage(str(state))
+        self.btnStartRun.setEnabled(state == daq.STATE_STOPPED)
+        self.btnStopRun.setEnabled(state == daq.STATE_RUNNING)
         nevents = self.dataTaker.get_event_number()
         self.lblEventNumber.setText(str(nevents))
         runNumber = self.dataTaker.get_run_number()
         self.lblRunNumber.setText(str(runNumber))
 
-        if state == pydaq.STATE_STOPPED:
+        # print ("here")
+
+        if state == daq.STATE_STOPPED:
             if self.timer.isActive():
                 self.timer.stop()
 
-        elif state == pydaq.STATE_RUNNING:
+        elif state == daq.STATE_RUNNING:
             if not self.timer.isActive():
                 self.timer.start()
 
-        last_events = self.dataTaker.get_accumulated_events()
+        # last_events = self.dataTaker.get_accumulated_events()
+        last_events = None
         if last_events:
             summed = sum(last_events)
             self.image.set_data(summed)
@@ -157,12 +167,15 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
             self.canvas.update()
 
 
-class MyEventListener(pydaq.EventListener):
+class MyEventListener(daq.EventListener):
     def __init__(self, window):
+        super().__init__()
         self._window = window
 
     def logMessage(self, level, string):
+        print("In logMessage")
         thread = threading.current_thread()
+        # invoke_in_main_thread(self._window.logMessage, level, thread.name, string)
         invoke_in_main_thread(self._window.logMessage, level, thread.name, string)
 
 

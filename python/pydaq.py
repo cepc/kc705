@@ -11,6 +11,7 @@ from collections import deque
 from queue import Queue
 
 import numpy as np
+import win32file, win32con
 
 STATE_STOPPED = 'STATE_STOPPED'
 STATE_RUNNING = 'STATE_RUNNING'
@@ -52,13 +53,29 @@ class DataTakingThread(threading.Thread):
     def run(self):
         self._eventListener.logMessage(LOG_DEBUG, "DataTakingThread.run()")
 
+        win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
+        f = open(r'//./xillybus_read_32', 'rb')
+
         while True:
             if not self.queue.empty():
                 cmd = self.queue.get()
                 if cmd == CMD_END_RUN:
                     break
 
-            hits = fake_data()
+            #hits = fake_data()
+            frame = f.read(98)
+            print ("read %d bytes" % len(frame))
+            #print(frame)
+            #print(frame[0],frame[0] == 0xF0)
+            assert frame[0] == 0xF0
+            assert frame[-1] == 0xAA
+            #hits = np.array(frame[1:-1], dtype=np.bool
+            frame = np.frombuffer(frame[1:-1], dtype=np.uint8)
+            hits = np.reshape(np.unpackbits(frame), newshape=(48, 16))
+            # print(len(hits))
+            # assert len(hits) == 48*16
+
+            #hits = np.unpackbits(frame)
 
             with self.data_lock:
                 self.nevents += 1

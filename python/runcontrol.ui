@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>525</width>
+    <height>558</height>
+   </rect>
+  </property>
   <property name="font">
    <font>
     <family>Segoe UI</family>
@@ -189,7 +197,7 @@
            <item>
             <widget class="QPushButton" name="btnStartRun">
              <property name="text">
-              <string>Start run</string>
+              <string>&amp;Start run</string>
              </property>
             </widget>
            </item>
@@ -199,7 +207,7 @@
               <bool>false</bool>
              </property>
              <property name="text">
-              <string>Stop run</string>
+              <string>S&amp;top run</string>
              </property>
             </widget>
            </item>
@@ -254,8 +262,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>980</width>
-     <height>43</height>
+     <width>525</width>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -270,6 +278,9 @@
   <action name="action_Exit">
    <property name="text">
     <string>&amp;Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F4</string>
    </property>
   </action>
  </widget>

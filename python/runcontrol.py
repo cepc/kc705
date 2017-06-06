@@ -60,7 +60,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         self.timer = Qt.QTimer()
         self.timer.timeout.connect(self.update_state)
-        self.timer.start(1000)
+        self.timer.start(100)
 
         # logging
         self.textEdit.document().setDefaultStyleSheet("""
@@ -77,10 +77,13 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
 
     def setupStyle(self, sf):
+        def px(x):
+            return str(int(x*sf))+"px"
+
         self.setStyleSheet("""
             QToolButton {
-                padding: """+str(int(6*sf))+"""px;
-                border-radius: """+str(int(2*sf))+"""px;
+                padding: """+px(6)+""";
+                border-radius: """+px(2)+""";
                 border: 1px solid transparent;
             }
             QToolButton::hover {
@@ -89,31 +92,58 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
             }        
 
             QGroupBox {
-                /*border: """+str(int(2*sf))+"""px groove #ADADAD;*/
-                border: """+str(int(1*sf))+"""px solid #C0C0C0;
-                border-radius: """+str(int(4*sf))+"""px;
+                /*border: """+px(2)+""" groove #ADADAD;*/
+                border: """+px(1)+""" solid #C0C0C0;
+                border-radius: """+px(4)+""";
                 margin-top: 0.70em;
             }
 
             QGroupBox::title {
                 subcontrol-origin: margin;
-                left: """+str(int(7*sf))+"""px;
-                padding: 0 """+str(int(3*sf))+"""px 0 """+str(int(3*sf))+"""px;
+                left: """+px(7)+""";
+                padding: 0 """+px(3)+""" 0 """+px(3)+""";
             }
 
-/*            QMenuBar {
-                border-bottom: """+str(int(2*sf))+"""px groove #ADADAD;
-                padding: """+str(int(2*sf))+"""px;
-            }*/
+            QMenuBar {
+                border-bottom: """+px(2)+""" groove #C0C0C0;
+                background-color: white;
+            }
+
+            QMenuBar::item {
+                spacing: """+px(3)+"""; /* spacing between menu bar items */
+                padding: """+px(3)+""" """+px(6)+""";
+                margin-bottom: """+px(1)+""";
+                background: transparent;
+                border: """+px(1)+""" solid transparent;
+            }
+
+            QMenuBar::item:selected {
+                background-color: rgba(0, 120, 215, 0.1);
+                border: """+px(1)+""" solid #0078D7;
+            }
+
+            QPushButton {
+                padding: """+px(4)+""" """+px(8)+""";
+            }
+
+            QStatusBar {
+                border-top: """+px(2)+""" groove #C0C0C0;
+                padding: 40px;
+            }
+
         """)
 
     def btnStartRun_clicked(self, arg):
         self.dataTaker.start_run()
         self.update_state()
+        # Bugfix: Without this, the button appears still "hovered"
+        # if disabled
+        self.btnStartRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
 
     def btnStopRun_clicked(self, arg):
         self.dataTaker.stop_run()
         self.update_state()
+        self.btnStopRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
 
     def logMessage(self, level, thread_name, string):
         print(string)
@@ -136,9 +166,15 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
     def update_state(self):
         print ("In update_state")
+        state_names = {
+            daq.STATE_STOPPED: "stopped",
+            daq.STATE_RUNNING: "running",
+            daq.STATE_STOPPING: "stopping...",
+        }
+
         state = self.dataTaker.get_state()
-        self.lblState.setText(str(state))
-        self.statusBar().showMessage(str(state))
+        self.lblState.setText(state_names[state])
+        self.statusBar().showMessage(state_names[state])
         self.btnStartRun.setEnabled(state == daq.STATE_STOPPED)
         self.btnStopRun.setEnabled(state == daq.STATE_RUNNING)
         nevents = self.dataTaker.get_event_number()
@@ -181,6 +217,8 @@ class MyEventListener(daq.EventListener):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
+    # app.setStyle(QtWidgets.QStyleFactory.create("Fusion"));
+    
     win = MainWindow()
 
     win.show()

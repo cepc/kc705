@@ -22,8 +22,6 @@ public:
     virtual ~EventListener() {};
 };
 
-//class DataTakingThread;
-
 
 // see https://rafalcieslak.wordpress.com/2014/05/16/c11-stdthreads-managed-by-a-designated-class/
 class DataTakingThread {
@@ -70,4 +68,3 @@ private:
     RunState m_state;
     std::unique_ptr<DataTakingThread> m_threadObj;
 };
-

@@ -4,3 +4,4 @@
 #include "daq2.h"
 %}
 %include "daq2.h"
+%ignore DataTakingThread;

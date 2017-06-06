@@ -1,5 +1,5 @@
 #include "daq2.h"
-
+#include "daq2_private.h"
 // #include <io.h>
 // #include <fcntl.h>// for _O_BINARY etc.
 #include <cstdio>
@@ -52,12 +52,14 @@ DataTaker::DataTaker(EventListener *listener): m_listener(listener), m_state(STA
     DAQ_INFO("In constructor");
 }
 
+DataTaker::~DataTaker() {};
+
 void DataTaker::start_run() {
     //std::cout << "m_listener: " << m_listener << std::endl;
     //m_listener->logMessage(LOG_INFO, "Starting run");
     DAQ_INFO("start_run");
 
-    m_threadObj = std::make_unique<DataTakingThread>(m_listener);
+    m_threadObj = std::make_unique<DataTakingThread>(this);
     m_threadObj->start();
     m_state = STATE_RUNNING;
     
@@ -68,8 +70,12 @@ void DataTaker::stop_run() {
     // m_listener->logMessage(LOG_INFO, "Stopping run");
     DAQ_INFO("Stopping run");
 
-    m_threadObj->stopAndJoin();
-    m_state = STATE_STOPPED;
+	// Don't join... if the thread is hanging (waiting for data),
+	// this will hang the GUI too
+    // m_threadObj->stopAndJoin();
+	m_state = STATE_STOPPING;
+	m_threadObj->stop();
+    // TODO: let the thread communicate state back
 }
 
 RunState DataTaker::get_state() {
@@ -77,11 +83,21 @@ RunState DataTaker::get_state() {
 }
 
 int DataTaker::get_event_number() {
-    return 123;
+	if (m_threadObj)
+		return m_threadObj->m_eventNumber;
+	else
+		return 0;
 }
 
 int DataTaker::get_run_number() {
     return 456;
+}
+
+// This is called from DataTakingThread, on the thread.
+// Only use atomic access, or a lock in here.
+void DataTaker::reportThreadStopped() {
+	DAQ_INFO("Thread reported that it stopped.");
+	m_state = STATE_STOPPED;
 }
 
 ////////////////
@@ -96,7 +112,6 @@ void DataTakingThread::threadMain() {
     const size_t buffer_size = 20000;
     const size_t read_size = 10000;
 
-    int nevents = 0;
     char buffer[buffer_size] = {0};
     char *pos = &buffer[0];
     char *used = &buffer[0];
@@ -142,7 +157,7 @@ void DataTakingThread::threadMain() {
         }
 
 		while (bytes_avail >= frame_size) {
-			nevents++;
+			m_eventNumber++;
 			if (used[0] != '\xF0') {
 				DAQ_ERROR("Wrong header");
 				break;
@@ -151,8 +166,8 @@ void DataTakingThread::threadMain() {
 				DAQ_ERROR("Wrong tail");
 				break;
 			}
-			if (nevents % 1000 == 0) {
-				DAQ_DEBUG("Read " << nevents << " events");
+			if (m_eventNumber % 1000 == 0) {
+				DAQ_DEBUG("Read " << m_eventNumber << " events");
 			}
 
 			used += frame_size;
@@ -162,5 +177,6 @@ void DataTakingThread::threadMain() {
     }
     end:
     DAQ_INFO("Quit taking data");
+	m_dataTaker->reportThreadStopped();
 	fclose(fd);
 }

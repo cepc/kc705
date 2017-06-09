@@ -143,6 +143,11 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
                 padding: """+px(3)+""" """+px(6)+""";
             }
 
+            QSizeGrip {
+                width: """+px(16)+""";
+                height: """+px(16)+""";
+            }
+
         """)
 
     def btnStartRun_clicked(self, arg):

@@ -51,7 +51,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         zeros = np.zeros(shape=(48,16))
         self.image = self.axes.imshow(zeros, animated=True, interpolation='nearest')
-        self.canvas.show()
+        self.canvas.draw()
 
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.graph)
 
@@ -60,7 +60,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         self.timer = Qt.QTimer()
         self.timer.timeout.connect(self.update_state)
-        self.timer.start(100)
+        self.timer.start(1000)
 
         # logging
         self.textEdit.document().setDefaultStyleSheet("""
@@ -205,7 +205,12 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
                 self.timer.start()
 
         # last_events = self.dataTaker.get_accumulated_events()
-        last_events = None
+        # last_events = None
+        thebytes = self.dataTaker.getRecentEvent()
+        frame = np.frombuffer(thebytes[1:-1], dtype=np.uint8)
+        hits = np.reshape(np.unpackbits(frame), newshape=(48, 16))
+        last_events = [hits]
+
         if last_events:
             summed = sum(last_events)
             self.image.set_data(summed)

@@ -93,6 +93,17 @@ int DataTaker::get_run_number() {
     return 456;
 }
 
+void DataTaker::getRecentEvent(char * data) {
+//	strcpy(data, "Hello Event!");*/
+	if (m_threadObj) {
+		std::lock_guard<std::mutex> guard(m_threadObj->eventDataMutex);
+		memcpy(data, m_threadObj->m_recentEvent, 98);
+	} else {
+		memset(data, 0xAA, 98);
+	}
+
+}
+
 // This is called from DataTakingThread, on the thread.
 // Only use atomic access, or a lock in here.
 void DataTaker::reportThreadStopped() {
@@ -164,17 +175,28 @@ void DataTakingThread::threadMain() {
         }
 
 		while (bytes_avail >= frame_size) {
-			m_eventNumber++;
-			if (used[0] != '\xF0') {
-				DAQ_ERROR("Wrong header");
-				break;
-			}
-			if (used[97] != '\xAA') {
-				DAQ_ERROR("Wrong tail");
-				break;
-			}
-			if (m_eventNumber % 1000 == 0) {
-				DAQ_DEBUG("Read " << m_eventNumber << " events");
+			{
+				std::lock_guard<std::mutex> guard(eventDataMutex);
+
+				m_eventNumber++;
+				if (used[0] != '\xF0') {
+					DAQ_ERROR("Wrong header");
+					break;
+				}
+				if (used[97] != '\xAA') {
+					DAQ_ERROR("Wrong tail");
+					break;
+				}
+				if (m_eventNumber % 1000 == 0) {
+					DAQ_DEBUG("Read " << m_eventNumber << " events");
+					memcpy(m_recentEvent, used, 98);
+					//char c = m_eventNumber / 100 % 256;
+					//for (size_t i = 0; i < 98; i++) {
+					//	m_recentEvent[i] = c;
+					//	//if (i % 10 == 0)
+					//		std::this_thread::sleep_for(1ms);
+					//}
+				}
 			}
 
 			// write event

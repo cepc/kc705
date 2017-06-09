@@ -1,6 +1,7 @@
 
 #include <atomic>
 #include <thread>
+#include <mutex>
 
 class EventListener;
 
@@ -30,6 +31,10 @@ public:
 
     std::atomic<int> m_eventNumber;
 	std::atomic<int> m_runNumber;
+
+	// A recent event for display.  Must be accessed via a lock.
+	char m_recentEvent[98] = {0};
+	std::mutex eventDataMutex;
 
 private:
 	DataTaker *m_dataTaker;

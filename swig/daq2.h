@@ -39,6 +39,9 @@ public:
     // get_accumulated_events
     // get_event_number
     // get_run_number
+
+	void getRecentEvent(char *data);
+
 private:
     EventListener* m_listener;
     std::atomic<RunState> m_state;

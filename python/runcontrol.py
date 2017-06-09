@@ -72,6 +72,10 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.textEdit.setReadOnly(True)
         self.textEdit.setUndoRedoEnabled(False)
 
+        self.lblStatus = QtWidgets.QLabel()
+        self.lblStatus.setMinimumSize(int(sf*200), 0)
+        self.statusBar().addWidget(self.lblStatus)
+
         self.update_state()
 
 
@@ -128,7 +132,15 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
             QStatusBar {
                 border-top: """+px(2)+""" groove #C0C0C0;
-                padding: 40px;
+            }
+
+            QStatusBar::item {
+                /*border-right: """+px(2)+""" groove #C0C0C0;*/
+                border-width: 0px;
+            }
+
+            QStatusBar QLabel {
+                padding: """+px(3)+""" """+px(6)+""";
             }
 
         """)
@@ -174,7 +186,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         state = self.dataTaker.get_state()
         self.lblState.setText(state_names[state])
-        self.statusBar().showMessage(state_names[state])
+        self.lblStatus.setText(state_names[state])
         self.btnStartRun.setEnabled(state == daq.STATE_STOPPED)
         self.btnStopRun.setEnabled(state == daq.STATE_RUNNING)
         nevents = self.dataTaker.get_event_number()

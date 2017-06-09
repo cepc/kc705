@@ -119,6 +119,12 @@ void DataTakingThread::threadMain() {
 	FILE *fd = fopen("//./xillybus_read_32", "rb");
 	//int fd = _open("//./xillybus_read_32", O_RDONLY | _O_BINARY);
 
+	if (!fd) {
+		DAQ_ERROR("Could not open stream");
+		m_dataTaker->reportThreadStopped();
+		return;
+	}
+
 	FILE *outf {nullptr};
 
     const size_t frame_size = 98;

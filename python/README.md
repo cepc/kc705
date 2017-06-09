@@ -30,7 +30,7 @@ There is a bug in Virtualenv under Windows, and you have to copy one DLL to the 
 Install swig, for Windows download it from http://www.swig.org/download.html.  Then run:
 
     cd swig
-    "C:\Program Files\swigwin-3.0.12\swig.exe" -c++ -python daq.i
+    "C:\Program Files\swigwin-3.0.12\swig.exe" -c++ -python -threads daq2.i
 
 Setup a shell which has both python and MSVC, for example by
 
@@ -38,7 +38,6 @@ Setup a shell which has both python and MSVC, for example by
 
 and then build and install it.  Make sure you are in the `cmos` virtualenv.
 
-	set DISTUTILS_USE_SDK=1
     python setup.py build
     python setup.py install
 

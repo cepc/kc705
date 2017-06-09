@@ -8,7 +8,7 @@ class EventListener;
 class DataTakingThread {
 public:
     DataTakingThread(DataTaker *dataTaker):
-        m_dataTaker(dataTaker), m_listener(dataTaker->m_listener), m_thread(), m_stop(false), m_eventNumber(0) {};
+        m_dataTaker(dataTaker), m_listener(dataTaker->m_listener), m_thread(), m_stop(false), m_eventNumber(0), m_runNumber(0) {};
 
     ~DataTakingThread() {
         stopAndJoin();
@@ -29,6 +29,7 @@ public:
     }
 
     std::atomic<int> m_eventNumber;
+	std::atomic<int> m_runNumber;
 
 private:
 	DataTaker *m_dataTaker;

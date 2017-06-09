@@ -108,6 +108,8 @@ void DataTakingThread::threadMain() {
 	FILE *fd = fopen("//./xillybus_read_32", "rb");
 	//int fd = _open("//./xillybus_read_32", O_RDONLY | _O_BINARY);
 
+	FILE *outf {nullptr};
+
     const size_t frame_size = 98;
     const size_t buffer_size = 20000;
     const size_t read_size = 10000;
@@ -117,6 +119,11 @@ void DataTakingThread::threadMain() {
     char *used = &buffer[0];
     char *endpos = &buffer[0]+buffer_size;
     size_t bytes_avail = pos-used;
+
+	m_runNumber += 1;
+	std::ostringstream ssFilename;
+	ssFilename << "run" << m_runNumber << ".bin";
+	outf = fopen(ssFilename.str().c_str(), "wb");
 
     while (!m_stop) {
 		while (bytes_avail < frame_size) {
@@ -170,6 +177,9 @@ void DataTakingThread::threadMain() {
 				DAQ_DEBUG("Read " << m_eventNumber << " events");
 			}
 
+			// write event
+			fwrite(used, 98, 1, outf);
+
 			used += frame_size;
 			bytes_avail = pos - used;
 		}
@@ -179,4 +189,6 @@ void DataTakingThread::threadMain() {
     DAQ_INFO("Quit taking data");
 	m_dataTaker->reportThreadStopped();
 	fclose(fd);
+	if (outf)
+		fclose(outf);
 }

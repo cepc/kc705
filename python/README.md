@@ -4,14 +4,20 @@
 
 I am installing all python packages in a "virtualenv" which allows you to separate the packages needed for different projects, and doesn't pollute the system Python directory.  If you don't have virtualenv, you can install it by:
 
-    pip install virtualenv virtualenvwrapper
+    pip install virtualenvwrapper-win   # for windows
+    # or
+    pip install virtualenvwrapper       # for linux (not yet supported)
 
-For Windows, download latest `numpy` and `matplotlib` from http://www.lfd.uci.edu/~gohlke/pythonlibs.  Make sure it matches your Python version (for Python 3.6 64 bit: cp36-win_amd64).
+If Python is installed in `C:\Program Files`, you must run that in an elevated shell (`cmd`, "Run as Administrator").
 
     mkvirtualenv cmos
 
     pip install pyqt5
-    pip install pypiwin32 
+    pip install pypiwin32
+    pip install numpy matoplotlib
+
+If numpy and matplotlib fail, you can get prebuild packages from http://www.lfd.uci.edu/~gohlke/pythonlibs, and install them via:
+
     pip install %USERPROFILE%\Downloads\numpy-1.13.0rc2+mkl-cp36-cp36m-win_amd64.whl 
     pip install %USERPROFILE%\Downloads\matplotlib-2.0.2-cp36-cp36m-win_amd64.whl
 

@@ -37,7 +37,7 @@ using namespace std::chrono_literals;
     do {                                                     \
         std::ostringstream os;                               \
         os << x;                                             \
-        m_listener->logMessage(LOG_DEBUG, os.str().c_str()); \
+        m_listener->logMessage(code, os.str().c_str()); \
     } while (false)
 
 #define DAQ_DEBUG(x)    DAQ_LOG(LOG_DEBUG, x)

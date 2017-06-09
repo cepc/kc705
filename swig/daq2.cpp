@@ -185,14 +185,14 @@ void DataTakingThread::threadMain() {
 				std::lock_guard<std::mutex> guard(eventDataMutex);
 
 				m_eventNumber++;
-				if (used[0] != '\xF0') {
-					DAQ_ERROR("Wrong header");
-					break;
-				}
-				if (used[97] != '\xAA') {
-					DAQ_ERROR("Wrong tail");
-					break;
-				}
+				//if (used[0] != '\xF0') {
+				//	DAQ_ERROR("Wrong header");
+				//	break;
+				//}
+				//if (used[97] != '\xAA') {
+				//	DAQ_ERROR("Wrong tail");
+				//	break;
+				//}
 				if (m_eventNumber % 1000 == 0) {
 					DAQ_DEBUG("Read " << m_eventNumber << " events");
 					memcpy(m_recentEvent, used, 98);

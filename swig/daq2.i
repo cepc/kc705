@@ -16,7 +16,7 @@
 }
 %enddef
 
-%cbytes_chunk_output(char *data, 98);
+%cbytes_chunk_output(char *data, 96);
 void DataTaker::getRecentEvent(char *data);
 
 %ignore DataTakingThread;

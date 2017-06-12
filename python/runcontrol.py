@@ -212,7 +212,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         # last_events = self.dataTaker.get_accumulated_events()
         # last_events = None
         thebytes = self.dataTaker.getRecentEvent()
-        frame = np.frombuffer(thebytes[1:-1], dtype=np.uint8)
+        frame = np.frombuffer(thebytes, dtype=np.uint8)
         hits = np.reshape(np.unpackbits(frame), newshape=(48, 16))
         last_events = [hits]
 

@@ -4,6 +4,8 @@
 // #include <fcntl.h>// for _O_BINARY etc.
 #include <cstdio>
 
+
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -97,9 +99,9 @@ void DataTaker::getRecentEvent(char * data) {
 //	strcpy(data, "Hello Event!");*/
 	if (m_threadObj) {
 		std::lock_guard<std::mutex> guard(m_threadObj->eventDataMutex);
-		memcpy(data, m_threadObj->m_recentEvent, 98);
+		memcpy(data, m_threadObj->m_recentEvent, 96);
 	} else {
-		memset(data, 0xAA, 98);
+		memset(data, 0xAA, 96);
 	}
 
 }
@@ -127,7 +129,8 @@ void DataTakingThread::threadMain() {
 
 	FILE *outf {nullptr};
 
-    const size_t frame_size = 98;
+    //const size_t frame_size = 98;
+    const size_t frame_size = 96+8;
     const size_t buffer_size = 20000;
     const size_t read_size = 10000;
 
@@ -181,6 +184,51 @@ void DataTakingThread::threadMain() {
         }
 
 		while (bytes_avail >= frame_size) {
+
+			if (used[0] != '\xAA' || used[100] != '\xF0') {
+				// Not synchronized
+				//DAQ_DEBUG("Unsynchronized after " << m_eventNumber << " events");
+
+				for (char *offset = used; offset < pos; offset++) {
+					if (offset[0] == '\xAA' && offset[100] == '\xF0') {
+						DAQ_DEBUG("Resynchronized! Skipped " << (offset - used) << " bytes");
+						// found head/tail
+						used = offset;
+						bytes_avail = pos - used;
+
+						//DAQ_DEBUG("Beginning of frame: "
+						//	<< std::hex << std::setfill('0')
+						//	<< std::setw(2) << (int)(uint8_t)used[0] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[1] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[2] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[3] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[4] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[5] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[6] << "-"
+						//);
+
+						//DAQ_DEBUG("End of frame:       "
+						//	<< std::hex << std::setfill('0')
+						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-7] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-6] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-5] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-4] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-3] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-2] << "-"
+						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-1] << "-"
+						//);
+
+
+						break;
+					}
+				}
+				
+				if (bytes_avail < frame_size) {
+					// get more data
+					break;
+				}
+			}
+
 			{
 				std::lock_guard<std::mutex> guard(eventDataMutex);
 
@@ -194,8 +242,9 @@ void DataTakingThread::threadMain() {
 				//	break;
 				//}
 				if (m_eventNumber % 1000 == 0) {
-					DAQ_DEBUG("Read " << m_eventNumber << " events");
-					memcpy(m_recentEvent, used, 98);
+					//DAQ_DEBUG("Read " << m_eventNumber << " events");
+					// memcpy(m_recentEvent, used, 98);
+					memcpy(m_recentEvent, used+4, 96);
 					//char c = m_eventNumber / 100 % 256;
 					//for (size_t i = 0; i < 98; i++) {
 					//	m_recentEvent[i] = c;
@@ -206,10 +255,41 @@ void DataTakingThread::threadMain() {
 			}
 
 			// write event
-			fwrite(used, 98, 1, outf);
+			//fwrite(used, 98, 1, outf);
+
+			if (m_eventNumber > 10000) {
+				DAQ_INFO("Event limit reached.");
+				DAQ_INFO("Read " << m_eventNumber << " events");
+				goto end;
+			}
 
 			used += frame_size;
 			bytes_avail = pos - used;
+
+
+
+			//DAQ_DEBUG("Beginning of frame: "
+			//	<< std::hex << std::setfill('0')
+			//	<< std::setw(2) << (int)(uint8_t)used[0] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[1] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[2] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[3] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[4] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[5] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[6] << "-"
+			//);
+
+			//DAQ_DEBUG("End of frame:       "
+			//	<< std::hex << std::setfill('0')
+			//	<< std::setw(2) << (int)(uint8_t)used[frame_size - 7] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[frame_size - 6] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[frame_size - 5] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[frame_size - 4] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[frame_size - 3] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[frame_size - 2] << "-"
+			//	<< std::setw(2) << (int)(uint8_t)used[frame_size - 1] << "-"
+			//);
+
 		}
 
     }

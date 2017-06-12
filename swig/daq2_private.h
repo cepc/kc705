@@ -33,7 +33,7 @@ public:
 	std::atomic<int> m_runNumber;
 
 	// A recent event for display.  Must be accessed via a lock.
-	char m_recentEvent[98] = {0};
+	char m_recentEvent[96] = {0};
 	std::mutex eventDataMutex;
 
 private:

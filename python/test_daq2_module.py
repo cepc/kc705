@@ -4,6 +4,7 @@ Usage: call python emulate_device.py in one window, and python test_daq_module.p
 """
 
 import signal
+import time
 import win32con
 import win32file
 
@@ -16,9 +17,12 @@ win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\
 
 class MyListener(daq.EventListener):
     def logMessage(self, level, string):
-        pass
+        print ("Message:", string)
 
 l = MyListener()
 d = daq.DataTaker(l)
+d.start_run()
+time.sleep(0.5)
+d.stop_run()
 event = d.getRecentEvent()
 print(repr(event))

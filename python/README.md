@@ -51,3 +51,25 @@ When you want to activate this environment later, just use
 - `pydaq.py`: A mockup of the DAQ module written in Python.  Generates dummy data.
 - `emulate_device.py`: You can use this to test the real C++ DAQ module, without the FPGA.  Creates fake data and writes it to a pipe.
 - `test_daq_module.py`: Reads fake data from the pipe, and gives it to the C++ DAQ module.
+
+## Testing
+
+In one command window, do:
+
+    cd src\kc705\python
+    workon cmos
+    python emulate_device.py
+
+In another, do:
+
+    cd src\kc705\python
+    workon cmos
+    python test_daq2_module.py
+
+or
+
+    python runcontrol.py
+
+
+
+

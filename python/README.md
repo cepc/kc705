@@ -70,6 +70,15 @@ or
 
     python runcontrol.py
 
+## Building and debugging the module with Visual Studio
 
+There is a Visual Studio 2017 project in `swig\msvc`.  To use it, you must install the swig package manually once.  Then, edit `swig\msvc\DAQModule\path.props`.  Specify the path to SWIG, to your python.exe, and your python virtualenv (or python installation directory, if not using a venv):
 
+    <SWIG_PATH>C:\Program Files\swigwin-3.0.12</SWIG_PATH>
+    <PYTHON_PATH>$(USERPROFILE)\Envs\cmos</PYTHON_PATH>
+    <PYTHON_CMD>$(PYTHON_PATH)\Scripts\Python.exe</PYTHON_CMD>
+    <PYTHON_LIBS_PATH>$(LOCALAPPDATA)\Programs\Python\Python36\libs</PYTHON_LIBS_PATH>
 
+Then you can open the solution, and run it.  Make sure you are using the Release x64 configuration.  For Debug, we would have to use a version of Python compiled with Debug settings.  It would make debugging nicer, but takes a bit of effort to set up.
+
+The solution is set up to start the python run control script.  You can now set up breakpoints in the C++ code, and debug it like a normal C++ project.  Tip: when you step into the code, the C++ thread is probably called "ucrtbase.dll".

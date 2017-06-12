@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <SWIG_PATH>C:\Program Files\swigwin-3.0.12</SWIG_PATH>
+    <PYTHON_PATH>$(USERPROFILE)\Envs\cmos</PYTHON_PATH>
+    <PYTHON_CMD>$(PYTHON_PATH)\Scripts\Python.exe</PYTHON_CMD>
+    <PYTHON_LIBS_PATH>$(LOCALAPPDATA)\Programs\Python\Python36\libs</PYTHON_LIBS_PATH>
+    <SWIG_MODULE_PATH>$(SolutionDir)..</SWIG_MODULE_PATH>
+  </PropertyGroup>
+</Project>

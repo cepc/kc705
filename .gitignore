@@ -12,7 +12,9 @@ swig/daq2.py
 swig/*_wrap.cxx
 swig/*_wrap.h
 
-swig/msvc
+swig/msvc/x64
+swig/msvc/DAQModule/x64
 
 # MSVC
 *.pdb
+.vs/

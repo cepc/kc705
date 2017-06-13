@@ -21,8 +21,8 @@ def sizeof_fmt(num, suffix='B'):
         num /= 1024.0
     return "%.1f %s%s" % (num, 'T', suffix)
 
-# make named pipe available at //./xillybus_read_32
-win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
+# # make named pipe available at //./xillybus_read_32
+# win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
 
 class MyListener(daq.EventListener):
     def logMessage(self, level, string):
@@ -34,7 +34,7 @@ d = daq.DataTaker(l)
 
 start = time.time()
 d.start_run()
-time.sleep(0.5)
+time.sleep(5)
 d.stop_run_and_join()
 end = time.time()
 

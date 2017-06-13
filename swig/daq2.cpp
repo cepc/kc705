@@ -254,8 +254,8 @@ void DataTakingThread::threadMain() {
 				//	DAQ_ERROR("Wrong tail");
 				//	break;
 				//}
-				if (m_eventNumber % 1000 == 0) {
-					//DAQ_DEBUG("Read " << m_eventNumber << " events");
+				if (m_eventNumber % 10000 == 0) {
+					DAQ_DEBUG("Read " << m_eventNumber << " events");
 					// memcpy(m_recentEvent, used, 98);
 					memcpy(m_recentEvent, used+4, 96);
 					//char c = m_eventNumber / 100 % 256;
@@ -270,11 +270,11 @@ void DataTakingThread::threadMain() {
 			// write event
 			//fwrite(used, 98, 1, outf);
 
-			if (m_eventNumber > 10000) {
-				DAQ_INFO("Event limit reached.");
-				DAQ_INFO("Read " << m_eventNumber << " events");
-				goto end;
-			}
+			 //if (m_eventNumber > 10000) {
+			 //	DAQ_INFO("Event limit reached.");
+			 //	DAQ_INFO("Read " << m_eventNumber << " events");
+			 //	goto end;
+			 //}
 
 			used += frame_size;
 			bytes_avail = pos - used;

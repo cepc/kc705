@@ -80,6 +80,11 @@ void DataTaker::stop_run() {
     // TODO: let the thread communicate state back
 }
 
+void DataTaker::stop_run_and_join() {
+	stop_run();
+	m_threadObj->stopAndJoin();
+}
+
 RunState DataTaker::get_state() {
     return m_state;
 }
@@ -93,6 +98,13 @@ int DataTaker::get_event_number() {
 
 int DataTaker::get_run_number() {
     return 456;
+}
+
+size_t DataTaker::get_bytes_read() {
+	if (m_threadObj) {
+		return m_threadObj->m_bytesRead;
+	}
+	return 0;
 }
 
 void DataTaker::getRecentEvent(char * data) {
@@ -174,6 +186,7 @@ void DataTakingThread::threadMain() {
 			CHECK(bytes_avail <= buffer_size);
 
 			size_t bytes_got = fread(pos, 1, read_size, fd);
+			m_bytesRead += bytes_got;
 
             CHECK(bytes_got > 0);
 

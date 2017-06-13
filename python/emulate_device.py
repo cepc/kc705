@@ -30,11 +30,11 @@ while True:
             i += 1
             if i % 100 == 0:
                 print('sending event', i)
-            win32file.WriteFile(p, b'\xF0')
+            win32file.WriteFile(p, b'\xA0\xA0\xA0\xA0')
             eventdata = fakedata.create_binary_map()
             bits = np.packbits(eventdata)
             win32file.WriteFile(p, bits.tobytes())
-            win32file.WriteFile(p, b'\xAA')
+            win32file.WriteFile(p, b'\xF0\xF0\xF0\xF0')
     except win32file.error as exc:
         if exc.winerror == 232:
             # pipe has been closed

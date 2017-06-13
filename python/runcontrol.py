@@ -1,6 +1,6 @@
 
-# from ctypes import windll
-# windll.shcore.SetProcessDpiAwareness(False)
+from ctypes import windll
+windll.shcore.SetProcessDpiAwareness(True)
 
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -16,7 +16,11 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
-import pydaq
+
+
+#import pydaq as daq
+import daq2 as daq
+
 from qtthreadutils import invoke_in_main_thread
 import numpy as np
 
@@ -26,7 +30,9 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        self.dataTaker = pydaq.DataTaker(MyEventListener(self))
+        # keep this object alive by saving a reference
+        self.events = MyEventListener(self)
+        self.dataTaker = daq.DataTaker(self.events)
 
         # scale factor for high dpi screens
         sf = self.logicalDpiX() / 96
@@ -45,7 +51,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         zeros = np.zeros(shape=(48,16))
         self.image = self.axes.imshow(zeros, animated=True, interpolation='nearest')
-        self.canvas.show()
+        self.canvas.draw()
 
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.graph)
 
@@ -66,15 +72,22 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.textEdit.setReadOnly(True)
         self.textEdit.setUndoRedoEnabled(False)
 
+        self.lblStatus = QtWidgets.QLabel()
+        self.lblStatus.setMinimumSize(int(sf*200), 0)
+        self.statusBar().addWidget(self.lblStatus)
+
         self.update_state()
 
 
 
     def setupStyle(self, sf):
+        def px(x):
+            return str(int(x*sf))+"px"
+
         self.setStyleSheet("""
             QToolButton {
-                padding: """+str(int(6*sf))+"""px;
-                border-radius: """+str(int(2*sf))+"""px;
+                padding: """+px(6)+""";
+                border-radius: """+px(2)+""";
                 border: 1px solid transparent;
             }
             QToolButton::hover {
@@ -83,34 +96,74 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
             }        
 
             QGroupBox {
-                /*border: """+str(int(2*sf))+"""px groove #ADADAD;*/
-                border: """+str(int(1*sf))+"""px solid #C0C0C0;
-                border-radius: """+str(int(4*sf))+"""px;
+                /*border: """+px(2)+""" groove #ADADAD;*/
+                border: """+px(1)+""" solid #C0C0C0;
+                border-radius: """+px(4)+""";
                 margin-top: 0.70em;
             }
 
             QGroupBox::title {
                 subcontrol-origin: margin;
-                left: """+str(int(7*sf))+"""px;
-                padding: 0 """+str(int(3*sf))+"""px 0 """+str(int(3*sf))+"""px;
+                left: """+px(7)+""";
+                padding: 0 """+px(3)+""" 0 """+px(3)+""";
             }
 
-/*            QMenuBar {
-                border-bottom: """+str(int(2*sf))+"""px groove #ADADAD;
-                padding: """+str(int(2*sf))+"""px;
-            }*/
+            QMenuBar {
+                border-bottom: """+px(2)+""" groove #C0C0C0;
+                background-color: white;
+            }
+
+            QMenuBar::item {
+                spacing: """+px(3)+"""; /* spacing between menu bar items */
+                padding: """+px(3)+""" """+px(6)+""";
+                margin-bottom: """+px(1)+""";
+                background: transparent;
+                border: """+px(1)+""" solid transparent;
+            }
+
+            QMenuBar::item:selected {
+                background-color: rgba(0, 120, 215, 0.1);
+                border: """+px(1)+""" solid #0078D7;
+            }
+
+            QPushButton {
+                padding: """+px(4)+""" """+px(8)+""";
+            }
+
+            QStatusBar {
+                border-top: """+px(2)+""" groove #C0C0C0;
+            }
+
+            QStatusBar::item {
+                /*border-right: """+px(2)+""" groove #C0C0C0;*/
+                border-width: 0px;
+            }
+
+            QStatusBar QLabel {
+                padding: """+px(3)+""" """+px(6)+""";
+            }
+
+            QSizeGrip {
+                width: """+px(16)+""";
+                height: """+px(16)+""";
+            }
+
         """)
 
     def btnStartRun_clicked(self, arg):
         self.dataTaker.start_run()
         self.update_state()
+        # Bugfix: Without this, the button appears still "hovered"
+        # if disabled
+        self.btnStartRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
 
     def btnStopRun_clicked(self, arg):
         self.dataTaker.stop_run()
         self.update_state()
+        self.btnStopRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
 
     def logMessage(self, level, thread_name, string):
-        # print(string)
+        print(string)
 
         prev_cursor = self.textEdit.textCursor()
         self.textEdit.moveCursor(Qt.QTextCursor.End)
@@ -118,10 +171,10 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         #self.textEdit.insertPlainText(thread_name + "\t" + string + "\n")
         message = escape(string, True) + "\n"
         classNames = {
-            pydaq.LOG_DEBUG: 'debug',
-            pydaq.LOG_INFO: 'info',
-            pydaq.LOG_WARNING: 'warning',
-            pydaq.LOG_ERROR: 'error',
+            daq.LOG_DEBUG: 'debug',
+            daq.LOG_INFO: 'info',
+            daq.LOG_WARNING: 'warning',
+            daq.LOG_ERROR: 'error',
         }
         className = classNames[level]
         self.textEdit.insertPlainText(thread_name + "\t")
@@ -129,25 +182,40 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.textEdit.setTextCursor(prev_cursor)
 
     def update_state(self):
+        print ("In update_state")
+        state_names = {
+            daq.STATE_STOPPED: "stopped",
+            daq.STATE_RUNNING: "running",
+            daq.STATE_STOPPING: "stopping...",
+        }
+
         state = self.dataTaker.get_state()
-        self.lblState.setText(state)
-        self.statusBar().showMessage(state)
-        self.btnStartRun.setEnabled(state == pydaq.STATE_STOPPED)
-        self.btnStopRun.setEnabled(state == pydaq.STATE_RUNNING)
+        self.lblState.setText(state_names[state])
+        self.lblStatus.setText(state_names[state])
+        self.btnStartRun.setEnabled(state == daq.STATE_STOPPED)
+        self.btnStopRun.setEnabled(state == daq.STATE_RUNNING)
         nevents = self.dataTaker.get_event_number()
         self.lblEventNumber.setText(str(nevents))
         runNumber = self.dataTaker.get_run_number()
         self.lblRunNumber.setText(str(runNumber))
 
-        if state == pydaq.STATE_STOPPED:
+        # print ("here")
+
+        if state == daq.STATE_STOPPED:
             if self.timer.isActive():
                 self.timer.stop()
 
-        elif state == pydaq.STATE_RUNNING:
+        elif state == daq.STATE_RUNNING:
             if not self.timer.isActive():
                 self.timer.start()
 
-        last_events = self.dataTaker.get_accumulated_events()
+        # last_events = self.dataTaker.get_accumulated_events()
+        # last_events = None
+        thebytes = self.dataTaker.getRecentEvent()
+        frame = np.frombuffer(thebytes, dtype=np.uint8)
+        hits = np.reshape(np.unpackbits(frame), newshape=(48, 16))
+        last_events = [hits]
+
         if last_events:
             summed = sum(last_events)
             self.image.set_data(summed)
@@ -157,17 +225,22 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
             self.canvas.update()
 
 
-class MyEventListener(pydaq.EventListener):
+class MyEventListener(daq.EventListener):
     def __init__(self, window):
+        super().__init__()
         self._window = window
 
     def logMessage(self, level, string):
+        print("In logMessage")
         thread = threading.current_thread()
+        # invoke_in_main_thread(self._window.logMessage, level, thread.name, string)
         invoke_in_main_thread(self._window.logMessage, level, thread.name, string)
 
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
+    # app.setStyle(QtWidgets.QStyleFactory.create("Fusion"));
+    
     win = MainWindow()
 
     win.show()

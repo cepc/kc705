@@ -33,9 +33,11 @@ public:
 	~DataTaker();
     void start_run();
     void stop_run();
+    void stop_run_and_join();
     RunState get_state();
     int get_event_number();
     int get_run_number();
+    size_t get_bytes_read();
     // get_accumulated_events
     // get_event_number
     // get_run_number

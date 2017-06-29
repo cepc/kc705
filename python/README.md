@@ -14,7 +14,7 @@ If Python is installed in `C:\Program Files`, you must run that in an elevated s
 
     pip install pyqt5
     pip install pypiwin32
-    pip install numpy matoplotlib
+    pip install numpy matplotlib
 
 If numpy and matplotlib fail, you can get prebuild packages from http://www.lfd.uci.edu/~gohlke/pythonlibs, and install them via:
 

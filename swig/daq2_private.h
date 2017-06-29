@@ -9,7 +9,7 @@ class EventListener;
 class DataTakingThread {
 public:
     DataTakingThread(DataTaker *dataTaker):
-        m_dataTaker(dataTaker), m_listener(dataTaker->m_listener), m_thread(), m_stop(false), m_eventNumber(0), m_runNumber(0) {};
+        m_dataTaker(dataTaker), m_listener(dataTaker->m_listener), m_thread(), m_stop(false), m_eventNumber(0), m_runNumber(0), m_bytesRead(0) {};
 
     ~DataTakingThread() {
         stopAndJoin();
@@ -29,8 +29,12 @@ public:
         if (m_thread.joinable()) m_thread.join();
     }
 
+    // Todo: rather than atomic, use a regular int and locks.
+    // Event number is frequently updated but rarely read, and
+    // this might improve speed
     std::atomic<int> m_eventNumber;
 	std::atomic<int> m_runNumber;
+    std::atomic<size_t> m_bytesRead;
 
 	// A recent event for display.  Must be accessed via a lock.
 	char m_recentEvent[96] = {0};

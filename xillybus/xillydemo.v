@@ -1,4 +1,4 @@
-`include "ClockDividerInteger.v"
+`include "juxd/ClockDividerInteger.v"
 module xillydemo
 (
   input        PCIE_PERST_B_LS,
@@ -60,49 +60,34 @@ module xillydemo
 
   // =====================================
   // juxd
-  // -------------------------------------
   // Parameter assert
-  // -------------------------------------
-  // Parameter : Signal light for reading data
+  // Signal light for reading data
   wire GPIO_LED_6;
-  reg  DAQ_LED_data_read = 1'b0; // Signal light : read data from FPGA
-  reg  DAQ_LED_cfg_write = 1'b0; // Signal light : configure FPGA
+  reg  DAQ_flag_data_read = 1'b0; // Signal light : read data from FPGA
+  reg  DAQ_flag_cfg_write = 1'b0; // Signal light : configure FPGA
 
-  // -------------------------------------
-  // Parameter : DAQ configure
-  wire [7:0] DAQ_cfg_write_0; // Configure value write to mem : 8'b
-  reg  [7:0] DAQ_flag_cfg_start  = 8'b11111111; // Configure flag : start
-  reg  [7:0] DAQ_flag_cfg_reset  = 8'b11000000; // Configure flag : reset
-  reg  [7:0] DAQ_flag_cfg_close  = 8'b11000111; // Configure flag : close
-  reg        DAQ_flag_data_orign = 1'b0;
-  reg        DAQ_flag_data_start = DAQ_flag_data_orign;
-  reg        DAQ_flag_data_reset = DAQ_flag_data_orign;
-  reg        DAQ_flag_data_close = DAQ_flag_data_orign;
+  // Test configure
+  wire [1:0] tst_cfg_flag; // Configure flag : 2'b11
+  wire [5:0] tst_cfg_value; // Configure value : 6'b111111
+  reg  [5:0] tst_cfg_start = 6'b111111; // Configure start
+  reg        tst_flag_data_start = 1'b0;
 
-  // -------------------------------------
-  // Parameter : test data
-  // wire
+  // Test data
   wire [31:0] tst_data_in;
   wire        tst_data_wren;
   wire        tst_flag_data_wren;
-  // register
-  reg  [ 7  : 0] tst_data_Header     = 8'b11110000; // Header
-  reg  [ 7  : 0] tst_data_Tailer     = 8'b10101010; // Tailer
-  reg  [16  : 0] tst_data_Line       = 16'b0; // Line information
-  reg  [768 : 0] tst_data_LineColumn = 768'b0; // Frame information
-  reg  [784 : 0] tst_data_raw        = 784'b0;
-  reg            tst_flag_data_raw   = 1'b0;
+  reg  [31:0] tst_data_raw      = 32'b0;
+  reg         tst_flag_data_raw = 1'b0;
 
-  // -------------------------------------
-  //// Clock divider
-  //wire DAQ_clock;
-  //wire DAQ_reset;
-  //wire DAQ_clock_divide;
-  //assign DAQ_clock_divide = 3;
-  //ClockDividerInteger clock_divide_3(.clock_o(DAQ_clock),
-  //                                   .clock_i(bus_clk),
-  //                                   .reset(DAQ_reset),
-  //                                   .F_DIV(DAQ_clock_divide));
+  // Clock divider
+  wire DAQ_clock;
+  wire DAQ_reset;
+  wire DAQ_clock_divide;
+  assign DAQ_clock_divide = 3;
+  ClockDividerInteger clock_divide_3(.clock_o(DAQ_clock),
+                                     .clock_i(bus_clk),
+                                     .reset(DAQ_reset),
+                                     .F_DIV(DAQ_clock_divide));
 
   // juxd
   // =====================================
@@ -187,73 +172,50 @@ module xillydemo
 
   // =====================================
   // juxd
-  // -------------------------------------
-  // DAQ configure
-  // -------------------------------------
-  // Configure information write to mem8X32
-  assign DAQ_cfg_write_0 = demoarray[0][7:0];
+  // Check FPGA configure
+  //assign tst_cfg_flag  = user_w_mem_8_data[7:6];
+  //assign tst_cfg_value = user_w_mem_8_data[5:0];
+  assign tst_cfg_flag  = demoarray[0][7:6];
+  assign tst_cfg_value = demoarray[0][5:0];
 
-  // Compare FPGA configure with set DAQ register
   always @(posedge bus_clk)
     begin
-      case (DAQ_cfg_write_0)
-        DAQ_flag_cfg_start : DAQ_flag_data_start <= 1'b1;
-        DAQ_flag_cfg_reset : DAQ_flag_data_reset <= 1'b1;
-        DAQ_flag_cfg_close : DAQ_flag_data_close <= 1'b1;
-        default            : ;
-      endcase
+      if (tst_cfg_flag == 2'b11)
+        begin
+          case (tst_cfg_value)
+            tst_cfg_start : tst_flag_data_start = 1'b1;
+            default       : tst_flag_data_start = 1'b0;
+          endcase
+        end
+      else tst_flag_data_start = 1'b0;
     end
+  assign tst_flag_data_wren = tst_flag_data_start;
 
-  // DAQ start
-  assign tst_flag_data_wren = DAQ_flag_data_start && !DAQ_flag_data_reset && !DAQ_flag_data_close;
 
-  // DAQ reset
 
-  // -------------------------------------
 
-  // -------------------------------------
   // Generate test data 
-  // -------------------------------------
   //always @(posedge bus_clk)
-  ////always @(posedge DAQ_clock)
-  //  begin
-  //    if (tst_flag_data_wren)
-  //      begin 
-  //        tst_data_raw      <= tst_data_raw + 1;
-  //        tst_flag_data_raw <= 1;
-  //        DAQ_LED_data_read <= 1;
-  //      end
-  //    else
-  //      begin
-  //        tst_data_raw      <= 0;
-  //        tst_flag_data_raw <= 0;
-  //        DAQ_LED_data_read <= 0;
-  //      end
-  //  end
-  //assign tst_data_in   = tst_data_raw;
-  //assign tst_data_wren = tst_flag_data_raw;
-  //assign GPIO_LED_6    = DAQ_LED_data_read;
-
-  always @(posedge bus_clk)
-  //always @(posedge DAQ_clock)
+  always @(posedge DAQ_clock)
     begin
       if (tst_flag_data_wren)
         begin 
-          tst_data_raw      <= tst_data_raw + 1;
-          tst_flag_data_raw <= 1;
-          DAQ_LED_data_read <= 1;
+          tst_data_raw       <= tst_data_raw + 1;
+          tst_flag_data_raw  <= 1;
+          DAQ_flag_data_read <= 1;
         end
       else
         begin
-          tst_data_raw      <= 0;
-          tst_flag_data_raw <= 0;
-          DAQ_LED_data_read <= 0;
+          tst_data_raw       <= 0;
+          tst_flag_data_raw  <= 0;
+          DAQ_flag_data_read <= 0;
         end
     end
 
   assign tst_data_in   = tst_data_raw;
   assign tst_data_wren = tst_flag_data_raw;
-  assign GPIO_LED_6    = DAQ_LED_data_read;
+  assign GPIO_LED_6    = DAQ_flag_data_read;
+
 
 
 

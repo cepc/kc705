@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<Runs Version="1" Minor="0">
-	<Run Id="impl_1" LaunchDir="F:/Ryuta/FPGA/KC705_V1.0/kc705_v1.0.runs/impl_1" FlowId="Vivado_Implementation" FromStepId="init_design" ToStepId="post_route_phys_opt_design"/>
-</Runs>
-

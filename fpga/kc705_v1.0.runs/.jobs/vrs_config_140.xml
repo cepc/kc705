@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<Runs Version="1" Minor="0">
-	<Run Id="coregen_clk_crossing_fifo32_synth_1" LaunchDir="C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1/kc705_v1.0.runs/coregen_clk_crossing_fifo32_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
-</Runs>
-

@@ -1,0 +1,760 @@
+
+*** Running vivado
+    with args -log kc705.vds -m64 -mode batch -messageDb vivado.pb -source kc705.tcl
+
+
+****** Vivado v2014.3.1 (64-bit)
+  **** SW Build 1056140 on Thu Oct 30 17:03:40 MDT 2014
+  **** IP Build 1028902 on Fri Sep 26 17:35:13 MDT 2014
+    ** Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+
+source kc705.tcl
+# set_param gui.test TreeTableDev
+# set_param xicom.use_bs_reader 1
+# debug::add_scope template.lib 1
+# set_msg_config -id {HDL 9-1061} -limit 100000
+# set_msg_config -id {HDL 9-1654} -limit 100000
+# set_msg_config -id {Synth 8-256} -limit 10000
+# set_msg_config -id {Synth 8-638} -limit 10000
+# create_project -in_memory -part xc7k325tffg900-2
+# set_param project.compositeFile.enableAutoGeneration 0
+# set_param synth.vivado.isSynthRun true
+# set_property webtalk.parent_dir C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.cache/wt [current_project]
+# set_property parent.project_path C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.xpr [current_project]
+# set_property default_lib xil_defaultlib [current_project]
+# set_property target_language Verilog [current_project]
+# add_files -quiet C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/coregen_sysclk_synth_1/coregen_sysclk.dcp
+# set_property used_in_implementation false [get_files C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/coregen_sysclk_synth_1/coregen_sysclk.dcp]
+# add_files -quiet C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/coregen_user_mem8_synth_1/coregen_user_mem8.dcp
+# set_property used_in_implementation false [get_files C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/coregen_user_mem8_synth_1/coregen_user_mem8.dcp]
+# add_files -quiet C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/coregen_clk_crossing_fifo32_synth_1/coregen_clk_crossing_fifo32.dcp
+# set_property used_in_implementation false [get_files C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/coregen_clk_crossing_fifo32_synth_1/coregen_clk_crossing_fifo32.dcp]
+# add_files -quiet C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/fifo_synth_1/fifo.dcp
+# set_property used_in_implementation false [get_files C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/fifo_synth_1/fifo.dcp]
+# add_files -quiet C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/fifo_8x2048_synth_1/fifo_8x2048.dcp
+# set_property used_in_implementation false [get_files C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/fifo_8x2048_synth_1/fifo_8x2048.dcp]
+# add_files -quiet C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/pcie_k7_vivado_synth_1/pcie_k7_vivado.dcp
+# set_property used_in_implementation false [get_files C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/pcie_k7_vivado_synth_1/pcie_k7_vivado.dcp]
+# read_verilog -library xil_defaultlib {
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/gen_user_reset.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillydemo.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus_core.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_8x.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_8x_pipe_clock.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_vivado_pipe_clock.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/gen_user_clock.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/generate_data_packet.v
+#   C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/generate_adc_packet.v
+# }
+# set_property edif_extra_search_paths F:/Ryuta/FPGA/KC705_V1.0/HDL/xillybus/core [current_fileset]
+# read_xdc C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc
+# set_property used_in_implementation false [get_files C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc]
+# read_xdc C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.xdc
+# set_property used_in_implementation false [get_files C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.xdc]
+# catch { write_hwdef -file kc705.hwdef }
+INFO: [Vivado_Tcl 4-279] hardware handoff file cannot be generated as there is no block diagram instance in the design
+# synth_design -top kc705 -part xc7k325tffg900-2
+Command: synth_design -top kc705 -part xc7k325tffg900-2
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7k325t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7k325t'
+INFO: [Common 17-1223] The version limit for your license is '2015.06' and will expire in -815 days. A version limit expiration means that, although you may be able to continue to use the current version of tools or IP with this license, you will not be eligible for any updates or new releases.
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 242.758 ; gain = 46.785
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'kc705' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:1]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:16]
+INFO: [Synth 8-638] synthesizing module 'coregen_sysclk' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/coregen_sysclk_stub.v:6]
+INFO: [Synth 8-256] done synthesizing module 'coregen_sysclk' (1#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/coregen_sysclk_stub.v:6]
+INFO: [Synth 8-638] synthesizing module 'xillybus' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:3]
+INFO: [Synth 8-638] synthesizing module 'IBUFDS_GTE2' [D:/vvivado/Vivado/2014.3.1/scripts/rt/data/unisim_comp.v:10380]
+	Parameter CLKCM_CFG bound to: TRUE - type: string 
+	Parameter CLKRCV_TRST bound to: TRUE - type: string 
+	Parameter CLKSWING_CFG bound to: 2'b11 
+INFO: [Synth 8-256] done synthesizing module 'IBUFDS_GTE2' (2#1) [D:/vvivado/Vivado/2014.3.1/scripts/rt/data/unisim_comp.v:10380]
+INFO: [Synth 8-638] synthesizing module 'pcie_k7_8x' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_8x.v:4]
+	Parameter PCIE_EXT_CLK bound to: TRUE - type: string 
+INFO: [Synth 8-638] synthesizing module 'pcie_k7_vivado' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/pcie_k7_vivado_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'pcie_k7_vivado' (3#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/pcie_k7_vivado_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'pcie_k7_8x' (4#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_8x.v:4]
+WARNING: [Synth 8-350] instance 'pcie' of module 'pcie_k7_8x' requires 167 connections, but only 94 given [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+INFO: [Synth 8-638] synthesizing module 'pcie_k7_8x_pipe_clock' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_8x_pipe_clock.v:3]
+	Parameter PCIE_ASYNC_EN bound to: FALSE - type: string 
+	Parameter PCIE_TXBUF_EN bound to: FALSE - type: string 
+	Parameter PCIE_CLK_SHARING_EN bound to: FALSE - type: string 
+	Parameter PCIE_LANE bound to: 6'b001000 
+	Parameter PCIE_LINK_SPEED bound to: 3 - type: integer 
+	Parameter PCIE_REFCLK_FREQ bound to: 0 - type: integer 
+	Parameter PCIE_USERCLK1_FREQ bound to: 4 - type: integer 
+	Parameter PCIE_USERCLK2_FREQ bound to: 4 - type: integer 
+	Parameter PCIE_OOBCLK_MODE bound to: 1 - type: integer 
+	Parameter PCIE_DEBUG_MODE bound to: 0 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'pcie_k7_vivado_pipe_clock' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_vivado_pipe_clock.v:67]
+	Parameter PCIE_ASYNC_EN bound to: FALSE - type: string 
+	Parameter PCIE_TXBUF_EN bound to: FALSE - type: string 
+	Parameter PCIE_CLK_SHARING_EN bound to: FALSE - type: string 
+	Parameter PCIE_LANE bound to: 6'b001000 
+	Parameter PCIE_LINK_SPEED bound to: 3 - type: integer 
+	Parameter PCIE_REFCLK_FREQ bound to: 0 - type: integer 
+	Parameter PCIE_USERCLK1_FREQ bound to: 4 - type: integer 
+	Parameter PCIE_USERCLK2_FREQ bound to: 4 - type: integer 
+	Parameter PCIE_OOBCLK_MODE bound to: 1 - type: integer 
+	Parameter PCIE_DEBUG_MODE bound to: 0 - type: integer 
+	Parameter DIVCLK_DIVIDE bound to: 1 - type: integer 
+	Parameter CLKFBOUT_MULT_F bound to: 10 - type: integer 
+	Parameter CLKIN1_PERIOD bound to: 10 - type: integer 
+	Parameter CLKOUT0_DIVIDE_F bound to: 8 - type: integer 
+	Parameter CLKOUT1_DIVIDE bound to: 4 - type: integer 
+	Parameter CLKOUT2_DIVIDE bound to: 4 - type: integer 
+	Parameter CLKOUT3_DIVIDE bound to: 4 - type: integer 
+	Parameter CLKOUT4_DIVIDE bound to: 20 - type: integer 
+	Parameter PCIE_GEN1_MODE bound to: 1'b1 
+INFO: [Synth 8-4472] Detected and applied attribute ASYNC_REG = TRUE [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_vivado_pipe_clock.v:137]
+INFO: [Synth 8-4472] Detected and applied attribute ASYNC_REG = TRUE [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_vivado_pipe_clock.v:138]
+INFO: [Synth 8-4472] Detected and applied attribute ASYNC_REG = TRUE [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_vivado_pipe_clock.v:139]
+INFO: [Synth 8-4472] Detected and applied attribute ASYNC_REG = TRUE [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_vivado_pipe_clock.v:141]
+INFO: [Synth 8-4472] Detected and applied attribute ASYNC_REG = TRUE [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_vivado_pipe_clock.v:142]
+INFO: [Synth 8-4472] Detected and applied attribute ASYNC_REG = TRUE [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_vivado_pipe_clock.v:143]
+INFO: [Synth 8-638] synthesizing module 'BUFG' [D:/vvivado/Vivado/2014.3.1/scripts/rt/data/unisim_comp.v:606]
+INFO: [Synth 8-256] done synthesizing module 'BUFG' (5#1) [D:/vvivado/Vivado/2014.3.1/scripts/rt/data/unisim_comp.v:606]
+INFO: [Synth 8-638] synthesizing module 'MMCME2_ADV' [D:/vvivado/Vivado/2014.3.1/scripts/rt/data/unisim_comp.v:15990]
+	Parameter BANDWIDTH bound to: OPTIMIZED - type: string 
+	Parameter CLKFBOUT_USE_FINE_PS bound to: FALSE - type: string 
+	Parameter CLKOUT0_USE_FINE_PS bound to: FALSE - type: string 
+	Parameter CLKOUT1_USE_FINE_PS bound to: FALSE - type: string 
+	Parameter CLKOUT2_USE_FINE_PS bound to: FALSE - type: string 
+	Parameter CLKOUT3_USE_FINE_PS bound to: FALSE - type: string 
+	Parameter CLKOUT4_CASCADE bound to: FALSE - type: string 
+	Parameter CLKOUT4_USE_FINE_PS bound to: FALSE - type: string 
+	Parameter CLKOUT5_USE_FINE_PS bound to: FALSE - type: string 
+	Parameter CLKOUT6_USE_FINE_PS bound to: FALSE - type: string 
+	Parameter COMPENSATION bound to: ZHOLD - type: string 
+	Parameter SS_EN bound to: FALSE - type: string 
+	Parameter SS_MODE bound to: CENTER_HIGH - type: string 
+	Parameter STARTUP_WAIT bound to: FALSE - type: string 
+	Parameter IS_CLKINSEL_INVERTED bound to: 1'b0 
+	Parameter IS_PSEN_INVERTED bound to: 1'b0 
+	Parameter IS_PSINCDEC_INVERTED bound to: 1'b0 
+	Parameter IS_PWRDWN_INVERTED bound to: 1'b0 
+	Parameter IS_RST_INVERTED bound to: 1'b0 
+	Parameter CLKOUT1_DIVIDE bound to: 4 - type: integer 
+	Parameter CLKOUT2_DIVIDE bound to: 4 - type: integer 
+	Parameter CLKOUT3_DIVIDE bound to: 4 - type: integer 
+	Parameter CLKOUT4_DIVIDE bound to: 20 - type: integer 
+	Parameter CLKOUT5_DIVIDE bound to: 1 - type: integer 
+	Parameter CLKOUT6_DIVIDE bound to: 1 - type: integer 
+	Parameter DIVCLK_DIVIDE bound to: 1 - type: integer 
+	Parameter SS_MOD_PERIOD bound to: 10000 - type: integer 
+	Parameter CLKFBOUT_MULT_F bound to: 10.000000 - type: float 
+	Parameter CLKFBOUT_PHASE bound to: 0.000000 - type: float 
+	Parameter CLKIN1_PERIOD bound to: 10.000000 - type: float 
+	Parameter CLKIN2_PERIOD bound to: 0.000000 - type: float 
+	Parameter CLKOUT0_DIVIDE_F bound to: 8.000000 - type: float 
+	Parameter CLKOUT0_DUTY_CYCLE bound to: 0.500000 - type: float 
+	Parameter CLKOUT0_PHASE bound to: 0.000000 - type: float 
+	Parameter CLKOUT1_DUTY_CYCLE bound to: 0.500000 - type: float 
+	Parameter CLKOUT1_PHASE bound to: 0.000000 - type: float 
+	Parameter CLKOUT2_DUTY_CYCLE bound to: 0.500000 - type: float 
+	Parameter CLKOUT2_PHASE bound to: 0.000000 - type: float 
+	Parameter CLKOUT3_DUTY_CYCLE bound to: 0.500000 - type: float 
+	Parameter CLKOUT3_PHASE bound to: 0.000000 - type: float 
+	Parameter CLKOUT4_DUTY_CYCLE bound to: 0.500000 - type: float 
+	Parameter CLKOUT4_PHASE bound to: 0.000000 - type: float 
+	Parameter CLKOUT5_DUTY_CYCLE bound to: 0.500000 - type: float 
+	Parameter CLKOUT5_PHASE bound to: 0.000000 - type: float 
+	Parameter CLKOUT6_DUTY_CYCLE bound to: 0.500000 - type: float 
+	Parameter CLKOUT6_PHASE bound to: 0.000000 - type: float 
+	Parameter REF_JITTER1 bound to: 0.010000 - type: float 
+	Parameter REF_JITTER2 bound to: 0.010000 - type: float 
+INFO: [Synth 8-256] done synthesizing module 'MMCME2_ADV' (6#1) [D:/vvivado/Vivado/2014.3.1/scripts/rt/data/unisim_comp.v:15990]
+INFO: [Synth 8-638] synthesizing module 'BUFGCTRL' [D:/vvivado/Vivado/2014.3.1/scripts/rt/data/unisim_comp.v:660]
+	Parameter PRESELECT_I0 bound to: FALSE - type: string 
+	Parameter PRESELECT_I1 bound to: FALSE - type: string 
+	Parameter IS_CE0_INVERTED bound to: 1'b0 
+	Parameter IS_CE1_INVERTED bound to: 1'b0 
+	Parameter IS_I0_INVERTED bound to: 1'b0 
+	Parameter IS_I1_INVERTED bound to: 1'b0 
+	Parameter IS_IGNORE0_INVERTED bound to: 1'b0 
+	Parameter IS_IGNORE1_INVERTED bound to: 1'b0 
+	Parameter IS_S0_INVERTED bound to: 1'b0 
+	Parameter IS_S1_INVERTED bound to: 1'b0 
+	Parameter INIT_OUT bound to: 0 - type: integer 
+INFO: [Synth 8-256] done synthesizing module 'BUFGCTRL' (7#1) [D:/vvivado/Vivado/2014.3.1/scripts/rt/data/unisim_comp.v:660]
+INFO: [Synth 8-256] done synthesizing module 'pcie_k7_vivado_pipe_clock' (8#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_vivado_pipe_clock.v:67]
+INFO: [Synth 8-256] done synthesizing module 'pcie_k7_8x_pipe_clock' (9#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/pcie_k7_8x_pipe_clock.v:3]
+WARNING: [Synth 8-350] instance 'pipe_clock' of module 'pcie_k7_8x_pipe_clock' requires 16 connections, but only 14 given [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+INFO: [Synth 8-638] synthesizing module 'xillybus_core' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus_core.v:1]
+INFO: [Synth 8-256] done synthesizing module 'xillybus_core' (10#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus_core.v:1]
+WARNING: [Synth 8-3848] Net sys_clk in module/entity xillybus does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:237]
+INFO: [Synth 8-256] done synthesizing module 'xillybus' (11#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:3]
+INFO: [Synth 8-638] synthesizing module 'fifo_8x2048' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/fifo_8x2048_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'fifo_8x2048' (12#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/fifo_8x2048_stub.v:7]
+INFO: [Synth 8-638] synthesizing module 'coregen_user_mem8' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/coregen_user_mem8_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'coregen_user_mem8' (13#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/coregen_user_mem8_stub.v:7]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:221]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:222]
+INFO: [Synth 8-638] synthesizing module 'gen_user_clock' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/gen_user_clock.v:1]
+INFO: [Synth 8-256] done synthesizing module 'gen_user_clock' (14#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/gen_user_clock.v:1]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:231]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:235]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:237]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:238]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:259]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:260]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:261]
+INFO: [Synth 8-638] synthesizing module 'generate_adc_packet' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/generate_adc_packet.v:1]
+INFO: [Synth 8-4472] Detected and applied attribute keep = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/generate_adc_packet.v:22]
+INFO: [Synth 8-256] done synthesizing module 'generate_adc_packet' (15#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/generate_adc_packet.v:1]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:277]
+INFO: [Synth 8-638] synthesizing module 'coregen_clk_crossing_fifo32' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/coregen_clk_crossing_fifo32_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'coregen_clk_crossing_fifo32' (16#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/coregen_clk_crossing_fifo32_stub.v:7]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:299]
+INFO: [Synth 8-638] synthesizing module 'gen_user_reset' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/gen_user_reset.v:1]
+INFO: [Synth 8-256] done synthesizing module 'gen_user_reset' (17#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/gen_user_reset.v:1]
+INFO: [Synth 8-4472] Detected and applied attribute mark_debug = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:326]
+INFO: [Synth 8-638] synthesizing module 'ADC_test' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:22]
+	Parameter CNT_NUM_1 bound to: 49 - type: integer 
+	Parameter CNT_NUM_2 bound to: 24 - type: integer 
+INFO: [Synth 8-4472] Detected and applied attribute keep = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:58]
+INFO: [Synth 8-4472] Detected and applied attribute keep = true [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:81]
+INFO: [Synth 8-638] synthesizing module 'fifo' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/fifo_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'fifo' (18#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/realtime/fifo_stub.v:7]
+WARNING: [Synth 8-350] instance 'ADC_OUT' of module 'fifo' requires 11 connections, but only 9 given [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:278]
+INFO: [Synth 8-155] case statement is not full and has no default [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:203]
+WARNING: [Synth 8-3848] Net SCK in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:27]
+WARNING: [Synth 8-3848] Net CH_en in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:29]
+WARNING: [Synth 8-3848] Net start in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:30]
+WARNING: [Synth 8-3848] Net LE in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:31]
+WARNING: [Synth 8-3848] Net ADC_rst in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:32]
+INFO: [Synth 8-256] done synthesizing module 'ADC_test' (19#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:22]
+WARNING: [Synth 8-3848] Net user_r_read_32_eof in module/entity kc705 does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:58]
+WARNING: [Synth 8-3848] Net user_w_write_32_full in module/entity kc705 does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:70]
+INFO: [Synth 8-256] done synthesizing module 'kc705' (20#1) [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:1]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 276.902 ; gain = 80.930
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+WARNING: [Synth 8-3295] tying undriven pin pcie:rx_np_req to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_pm_send_pme_to to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_bus_number[7] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_bus_number[6] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_bus_number[5] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_bus_number[4] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_bus_number[3] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_bus_number[2] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_bus_number[1] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_bus_number[0] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_device_number[4] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_device_number[3] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_device_number[2] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_device_number[1] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_device_number[0] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_function_number[2] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_function_number[1] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:cfg_ds_function_number[0] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:pl_transmit_hot_rst to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pcie:pl_downstream_deemph_source to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:107]
+WARNING: [Synth 8-3295] tying undriven pin pipe_clock:CLK_CLK to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+WARNING: [Synth 8-3295] tying undriven pin pipe_clock:CLK_PCLK_SEL_SLAVE[7] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+WARNING: [Synth 8-3295] tying undriven pin pipe_clock:CLK_PCLK_SEL_SLAVE[6] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+WARNING: [Synth 8-3295] tying undriven pin pipe_clock:CLK_PCLK_SEL_SLAVE[5] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+WARNING: [Synth 8-3295] tying undriven pin pipe_clock:CLK_PCLK_SEL_SLAVE[4] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+WARNING: [Synth 8-3295] tying undriven pin pipe_clock:CLK_PCLK_SEL_SLAVE[3] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+WARNING: [Synth 8-3295] tying undriven pin pipe_clock:CLK_PCLK_SEL_SLAVE[2] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+WARNING: [Synth 8-3295] tying undriven pin pipe_clock:CLK_PCLK_SEL_SLAVE[1] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+WARNING: [Synth 8-3295] tying undriven pin pipe_clock:CLK_PCLK_SEL_SLAVE[0] to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:233]
+WARNING: [Synth 8-3295] tying undriven pin xillybus_ins:user_r_read_32_eof to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:80]
+WARNING: [Synth 8-3295] tying undriven pin xillybus_ins:user_w_write_32_full to constant 0 [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:80]
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 276.902 ; gain = 80.930
+---------------------------------------------------------------------------------
+INFO: [Netlist 29-17] Analyzing 1 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+Loading clock regions from D:/vvivado/Vivado/2014.3.1/data\parts/xilinx/kintex7/kintex7/xc7k325t/ClockRegion.xml
+Loading clock buffers from D:/vvivado/Vivado/2014.3.1/data\parts/xilinx/kintex7/kintex7/xc7k325t/ClockBuffers.xml
+Loading clock placement rules from D:/vvivado/Vivado/2014.3.1/data/parts/xilinx/kintex7/ClockPlacerRules.xml
+Loading package pin functions from D:/vvivado/Vivado/2014.3.1/data\parts/xilinx/kintex7/PinFunctions.xml...
+Loading package from D:/vvivado/Vivado/2014.3.1/data\parts/xilinx/kintex7/kintex7/xc7k325t/ffg900/Package.xml
+Loading io standards from D:/vvivado/Vivado/2014.3.1/data\./parts/xilinx/kintex7/IOStandards.xml
+Loading device configuration modes from D:/vvivado/Vivado/2014.3.1/data\parts/xilinx/kintex7/ConfigModes.xml
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/dcp/coregen_sysclk_in_context.xdc] for cell 'sysclk_ins'
+Finished Parsing XDC File [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/dcp/coregen_sysclk_in_context.xdc] for cell 'sysclk_ins'
+Parsing XDC File [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/dcp_6/pcie_k7_vivado_in_context.xdc] for cell 'xillybus_ins/pcie/pcie_k7_vivado'
+Finished Parsing XDC File [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/dcp_6/pcie_k7_vivado_in_context.xdc] for cell 'xillybus_ins/pcie/pcie_k7_vivado'
+Parsing XDC File [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc]
+Finished Parsing XDC File [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc]
+INFO: [Timing 38-2] Deriving generated clocks
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/kc705_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/kc705_propImpl.xdc] to anoth XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Parsing XDC File [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.xdc]
+Finished Parsing XDC File [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.xdc]
+Completed Processing XDC Constraints
+
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.020 . Memory (MB): peak = 647.387 ; gain = 0.000
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7k325tffg900-2
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property IO_BUFFER_TYPE = NONE for SYSCLK_P. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/dcp/coregen_sysclk_in_context.xdc, line 3).
+Applied set_property IO_BUFFER_TYPE = NONE for SYSCLK_N. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705_v1.0.runs/synth_1/.Xil/Vivado-2024-daq-PC/dcp/coregen_sysclk_in_context.xdc, line 4).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/S00_i. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 6).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/\pclk_i1_bufgctrl.pclk_i1 . (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 6).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel0_i. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel0_i__0. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel1_i. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_i. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_i__0. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_i__1. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg1_i. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg2_i. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg1_i. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg1_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg2_i. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+Applied set_property DONT_TOUCH = true for xillybus_ins/pipe_clock/pipe_clock/pclk_sel_slave_reg2_reg. (constraint file  C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/vivado-essentials/xillydemo.xdc, line 7).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+INFO: [Synth 8-4471] merging register 'wr_en_reg' into 'mem_access_wren_reg' [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/user_module/gen_user_reset.v:139]
+WARNING: [Synth 8-3848] Net sys_clk in module/entity xillybus does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/xillybus/verilog/src/xillybus.v:237]
+WARNING: [Synth 8-3848] Net SCK in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:27]
+WARNING: [Synth 8-3848] Net CH_en in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:29]
+WARNING: [Synth 8-3848] Net start in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:30]
+WARNING: [Synth 8-3848] Net LE in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:31]
+WARNING: [Synth 8-3848] Net ADC_rst in module/entity ADC_test does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/HDL/adc/ADC_test.v:32]
+WARNING: [Synth 8-3848] Net user_r_read_32_eof in module/entity kc705 does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:58]
+WARNING: [Synth 8-3848] Net user_w_write_32_full in module/entity kc705 does not have driver. [C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1_ADCpattern/kc705.v:70]
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     16 Bit       Adders := 4     
+	   2 Input     12 Bit       Adders := 2     
+	   2 Input     10 Bit       Adders := 2     
+	   2 Input      8 Bit       Adders := 12    
++---Registers : 
+	               32 Bit    Registers := 1     
+	               16 Bit    Registers := 10    
+	               12 Bit    Registers := 2     
+	               10 Bit    Registers := 2     
+	                8 Bit    Registers := 20    
+	                5 Bit    Registers := 2     
+	                1 Bit    Registers := 27    
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 1     
+	   3 Input     32 Bit        Muxes := 1     
+	   2 Input     16 Bit        Muxes := 8     
+	  17 Input     16 Bit        Muxes := 2     
+	   2 Input     12 Bit        Muxes := 2     
+	   2 Input     10 Bit        Muxes := 3     
+	   2 Input      8 Bit        Muxes := 9     
+	   3 Input      8 Bit        Muxes := 1     
+	   2 Input      5 Bit        Muxes := 3     
+	   3 Input      5 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 25    
+	   4 Input      1 Bit        Muxes := 1     
+	   3 Input      1 Bit        Muxes := 2     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Hierarchical Component Statistics 
+---------------------------------------------------------------------------------
+Hierarchical RTL Component report 
+Module kc705 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     10 Bit       Adders := 1     
++---Registers : 
+	               10 Bit    Registers := 1     
+	                1 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     10 Bit        Muxes := 3     
+	   2 Input      1 Bit        Muxes := 3     
+Module pcie_k7_8x 
+Detailed RTL Component Info : 
+Module pcie_k7_vivado_pipe_clock 
+Detailed RTL Component Info : 
++---Registers : 
+	                8 Bit    Registers := 4     
+	                1 Bit    Registers := 3     
++---Muxes : 
+	   2 Input      8 Bit        Muxes := 2     
+	   2 Input      1 Bit        Muxes := 2     
+Module pcie_k7_8x_pipe_clock 
+Detailed RTL Component Info : 
+Module xillybus 
+Detailed RTL Component Info : 
+Module gen_user_clock 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     10 Bit       Adders := 1     
+	   2 Input      8 Bit       Adders := 1     
++---Registers : 
+	               10 Bit    Registers := 1     
+	                8 Bit    Registers := 1     
+	                1 Bit    Registers := 2     
++---Muxes : 
+	   3 Input      8 Bit        Muxes := 1     
+	   2 Input      8 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 2     
+Module generate_adc_packet 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      8 Bit       Adders := 1     
++---Registers : 
+	               32 Bit    Registers := 1     
+	                8 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 1     
+	   3 Input     32 Bit        Muxes := 1     
+	   2 Input      8 Bit        Muxes := 1     
+Module gen_user_reset 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      8 Bit       Adders := 4     
++---Registers : 
+	                8 Bit    Registers := 8     
+	                5 Bit    Registers := 2     
+	                1 Bit    Registers := 7     
++---Muxes : 
+	   2 Input      8 Bit        Muxes := 1     
+	   2 Input      5 Bit        Muxes := 3     
+	   3 Input      5 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 10    
+	   4 Input      1 Bit        Muxes := 1     
+Module ADC_test 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     16 Bit       Adders := 2     
+	   2 Input     12 Bit       Adders := 1     
+	   2 Input      8 Bit       Adders := 3     
++---Registers : 
+	               16 Bit    Registers := 5     
+	               12 Bit    Registers := 1     
+	                8 Bit    Registers := 3     
+	                1 Bit    Registers := 7     
++---Muxes : 
+	   2 Input     16 Bit        Muxes := 4     
+	  17 Input     16 Bit        Muxes := 1     
+	   2 Input     12 Bit        Muxes := 1     
+	   2 Input      8 Bit        Muxes := 2     
+	   2 Input      1 Bit        Muxes := 4     
+	   3 Input      1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Hierarchical Component Statistics
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 840 (col length:140)
+BRAMs: 890 (col length: RAMB18 140 RAMB36 70)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+Start Cross Boundary Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Cross Boundary Optimization : Time (s): cpu = 00:00:13 ; elapsed = 00:00:14 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+Finished Parallel Reinference  : Time (s): cpu = 00:00:13 ; elapsed = 00:00:14 . Memory (MB): peak = 647.387 ; gain = 451.414
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (gen_user_reset_ins/\mem8_out_reg_reg[7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (gen_user_reset_ins/\mem_address_rden_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (gen_user_reset_ins/\mem_address_wren_reg[4] )
+WARNING: [Synth 8-3332] Sequential element (\mem8_out_reg_reg[7] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem8_out_reg_reg[6] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem8_out_reg_reg[5] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem8_out_reg_reg[4] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem8_out_reg_reg[3] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem8_out_reg_reg[2] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem8_out_reg_reg[1] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem8_out_reg_reg[0] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem_address_wren_reg[4] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem_address_wren_reg[3] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem_address_wren_reg[2] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem_address_wren_reg[1] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem_address_rden_reg[4] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem_address_rden_reg[3] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem_address_rden_reg[2] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (\mem_address_rden_reg[1] ) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (rst_on_reg) is unused and will be removed from module gen_user_reset.
+WARNING: [Synth 8-3332] Sequential element (ADC_SCK_reg) is unused and will be removed from module ADC_test.
+---------------------------------------------------------------------------------
+Start Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:00:14 ; elapsed = 00:00:15 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:00:14 ; elapsed = 00:00:15 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+Finished Parallel Area Optimization  : Time (s): cpu = 00:00:14 ; elapsed = 00:00:15 . Memory (MB): peak = 647.387 ; gain = 451.414
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:00:14 ; elapsed = 00:00:15 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+INFO: Moved 3 constraints on hierarchical pins to their respective driving/loading pins
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:23 ; elapsed = 00:00:25 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:24 ; elapsed = 00:00:25 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:24 ; elapsed = 00:00:26 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++------+----------------------------+----------+
+|      |BlackBox name               |Instances |
++------+----------------------------+----------+
+|1     |coregen_sysclk              |         1|
+|2     |fifo_8x2048                 |         1|
+|3     |coregen_user_mem8           |         1|
+|4     |coregen_clk_crossing_fifo32 |         1|
+|5     |fifo                        |         2|
+|6     |xillybus_core               |         1|
+|7     |pcie_k7_vivado              |         1|
++------+----------------------------+----------+
+
+Report Cell Usage: 
++------+----------------------------+------+
+|      |Cell                        |Count |
++------+----------------------------+------+
+|1     |coregen_clk_crossing_fifo32 |     1|
+|2     |coregen_sysclk              |     1|
+|3     |coregen_user_mem8           |     1|
+|4     |fifo                        |     1|
+|5     |fifo_8x2048                 |     1|
+|6     |fifo__2                     |     1|
+|7     |pcie_k7_vivado              |     1|
+|8     |xillybus_core               |     1|
+|9     |BUFG                        |     3|
+|10    |BUFGCTRL                    |     1|
+|11    |CARRY4                      |    22|
+|12    |IBUFDS_GTE2                 |     1|
+|13    |LUT1                        |   111|
+|14    |LUT2                        |    56|
+|15    |LUT3                        |    31|
+|16    |LUT4                        |    73|
+|17    |LUT5                        |    82|
+|18    |LUT6                        |   129|
+|19    |MMCME2_ADV                  |     1|
+|20    |FDCE                        |   244|
+|21    |FDRE                        |   144|
+|22    |FDSE                        |    26|
+|23    |IBUF                        |    19|
+|24    |OBUF                        |    20|
++------+----------------------------+------+
+
+Report Instance Areas: 
++------+---------------------+--------------------------+------+
+|      |Instance             |Module                    |Cells |
++------+---------------------+--------------------------+------+
+|1     |top                  |                          |  1729|
+|2     |  gen_user_clock_ins |gen_user_clock            |    52|
+|3     |  gen_adc_packet_ins |generate_adc_packet       |    72|
+|4     |  gen_user_reset_ins |gen_user_reset            |   129|
+|5     |  ADC_test_ins1      |ADC_test__2               |   323|
+|6     |  ADC_test_ins2      |ADC_test                  |   323|
+|7     |  xillybus_ins       |xillybus                  |   668|
+|8     |    pcie             |pcie_k7_8x                |   473|
+|9     |    pipe_clock       |pcie_k7_8x_pipe_clock     |    45|
+|10    |      pipe_clock     |pcie_k7_vivado_pipe_clock |    45|
++------+---------------------+--------------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 647.387 ; gain = 451.414
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 26 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:19 . Memory (MB): peak = 647.387 ; gain = 55.637
+Synthesis Optimization Complete : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 647.387 ; gain = 451.414
+INFO: [Project 1-571] Translating synthesized netlist
+Reading core file 'F:/Ryuta/FPGA/KC705_V1.0/HDL/xillybus/core/xillybus_core.ngc' for (cell view 'xillybus_core', library 'work')
+Parsing EDIF File [./.ngc2edfcache/xillybus_core_ngc_c2732dde.edif]
+Finished Parsing EDIF File [./.ngc2edfcache/xillybus_core_ngc_c2732dde.edif]
+INFO: [Netlist 29-17] Analyzing 3442 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+WARNING: [Netlist 29-43] Netlist 'kc705' is not ideal for floorplanning, since the cellview 'xillybus_core' defined in file 'xillybus_core.ngc' contains large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+INFO: [Project 1-479] Netlist was created with Xilinx ngc2edif P.20140912
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-140] Inserted 0 IBUFs to IO ports without IO buffers.
+INFO: [Opt 31-141] Inserted 0 OBUFs to IO ports without IO buffers.
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 3102 instances were transformed.
+  (MUXCY,XORCY) => CARRY4: 232 instances
+  FD => FDRE: 210 instances
+  FDE => FDRE: 2076 instances
+  FDR => FDRE: 282 instances
+  FDS => FDSE: 12 instances
+  INV => LUT1: 174 instances
+  RAM32M => RAM32M (RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMS32, RAMS32): 19 instances
+  RAM32X1D => RAM32X1D (RAMD32, RAMD32): 16 instances
+  RAM64M => RAM64M (RAMD64E, RAMD64E, RAMD64E, RAMD64E): 58 instances
+  RAM64X1D => RAM64X1D (RAMD64E, RAMD64E): 18 instances
+  SRLC16E => SRL16E: 5 instances
+
+INFO: [Common 17-83] Releasing license: Synthesis
+85 Infos, 69 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:27 ; elapsed = 00:00:29 . Memory (MB): peak = 649.484 ; gain = 451.348
+# write_checkpoint kc705.dcp
+# catch { report_utilization -file kc705_utilization_synth.rpt -pb kc705_utilization_synth.pb }
+report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.211 . Memory (MB): peak = 649.484 ; gain = 0.000
+INFO: [Common 17-206] Exiting Vivado at Fri Sep 22 16:16:31 2017...

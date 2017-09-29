@@ -26,3 +26,6 @@ time.sleep(0.5)
 d.stop_run()
 event = d.getRecentEvent()
 print(repr(event))
+
+import os
+os._exit(0)

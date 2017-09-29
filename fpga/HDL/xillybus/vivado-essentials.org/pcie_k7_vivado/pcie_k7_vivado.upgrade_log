@@ -1,0 +1,16 @@
+Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2014.3.1 (win64) Build 1056140 Thu Oct 30 17:03:40 MDT 2014
+| Date         : Fri Aug 18 20:06:25 2017
+| Host         : daq-PC running 64-bit Service Pack 1  (build 7601)
+| Command      : upgrade_ip
+| Device       : xc7k325tffg900-2
+--------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'pcie_k7_vivado'
+
+1. Summary
+----------
+
+SUCCESS in the upgrade of pcie_k7_vivado (xilinx.com:ip:pcie_7x:3.0) from (Rev. 1) to (Rev. 3)
+

@@ -1,0 +1,10 @@
+#-----------------------------------------------------------
+# Vivado v2014.3.1 (64-bit)
+# SW Build 1056140 on Thu Oct 30 17:03:40 MDT 2014
+# IP Build 1028902 on Fri Sep 26 17:35:13 MDT 2014
+# Start of session at: Thu Sep 21 11:15:19 2017
+# Process ID: 2824
+# Log file: C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1/kc705_v1.0.runs/coregen_clk_crossing_fifo32_synth_1/coregen_clk_crossing_fifo32.vds
+# Journal file: C:/Users/daq/Desktop/Active_FPGA/KC705_V1.1/kc705_v1.0.runs/coregen_clk_crossing_fifo32_synth_1\vivado.jou
+#-----------------------------------------------------------
+source coregen_clk_crossing_fifo32.tcl

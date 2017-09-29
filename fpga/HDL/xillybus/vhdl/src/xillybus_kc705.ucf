@@ -1,0 +1,64 @@
+INST "*/pcieclk_ibuf" LOC = IBUFDS_GTE2_X0Y1;
+
+INST "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtx_channel.gtxe2_channel_i" LOC = GTXE2_CHANNEL_X0Y7;
+INST "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[1].gt_wrapper_i/gtx_channel.gtxe2_channel_i" LOC = GTXE2_CHANNEL_X0Y6;
+INST "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[2].gt_wrapper_i/gtx_channel.gtxe2_channel_i" LOC = GTXE2_CHANNEL_X0Y5;
+INST "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[3].gt_wrapper_i/gtx_channel.gtxe2_channel_i" LOC = GTXE2_CHANNEL_X0Y4;
+INST "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[4].gt_wrapper_i/gtx_channel.gtxe2_channel_i" LOC = GTXE2_CHANNEL_X0Y3;
+INST "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[5].gt_wrapper_i/gtx_channel.gtxe2_channel_i" LOC = GTXE2_CHANNEL_X0Y2;
+INST "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[6].gt_wrapper_i/gtx_channel.gtxe2_channel_i" LOC = GTXE2_CHANNEL_X0Y1;
+INST "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[7].gt_wrapper_i/gtx_channel.gtxe2_channel_i" LOC = GTXE2_CHANNEL_X0Y0;
+
+INST "*/pcie/pcie_top_i/pcie_7x_i/pcie_block_i" LOC = PCIE_X0Y0;
+
+# Place block RAMs
+INST "*/pcie/pcie_top_i/pcie_7x_i/pcie_bram_top/pcie_brams_rx/brams[3].ram/use_tdp.ramb36/bram36_tdp_bl.bram36_tdp_bl" LOC = RAMB36_X5Y35 ;
+INST "*/pcie/pcie_top_i/pcie_7x_i/pcie_bram_top/pcie_brams_rx/brams[2].ram/use_tdp.ramb36/bram36_tdp_bl.bram36_tdp_bl" LOC = RAMB36_X4Y36 ;
+INST "*/pcie/pcie_top_i/pcie_7x_i/pcie_bram_top/pcie_brams_rx/brams[1].ram/use_tdp.ramb36/bram36_tdp_bl.bram36_tdp_bl" LOC = RAMB36_X4Y35 ;
+INST "*/pcie/pcie_top_i/pcie_7x_i/pcie_bram_top/pcie_brams_rx/brams[0].ram/use_tdp.ramb36/bram36_tdp_bl.bram36_tdp_bl" LOC = RAMB36_X4Y34 ;
+INST "*/pcie/pcie_top_i/pcie_7x_i/pcie_bram_top/pcie_brams_tx/brams[0].ram/use_tdp.ramb36/bram36_tdp_bl.bram36_tdp_bl" LOC = RAMB36_X4Y33 ;
+INST "*/pcie/pcie_top_i/pcie_7x_i/pcie_bram_top/pcie_brams_tx/brams[1].ram/use_tdp.ramb36/bram36_tdp_bl.bram36_tdp_bl" LOC = RAMB36_X4Y32 ;
+INST "*/pcie/pcie_top_i/pcie_7x_i/pcie_bram_top/pcie_brams_tx/brams[2].ram/use_tdp.ramb36/bram36_tdp_bl.bram36_tdp_bl" LOC = RAMB36_X4Y31 ;
+INST "*/pcie/pcie_top_i/pcie_7x_i/pcie_bram_top/pcie_brams_tx/brams[3].ram/use_tdp.ramb36/bram36_tdp_bl.bram36_tdp_bl" LOC = RAMB36_X4Y30 ;
+
+NET "PCIE_REFCLK_P" TNM_NET = "SYSCLK" ;
+NET "*/pipe_clock/clk_125mhz" TNM_NET = "CLK_125" ;
+NET "*/pipe_clock/clk_250mhz" TNM_NET = "CLK_250" ;
+NET "*/pipe_clock/userclk1" TNM_NET = "CLK_USERCLK" ;
+NET "*/pipe_clock/userclk2" TNM_NET = "CLK_USERCLK2" ;
+
+TIMESPEC "TS_SYSCLK"  = PERIOD "SYSCLK" 100 MHz HIGH 50 % ;
+TIMESPEC "TS_CLK_125"  = PERIOD "CLK_125" TS_SYSCLK*1.25 HIGH 50 % PRIORITY 1;
+TIMESPEC "TS_CLK_USERCLK" = PERIOD "CLK_USERCLK" TS_SYSCLK*2.5 HIGH 50 %;
+TIMESPEC "TS_CLK_USERCLK2" = PERIOD "CLK_USERCLK2" TS_SYSCLK*2.5 HIGH 50 %;
+
+INST "*/pipe_clock/mmcm_i"  LOC = MMCME2_ADV_X0Y2;
+
+PIN "*/pcie/pcie_top_i/pcie_7x_i/pcie_block_i.PLPHYLNKUPN" TIG;
+PIN "*/pcie/pcie_top_i/pcie_7x_i/pcie_block_i.PLRECEIVEDHOTRST" TIG;
+
+PIN "*/pipe_clock/mmcm_i.RST" TIG ;
+NET "*/pcie/gt_top_i/pipe_wrapper_i/user_resetdone*" TIG;
+NET "*/pipe_clock/pclk_sel" TIG;
+NET "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[0].pipe_rate.pipe_rate_i/*" TNM_NET = FFS "MC_PIPE";
+NET "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[1].pipe_rate.pipe_rate_i/*" TNM_NET = FFS "MC_PIPE";
+NET "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[2].pipe_rate.pipe_rate_i/*" TNM_NET = FFS "MC_PIPE";
+NET "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[3].pipe_rate.pipe_rate_i/*" TNM_NET = FFS "MC_PIPE";
+NET "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[4].pipe_rate.pipe_rate_i/*" TNM_NET = FFS "MC_PIPE";
+NET "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[5].pipe_rate.pipe_rate_i/*" TNM_NET = FFS "MC_PIPE";
+NET "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[6].pipe_rate.pipe_rate_i/*" TNM_NET = FFS "MC_PIPE";
+NET "*/pcie/gt_top_i/pipe_wrapper_i/pipe_lane[7].pipe_rate.pipe_rate_i/*" TNM_NET = FFS "MC_PIPE";
+
+TIMESPEC "TS_PIPE_RATE" = FROM "MC_PIPE" TS_CLK_USERCLK*0.5;
+
+
+NET "*/pcie/gt_top_i/pipe_wrapper_i/pipe_reset.pipe_reset_i/cpllreset" TIG;
+NET "*/pipe_clock/clk_125mhz" TIG;
+
+NET "PCIE_PERST_B_LS" TIG;
+NET "PCIE_PERST_B_LS"  LOC = G25 | IOSTANDARD = LVCMOS25 | PULLUP | NODELAY ;
+
+NET  "GPIO_LED[0]"  LOC = AB8 | IOSTANDARD = LVCMOS15;
+NET  "GPIO_LED[1]"  LOC = AA8 | IOSTANDARD = LVCMOS15;
+NET  "GPIO_LED[2]"  LOC = AC9 | IOSTANDARD = LVCMOS15;
+NET  "GPIO_LED[3]"  LOC = AB9 | IOSTANDARD = LVCMOS15;

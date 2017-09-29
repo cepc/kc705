@@ -1,0 +1,10 @@
+#-----------------------------------------------------------
+# Vivado v2014.3.1 (64-bit)
+# SW Build 1056140 on Thu Oct 30 17:03:40 MDT 2014
+# IP Build 1028902 on Fri Sep 26 17:35:13 MDT 2014
+# Start of session at: Fri Aug 18 20:40:36 2017
+# Process ID: 1772
+# Log file: F:/Ryuta/FPGA/KC705_V1.0/kc705_v1.0.runs/fifo_synth_1/fifo.vds
+# Journal file: F:/Ryuta/FPGA/KC705_V1.0/kc705_v1.0.runs/fifo_synth_1\vivado.jou
+#-----------------------------------------------------------
+source fifo.tcl

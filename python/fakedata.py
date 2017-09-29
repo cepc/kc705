@@ -1,6 +1,5 @@
 
 import numpy as np
-
 def create_fake_map():
     noise = np.random.rand(48, 16) * 0.01
     res = noise

@@ -1,6 +1,6 @@
 
-from ctypes import windll
-windll.shcore.SetProcessDpiAwareness(True)
+#from ctypes import windll
+#windll.shcore.SetProcessDpiAwareness(True)
 
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -17,6 +17,9 @@ from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationTo
 from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 
+
+#import win32file, win32con
+#win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
 
 #import pydaq as daq
 import daq2 as daq
@@ -41,6 +44,9 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.dpi = 100 * sf
         self.fig = Figure((3.0, 4.0), dpi=self.dpi)
         self.fig.patch.set_visible(False)
+
+        self.setWindowIcon(QtGui.QIcon('iheplogo.gif'))
+        self.setWindowTitle('DAQ-UI')
 
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.graph)

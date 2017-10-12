@@ -1,6 +1,6 @@
 # Xillydemo project generation script for Vivado 2014.1
 
-set proj_name kc705_v1.0
+set proj_name kc705
 set proj_dir [file dirname [info script]]
 set thepart "xc7k325tffg900-2"
 
@@ -35,9 +35,10 @@ set_property "top" "kc705" $obj
 set obj [get_filesets sources_1]
 set files [list \
  "[file normalize "$proj_dir/kc705.v"]"\
- "[file normalize "$proj_dir/HDL/user_module/addr_decoder.v"]"\
+ "[file normalize "$proj_dir/HDL/user_module/gen_user_clock.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/gen_user_reset.v"]"\
- "[file normalize "$proj_dir/HDL/user_module/simple_counter.v"]"\
+ "[file normalize "$proj_dir/HDL/user_module/generate_adc_packet.v"]"\
+ "[file normalize "$proj_dir/HDL/user_module/generate_data_packet.v"]"\
  "[file normalize "$proj_dir/HDL/adc/ADC_test.v"]"\
  "[file normalize "$proj_dir/HDL/xillybus/verilog/src/xillydemo.v"]"\
  "[file normalize "$proj_dir/HDL/xillybus/verilog/src/xillybus.v"]"\
@@ -47,6 +48,10 @@ set files [list \
  "[file normalize "$essentials_dir/fifo_8x2048/fifo_8x2048.xci"]"\
  "[file normalize "$essentials_dir/fifo_32x512/fifo_32x512.xci"]"\
  "[file normalize "$essentials_dir/$pcie_vivado/$pcie_vivado.xci"]"\
+ "[file normalize "$proj_dir/IP_Core/clk1/coregen_sysclk.xci"]"\
+ "[file normalize "$proj_dir/IP_Core/mem1/coregen_user_mem8.xci"]"\
+ "[file normalize "$proj_dir/IP_Core/fifo1/coregen_clk_crossing_fifo32.xci"]"\
+ "[file normalize "$proj_dir/IP_Core/fifo2/fifo.xci"]"\
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -56,8 +61,15 @@ upgrade_ip [get_ips]
 # of the pipe_clock module, and include the copy in the project.
 
 generate_target example [get_ips $pcie_vivado]
-file copy "[file normalize "$essentials_dir/$pcie_vivado/example_design/support/${pcie_vivado}_pipe_clock.v"]" "[file normalize "$essentials_dir"]"
+file copy -force "[file normalize "$essentials_dir/$pcie_vivado/example_design/support/${pcie_vivado}_pipe_clock.v"]" "[file normalize "$essentials_dir"]"
 add_files -norecurse -fileset $obj  "[file normalize "$essentials_dir/${pcie_vivado}_pipe_clock.v"]"
+
+#set obj [get_filesets sources_1]
+#set files2 [list \
+# "[file normalize "$essentials_dir/${pcie_vivado}_pipe_clock.v"]"
+#] 
+#add_files -norecurse -fileset $obj $files2
+
 
 # Create 'constrs_1' fileset (if not found)
 if {[string equal [get_filesets constrs_1] ""]} {

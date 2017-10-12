@@ -1,4 +1,0 @@
-this is a package to pack c++ code with swig
-guidance:http://www.cppblog.com/wanghaiguang/archive/2016/08/18/214201.html
-note:
-change in daq.cpp: file generated ends with .bit instead of .txt

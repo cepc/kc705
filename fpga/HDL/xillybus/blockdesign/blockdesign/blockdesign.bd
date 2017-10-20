@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<bd:repository xmlns:bd="http://www.xilinx.com/bd" bd:tool_version="2014.1" bd:top="blockdesign" bd:version="1.00.a">
+
+  <spirit:component xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009">
+    <spirit:vendor>xilinx.com</spirit:vendor>
+    <spirit:library>BlockDiagram</spirit:library>
+    <spirit:name>blockdesign</spirit:name>
+    <spirit:version>1.00.a</spirit:version>
+    <spirit:parameters>
+      <spirit:parameter>
+        <spirit:name>isTop</spirit:name>
+        <spirit:value spirit:format="bool" spirit:resolve="immediate">true</spirit:value>
+      </spirit:parameter>
+    </spirit:parameters>
+    <spirit:model>
+      <spirit:views>
+        <spirit:view>
+          <spirit:name>BlockDiagram</spirit:name>
+          <spirit:envIdentifier>:vivado.xilinx.com:</spirit:envIdentifier>
+          <spirit:hierarchyRef spirit:library="BlockDiagram" spirit:name="blockdesign_imp" spirit:vendor="xilinx.com" spirit:version="1.00.a"/>
+        </spirit:view>
+      </spirit:views>
+      <spirit:ports>
+        <spirit:port>
+          <spirit:name>PCIE_PERST_B_LS</spirit:name>
+          <spirit:wire>
+            <spirit:direction>in</spirit:direction>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
+          <spirit:name>PCIE_REFCLK_N</spirit:name>
+          <spirit:wire>
+            <spirit:direction>in</spirit:direction>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
+          <spirit:name>PCIE_REFCLK_P</spirit:name>
+          <spirit:wire>
+            <spirit:direction>in</spirit:direction>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
+          <spirit:name>PCIE_RX_N</spirit:name>
+          <spirit:wire>
+            <spirit:direction>in</spirit:direction>
+            <spirit:vector>
+              <spirit:left>7</spirit:left>
+              <spirit:right>0</spirit:right>
+            </spirit:vector>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
+          <spirit:name>PCIE_RX_P</spirit:name>
+          <spirit:wire>
+            <spirit:direction>in</spirit:direction>
+            <spirit:vector>
+              <spirit:left>7</spirit:left>
+              <spirit:right>0</spirit:right>
+            </spirit:vector>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
+          <spirit:name>GPIO_LED</spirit:name>
+          <spirit:wire>
+            <spirit:direction>out</spirit:direction>
+            <spirit:vector>
+              <spirit:left>3</spirit:left>
+              <spirit:right>0</spirit:right>
+            </spirit:vector>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
+          <spirit:name>PCIE_TX_N</spirit:name>
+          <spirit:wire>
+            <spirit:direction>out</spirit:direction>
+            <spirit:vector>
+              <spirit:left>7</spirit:left>
+              <spirit:right>0</spirit:right>
+            </spirit:vector>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
+          <spirit:name>PCIE_TX_P</spirit:name>
+          <spirit:wire>
+            <spirit:direction>out</spirit:direction>
+            <spirit:vector>
+              <spirit:left>7</spirit:left>
+              <spirit:right>0</spirit:right>
+            </spirit:vector>
+          </spirit:wire>
+        </spirit:port>
+      </spirit:ports>
+    </spirit:model>
+  </spirit:component>
+
+  <spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009">
+    <spirit:vendor>xilinx.com</spirit:vendor>
+    <spirit:library>BlockDiagram</spirit:library>
+    <spirit:name>blockdesign_imp</spirit:name>
+    <spirit:version>1.00.a</spirit:version>
+    <spirit:componentInstances>
+      <spirit:componentInstance>
+        <spirit:instanceName>xillybus_bundled_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="user" spirit:name="xillybus_bundled" spirit:vendor="xillybus.com" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">blockdesign_xillybus_bundled_0_0</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:interconnections>
+      <spirit:interconnection>
+        <spirit:name>xillybus_bundled_0_from_host_write_8</spirit:name>
+        <spirit:activeInterface spirit:busRef="to_host_read_8" spirit:componentRef="xillybus_bundled_0"/>
+        <spirit:activeInterface spirit:busRef="from_host_write_8" spirit:componentRef="xillybus_bundled_0"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+        <spirit:name>xillybus_bundled_0_from_host_write_32</spirit:name>
+        <spirit:activeInterface spirit:busRef="to_host_read_32" spirit:componentRef="xillybus_bundled_0"/>
+        <spirit:activeInterface spirit:busRef="from_host_write_32" spirit:componentRef="xillybus_bundled_0"/>
+      </spirit:interconnection>
+    </spirit:interconnections>
+    <spirit:adHocConnections>
+      <spirit:adHocConnection>
+        <spirit:name>PCIE_PERST_B_LS_1</spirit:name>
+        <spirit:externalPortReference spirit:portRef="PCIE_PERST_B_LS"/>
+        <spirit:internalPortReference spirit:componentRef="xillybus_bundled_0" spirit:portRef="PCIE_PERST_B_LS"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>PCIE_REFCLK_N_1</spirit:name>
+        <spirit:externalPortReference spirit:portRef="PCIE_REFCLK_N"/>
+        <spirit:internalPortReference spirit:componentRef="xillybus_bundled_0" spirit:portRef="PCIE_REFCLK_N"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>PCIE_REFCLK_P_1</spirit:name>
+        <spirit:externalPortReference spirit:portRef="PCIE_REFCLK_P"/>
+        <spirit:internalPortReference spirit:componentRef="xillybus_bundled_0" spirit:portRef="PCIE_REFCLK_P"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>PCIE_RX_N_1</spirit:name>
+        <spirit:externalPortReference spirit:portRef="PCIE_RX_N"/>
+        <spirit:internalPortReference spirit:componentRef="xillybus_bundled_0" spirit:portRef="PCIE_RX_N"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>PCIE_RX_P_1</spirit:name>
+        <spirit:externalPortReference spirit:portRef="PCIE_RX_P"/>
+        <spirit:internalPortReference spirit:componentRef="xillybus_bundled_0" spirit:portRef="PCIE_RX_P"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>xillybus_bundled_0_GPIO_LED</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="xillybus_bundled_0" spirit:portRef="GPIO_LED"/>
+        <spirit:externalPortReference spirit:portRef="GPIO_LED"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>xillybus_bundled_0_PCIE_TX_N</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="xillybus_bundled_0" spirit:portRef="PCIE_TX_N"/>
+        <spirit:externalPortReference spirit:portRef="PCIE_TX_N"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>xillybus_bundled_0_PCIE_TX_P</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="xillybus_bundled_0" spirit:portRef="PCIE_TX_P"/>
+        <spirit:externalPortReference spirit:portRef="PCIE_TX_P"/>
+      </spirit:adHocConnection>
+    </spirit:adHocConnections>
+  </spirit:design>
+
+</bd:repository>

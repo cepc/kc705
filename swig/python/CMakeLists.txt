@@ -11,10 +11,16 @@ include_directories(../..)
 swig_add_module(daq python ../${PROJECT_NAME}.i)
 swig_link_libraries(daq ${PROJECT_NAME} ${PYTHON_LIBRARIES})
 
+if(UNIX)
 # Files to install with Python
 set(PYTHON_INSTALL_FILES
         ${CMAKE_CURRENT_BINARY_DIR}/daq.py
         ${CMAKE_CURRENT_BINARY_DIR}/_daq.so)
+elseif(WIN32)
+set(PYTHON_INSTALL_FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/daq.py
+        ${CMAKE_CURRENT_BINARY_DIR}/_daq.pyd)
+endif()
 
 # Configure setup.py and copy to output directory
 set(SETUP_PY_IN ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in)
@@ -29,4 +35,4 @@ configure_file(${SETUP_PY_IN} ${SETUP_PY_OUT})
 # Install target to call setup.py
 add_custom_target(install-python
         DEPENDS _daq
-        COMMAND python3 ${SETUP_PY_OUT} install)
+        COMMAND python ${SETUP_PY_OUT} install)

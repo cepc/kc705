@@ -21,8 +21,8 @@ from matplotlib.animation import FuncAnimation
 #import win32file, win32con
 #win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
 
-#import pydaq as daq
-import daq as daq
+
+import daq 
 
 from qtthreadutils import invoke_in_main_thread
 import numpy as np
@@ -246,10 +246,17 @@ class MyEventListener(daq.EventListener):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     # app.setStyle(QtWidgets.QStyleFactory.create("Fusion"));
+    splash = QtWidgets.QSplashScreen(QtGui.QPixmap('splash.png'))
+
+    splash.show()
+    splash.showMessage(u'loading...', QtCore.Qt.AlignBottom)
+    app.processEvents()
+
     
     win = MainWindow()
 
     win.show()
+    splash.finish(win)
     # really quit even if we have running threads
     # this does not e.g. write buffered files to disk,
     # I'm using it for testing only:

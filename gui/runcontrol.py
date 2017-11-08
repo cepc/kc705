@@ -157,6 +157,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         """)
 
     def btnStartRun_clicked(self, arg):
+        self.dataTaker.set_filename("File20171108_run1.dat")  ## set the filename. test input 
         self.dataTaker.start_run()
         self.update_state()
         # Bugfix: Without this, the button appears still "hovered"
@@ -218,7 +219,9 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         # last_events = self.dataTaker.get_accumulated_events()
         # last_events = None
         thebytes = self.dataTaker.getRecentEvent()
-        frame = np.frombuffer(thebytes, dtype=np.uint8)
+        frame = np.frombuffer(thebytes, dtype=np.uint8, count=96)
+        frame1 = np.frombuffer(thebytes, dtype=np.uint8, count=1000)
+        #print(frame1)
         hits = np.reshape(np.unpackbits(frame), newshape=(48, 16))
         last_events = [hits]
 

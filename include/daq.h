@@ -44,6 +44,9 @@ public:
     // get_run_number
 
 	void getRecentEvent(char *data);
+	
+	const std::string& get_filename(){ return m_filename; }
+	void set_filename( const std::string &fname ){ m_filename = fname; }
 
 private:
     EventListener* m_listener;
@@ -51,4 +54,5 @@ private:
     std::unique_ptr<DataTakingThread> m_threadObj;
 
 	void reportThreadStopped();
+	std::string m_filename;
 };

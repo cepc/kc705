@@ -119,9 +119,9 @@ void DataTaker::getRecentEvent(char * data) {
 //	strcpy(data, "Hello Event!");*/
 	if (m_threadObj) {
 		std::lock_guard<std::mutex> guard(m_threadObj->eventDataMutex);
-		memcpy(data, m_threadObj->m_recentEvent, 96);
+		memcpy(data, m_threadObj->m_recentEvent, 1928);
 	} else {
-		memset(data, 0xAA, 96);
+		memset(data, 0xAA, 1928);
 	}
 
 }
@@ -147,21 +147,19 @@ void DataTakingThread::threadMain() {
 		return;
 	}
 
-      // Send Reset Command to FPGA
-      char *reset_init = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15" ;
+    // Send Reset Command to FPGA
+    char *reset_init = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15" ;
 
-      system(reset_init);     
+    system(reset_init);     
 			
-      // Sleep until FIFO in FPGA is filled 
-      std::cout << "Waiting . . . " << std::endl;
-      std::this_thread::sleep_for(std::chrono::seconds(1));
+    // Sleep until FIFO in FPGA is filled 
+    std::cout << "Waiting . . . " << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	FILE *outf {nullptr};
 
-    //const size_t frame_size = 98;
-    const size_t frame_size = 96+8;
+    const size_t frame_size = 1920+8;
     const size_t buffer_size = 32768*4;  // FIFO depth 32768 * 4 bytes
-    //const size_t read_size = 500;
     const size_t read_size = 10000;
 
 
@@ -172,9 +170,13 @@ void DataTakingThread::threadMain() {
     size_t bytes_avail = pos-used;
 
 	m_runNumber += 1;
-	std::ostringstream ssFilename;
-	ssFilename << "run" << m_runNumber << ".bin";
-	outf = fopen(ssFilename.str().c_str(), "wb");
+	
+	//std::ostringstream ssFilename;
+	//ssFilename << "run" << m_runNumber << ".bin";
+	//outf = fopen(ssFilename.str().c_str(), "wb");
+	std::string ssFilename = m_dataTaker->m_filename;
+	std::cout << "Filename = " << ssFilename.c_str() << std::endl;
+	outf = fopen(ssFilename.c_str(), "wb");
 	
 	//add datetime to the beginning of the file by Lu
 	time_t t=time(0);
@@ -198,21 +200,11 @@ void DataTakingThread::threadMain() {
                 //pos = used + bytes_avail;           // Comment out
 
                 std::cout << "End of Buffer Size" << std::endl;
-             
-                // Send Reset Command to FPGA
-                char *reset = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15" ;
-
-                system(reset);     
 			
                 // Initialization of pointers
                 pos = &buffer[0];
                 used = &buffer[0];
                 bytes_avail = pos - used;
-
-                // Sleep until FIFO in FPGA is filled 
-                std::cout << "Waiting . . . " << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-	
             }
 			if (pos + read_size > endpos) {
                 // This shouldn't happen, we cannot read past the end of the buffer
@@ -231,31 +223,33 @@ void DataTakingThread::threadMain() {
 			size_t bytes_got = fread(pos, 1, read_size, fd);
 			m_bytesRead += bytes_got;
 
-                  std::cout << "readout size (byte) = " << bytes_got << "  " ;
-                  std::cout << "total readout size (byte) = " << m_bytesRead << std::endl;
+            std::cout << "readout size (byte) = " << bytes_got << "  " ;
+            std::cout << "total readout size (byte) = " << m_bytesRead << std::endl;
 
             CHECK(bytes_got > 0);
 
 			pos += bytes_got;
             bytes_avail = pos-used;
             
+			// Save Raw Data to File
+			fwrite(used, 1, read_size, outf);
+			
             if (m_stop) goto end;
         }
 
 		while (bytes_avail >= frame_size) {
 
-			if (used[0] != '\xAA' || used[100] != '\xF0') {
+			if (used[0] != '\xAA' || used[4+1920] != '\xF0') { // 4(header)+(4byte*10)*48rows
 			//if (0){
 				// Not synchronized
 				//DAQ_DEBUG("Unsynchronized after " << m_eventNumber << " events");
-
 				for (char *offset = used; offset < pos; offset++) {
-					if (offset[0] == '\xAA' && offset[100] == '\xF0') {
+					if (offset[0] == '\xAA' && offset[4+1920] == '\xF0') {
 						DAQ_DEBUG("Resynchronized! Skipped " << (offset - used) << " bytes");
 						// found head/tail
 						used = offset;
 						bytes_avail = pos - used;
-
+						
 						//DAQ_DEBUG("Beginning of frame: "
 						//	<< std::hex << std::setfill('0')
 						//	<< std::setw(2) << (int)(uint8_t)used[0] << "-"
@@ -291,11 +285,10 @@ void DataTakingThread::threadMain() {
 
 			{
 				std::lock_guard<std::mutex> guard(eventDataMutex);
-
 				m_eventNumber++;
-                        if (m_eventNumber % 10 == 0) {
-                            std::cout << "Event Number = " << m_eventNumber << std::endl;
-                        }
+                if (m_eventNumber % 100 == 0) {
+                    std::cout << "Event Number = " << m_eventNumber << std::endl;
+                }
 
 				//if (used[0] != '\xF0') {
 				//	DAQ_ERROR("Wrong header");
@@ -307,8 +300,8 @@ void DataTakingThread::threadMain() {
 				//}
 				if (m_eventNumber % 2000 == 0) {
 					DAQ_DEBUG("Read " << m_eventNumber << " events");
-					// memcpy(m_recentEvent, used, 98);
-					memcpy(m_recentEvent, used+4, 96);
+					memcpy(m_recentEvent, used, 1928);  // Send the entire frame
+					//memcpy(m_recentEvent, used+4, 96);
 					//char c = m_eventNumber / 100 % 256;
 					//for (size_t i = 0; i < 98; i++) {
 					//	m_recentEvent[i] = c;
@@ -319,7 +312,7 @@ void DataTakingThread::threadMain() {
 			}
 
 			// write event
-			fwrite(used, 104, 1, outf);
+			//fwrite(used, 104, 1, outf);
 
 			 //if (m_eventNumber > 10000) {
 			 //	DAQ_INFO("Event limit reached.");

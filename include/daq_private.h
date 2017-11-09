@@ -37,7 +37,7 @@ public:
     std::atomic<size_t> m_bytesRead;
 
 	// A recent event for display.  Must be accessed via a lock.
-	char m_recentEvent[96] = {0};
+	char m_recentEvent[1928] = {0};
 	std::mutex eventDataMutex;
 
 private:

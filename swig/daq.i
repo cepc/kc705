@@ -1,4 +1,5 @@
 %module(directors="1") daq
+%include "std_string.i"
 %feature("director") EventListener;
 %{
 #include "daq.h"
@@ -16,7 +17,7 @@
 }
 %enddef
 
-%cbytes_chunk_output(char *data, 96);
+%cbytes_chunk_output(char *data, 1928);
 void DataTaker::getRecentEvent(char *data);
 
 %ignore DataTakingThread;

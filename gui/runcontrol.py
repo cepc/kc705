@@ -1,4 +1,3 @@
-
 #from ctypes import windll
 #windll.shcore.SetProcessDpiAwareness(True)
 
@@ -37,8 +36,9 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.setupUi(self)
         # keep this object alive by saving a reference
         self.select_dialog=Directory_Select_Dialog(self)
-        self.file_name=os.getcwd()
-#        print(self.select_dialog.get_save_path_and_name())
+        #self.file_name=os.getcwd()+'/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'.dat'
+        self.file_name=self.select_dialog.get_save_path_and_name()
+   
 
         self.events = MyEventListener(self)
         self.dataTaker = daq.DataTaker(self.events)
@@ -161,7 +161,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         # last_events = self.dataTaker.get_accumulated_events()
         # last_events = None
         thebytes = self.dataTaker.getRecentEvent()
-        print(thebytes)
+        #print(thebytes)
         
         frame=self.rebuild_data(thebytes)#rebuild data
         last_events=[frame]
@@ -269,26 +269,47 @@ class Directory_Select_Dialog(QtWidgets.QDialog):
         self.buttonBox = QtWidgets.QDialogButtonBox()
         #buttonBox.setOrientation())# 设置为水平方向
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Ok|QtWidgets.QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self.accept)  # 确定
-        self.buttonBox.rejected.connect(self.reject) 
-        
+        self.buttonBox.accepted.connect(self.ok_button_click)  # 确定
+        self.buttonBox.rejected.connect(self.cancel_button_click)  # 取消
         grid.addWidget(self.buttonBox, 2, 1)
         self.setLayout(grid)
+        
+    def ok_button_click(self):
+        path_input=self.pathLineEdit.text()
+        name_input=self.filenamelineEdit.text()
+        if path_input and name_input :
+            self.save_path=path_input
+            self.save_name=name_input
+            self.accept()
+        else:
+            QtWidgets.QMessageBox.critical(self,'error','Input is empty！', QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
+        
+    def cancel_button_click(self):
+        reply=QtWidgets.QMessageBox.question(self, '?','Use default setting?', QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.Cancel,QtWidgets.QMessageBox.Yes )
+        if reply==QtWidgets.QMessageBox.Yes:
+            self.reject()
+        
         
     def changePath(self):
         open = QtWidgets.QFileDialog()
         open.setWindowModality(QtCore.Qt.WindowModal)
-        self.save_path=open.getExistingDirectory(self, 'Chose the directory to save data',self.save_path)
+        text_path=open.getExistingDirectory(self, 'Chose the directory to save data',self.save_path)
         #print(self.path)
-        self.pathLineEdit.setText(self.save_path)
+        self.pathLineEdit.setText(text_path)
         
     def changename(self):
         self.save_name=self.filenamelineEdit.text()
         
     def get_save_path_and_name(self):
-        fpath=self.save_path
-        fname=self.save_name+self.comboBox.currentText()
-        tmp=fpath+'/'+fname
+        tmp=os.getcwd()+'/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'.dat'
+        if self.Accepted:
+            fpath=self.save_path
+            if fpath[-1]=='/':
+                fpath=fpath.rstrip('/')
+            fname=self.save_name+self.comboBox.currentText()
+            tmp=fpath+'/'+fname
+            
+            
         return tmp
         
 ##############################################################################
@@ -311,8 +332,8 @@ def main():
     win.show()
     win.select_dialog.show()
     
-    if win.select_dialog.exec_() or win.select_dialog.buttonBox.rejected:
-       win.file_name=win.select_dialog.get_save_path_and_name()
+    if win.select_dialog.exec_():
+        win.file_name=win.select_dialog.get_save_path_and_name()
        
     # really quit even if we have running threads
     # this does not e.g. write buffered files to disk,

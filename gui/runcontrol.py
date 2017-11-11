@@ -266,13 +266,13 @@ class Directory_Select_Dialog(QtWidgets.QDialog):
         grid.addWidget(self.comboBox, 1, 2)
         
         
-        buttonBox = QtWidgets.QDialogButtonBox()
+        self.buttonBox = QtWidgets.QDialogButtonBox()
         #buttonBox.setOrientation())# 设置为水平方向
-        buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Ok|QtWidgets.QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.accept)  # 确定
-        #buttonBox.rejected.connect(self.reject)  # 取消
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Ok|QtWidgets.QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self.accept)  # 确定
+        self.buttonBox.rejected.connect(self.reject) 
         
-        grid.addWidget(buttonBox, 2, 1)
+        grid.addWidget(self.buttonBox, 2, 1)
         self.setLayout(grid)
         
     def changePath(self):
@@ -311,7 +311,7 @@ def main():
     win.show()
     win.select_dialog.show()
     
-    if win.select_dialog.exec_():
+    if win.select_dialog.exec_() or win.select_dialog.buttonBox.rejected:
        win.file_name=win.select_dialog.get_save_path_and_name()
        
     # really quit even if we have running threads

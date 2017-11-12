@@ -18,8 +18,8 @@ from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 
 
-import win32file, win32con 
-win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')#tao
+##RK import win32file, win32con 
+##RK win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')#tao
 
 
 import daq 
@@ -161,7 +161,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         # last_events = self.dataTaker.get_accumulated_events()
         # last_events = None
         thebytes = self.dataTaker.getRecentEvent()
-        print(thebytes)
+        ##RK print(thebytes)
         
         frame=self.rebuild_data(thebytes)#rebuild data
         last_events=[frame]

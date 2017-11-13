@@ -18,7 +18,7 @@ from matplotlib.animation import FuncAnimation
 
 
 import win32file, win32con 
-win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')#tao
+#win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')#tao
 
 
 import daq 

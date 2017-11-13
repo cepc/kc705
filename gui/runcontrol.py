@@ -1,4 +1,3 @@
-
 #from ctypes import windll
 #windll.shcore.SetProcessDpiAwareness(True)
 
@@ -18,14 +17,16 @@ from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 
 
-#import win32file, win32con
-#win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
+import win32file, win32con 
+#win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')#tao
 
 
 import daq 
 
 from qtthreadutils import invoke_in_main_thread
 import numpy as np
+
+import time
 
 form_class = uic.loadUiType("runcontrol.ui")[0]
 
@@ -34,32 +35,20 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         super().__init__(parent)
         self.setupUi(self)
         # keep this object alive by saving a reference
+        self.select_dialog=Directory_Select_Dialog(self)
+        #self.file_name=os.getcwd()+'/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'.dat'
+        self.file_name=self.select_dialog.get_save_path_and_name()
+   
+
         self.events = MyEventListener(self)
         self.dataTaker = daq.DataTaker(self.events)
-
+        
         # scale factor for high dpi screens
         sf = self.logicalDpiX() / 96
-        self.setupStyle(sf)
-
+        #self.setupStyle(sf)
         self.dpi = 100 * sf
-        self.fig = Figure((3.0, 4.0), dpi=self.dpi)
-        self.fig.patch.set_visible(False)
-
-        self.setWindowIcon(QtGui.QIcon('iheplogo.gif'))
-        self.setWindowTitle('DAQ-UI')
-
-        self.canvas = FigureCanvas(self.fig)
-        self.canvas.setParent(self.graph)
-        size = self.fig.get_size_inches()*self.fig.dpi
-        self.graph.setMinimumSize(*size)
-
-        self.axes = self.fig.add_subplot(111)
-
-        zeros = np.zeros(shape=(48,16))
-        self.image = self.axes.imshow(zeros, animated=True, interpolation='nearest')
-        self.canvas.draw()
-
-        self.mpl_toolbar = NavigationToolbar(self.canvas, self.graph)
+        
+        self.draw_2D_image()
 
         self.btnStartRun.clicked.connect(self.btnStartRun_clicked)
         self.btnStopRun.clicked.connect(self.btnStopRun_clicked)
@@ -83,81 +72,34 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.statusBar().addWidget(self.lblStatus)
 
         self.update_state()
+        
+    
 
+    def draw_2D_image(self):
+     
+        
+        self.fig = Figure((3.0, 4.0), dpi=self.dpi)
+        self.fig.patch.set_visible(False)
 
+        self.setWindowIcon(QtGui.QIcon('iheplogo.gif'))
+        self.setWindowTitle('DAQ-UI')
 
-    def setupStyle(self, sf):
-        def px(x):
-            return str(int(x*sf))+"px"
+        self.canvas = FigureCanvas(self.fig)
+        self.canvas.setParent(self.graph)
+        size = self.fig.get_size_inches()*self.fig.dpi
+        self.graph.setMinimumSize(*size)
 
-        self.setStyleSheet("""
-            QToolButton {
-                padding: """+px(6)+""";
-                border-radius: """+px(2)+""";
-                border: 1px solid transparent;
-            }
-            QToolButton::hover {
-                background-color: rgba(0, 120, 215, 0.1);
-                border: 1px solid #0078D7;
-            }        
+        self.axes = self.fig.add_subplot(111)
 
-            QGroupBox {
-                /*border: """+px(2)+""" groove #ADADAD;*/
-                border: """+px(1)+""" solid #C0C0C0;
-                border-radius: """+px(4)+""";
-                margin-top: 0.70em;
-            }
+        zeros = np.zeros(shape=(48,16))
+        self.image = self.axes.imshow(zeros, animated=True, interpolation='nearest')
+        self.canvas.draw()
 
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: """+px(7)+""";
-                padding: 0 """+px(3)+""" 0 """+px(3)+""";
-            }
-
-            QMenuBar {
-                border-bottom: """+px(2)+""" groove #C0C0C0;
-                background-color: white;
-            }
-
-            QMenuBar::item {
-                spacing: """+px(3)+"""; /* spacing between menu bar items */
-                padding: """+px(3)+""" """+px(6)+""";
-                margin-bottom: """+px(1)+""";
-                background: transparent;
-                border: """+px(1)+""" solid transparent;
-            }
-
-            QMenuBar::item:selected {
-                background-color: rgba(0, 120, 215, 0.1);
-                border: """+px(1)+""" solid #0078D7;
-            }
-
-            QPushButton {
-                padding: """+px(4)+""" """+px(8)+""";
-            }
-
-            QStatusBar {
-                border-top: """+px(2)+""" groove #C0C0C0;
-            }
-
-            QStatusBar::item {
-                /*border-right: """+px(2)+""" groove #C0C0C0;*/
-                border-width: 0px;
-            }
-
-            QStatusBar QLabel {
-                padding: """+px(3)+""" """+px(6)+""";
-            }
-
-            QSizeGrip {
-                width: """+px(16)+""";
-                height: """+px(16)+""";
-            }
-
-        """)
+        self.mpl_toolbar = NavigationToolbar(self.canvas, self.graph)
+        
 
     def btnStartRun_clicked(self, arg):
-        self.dataTaker.set_filename("File20171108_run1.dat")  ## set the filename. test input 
+        self.dataTaker.set_filename(self.file_name)  ## set the filename. test input 
         self.dataTaker.start_run()
         self.update_state()
         # Bugfix: Without this, the button appears still "hovered"
@@ -219,18 +161,58 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         # last_events = self.dataTaker.get_accumulated_events()
         # last_events = None
         thebytes = self.dataTaker.getRecentEvent()
-        frame = np.frombuffer(thebytes, dtype=np.uint8, count=96)
-        hits = np.reshape(np.unpackbits(frame), newshape=(48, 16))
-        last_events = [hits]
-
+        #print(thebytes)
+        
+        frame=self.rebuild_data(thebytes)#rebuild data
+        last_events=[frame]
+        
         if last_events:
             summed = sum(last_events)
             self.image.set_data(summed)
             self.image.autoscale()
-
+            
             self.axes.draw_artist(self.image)
             self.canvas.update()
 
+    def rebuild_data(self, thebytes):
+        event_data=np.frombuffer(thebytes, dtype=np.uint8, count=1928)
+        
+        event_data_list=event_data.tolist()
+        
+        frame_list=event_data_list
+        
+        #delete  event_header and event_footer
+        for j in range(0, 4):
+            frame_list.remove(frame_list[0])
+            frame_list.pop()
+        
+        mark=0
+        tmp_list=np.zeros(1536, dtype=int)
+        x=0
+        
+        for k in range(0, 1920):
+            if k%40==0 or  k%40==1 or k%40==2 or k%40==3 or k%40==36 or k%40==37 or k%40==38 or k%40==39:
+                x=1
+            if x==0:
+                tmp_list[mark]=frame_list[k]
+                mark=mark+1
+            x=0
+            
+        frame_list=tmp_list
+        #length=len(frame_list)
+        #print(length)
+        
+        frame_array=np.reshape(frame_list, newshape=(48, 16, 2))
+        
+        frame=np.zeros((48, 16), dtype=int)
+        for i in range(0, 48):
+            for j in range(0, 16):
+                tmp=frame_array[i, j, 0]*256+frame_array[i, j, 1]
+                frame[i, j]=tmp
+        return frame        
+
+#############################################################################
+#############################################################################
 
 class MyEventListener(daq.EventListener):
     def __init__(self, window):
@@ -243,6 +225,95 @@ class MyEventListener(daq.EventListener):
         # invoke_in_main_thread(self._window.logMessage, level, thread.name, string)
         invoke_in_main_thread(self._window.logMessage, level, thread.name, string)
 
+##############################################################################
+##############################################################################
+class Directory_Select_Dialog(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        super(Directory_Select_Dialog, self).__init__(parent)
+        
+        self.save_path= os.getcwd()#this is the default path
+        #print('default path :', self.save_path)
+        
+        self.save_name=time.strftime('%Y-%m-%d',time.localtime(time.time())) #this is the default filename
+        #print('default name :', self.save_name)
+        
+        self.initUI()
+        self.setWindowTitle("Chose the directory to save data ")
+        self.setWindowModality(QtCore.Qt.WindowModal)
+        self.resize(240, 100)
+        
+    def initUI(self):
+        grid = QtWidgets.QGridLayout()
+        
+        grid.addWidget(QtWidgets.QLabel('Path：'), 0, 0)
+        self.pathLineEdit = QtWidgets.QLineEdit()
+        self.pathLineEdit.setReadOnly(True)
+        self.pathLineEdit.setFixedWidth(200)
+        self.pathLineEdit.setText(self.save_path)
+        grid.addWidget(self.pathLineEdit, 0, 1)
+        self.chose_button = QtWidgets.QPushButton("Chose..")
+        self.chose_button.clicked.connect(self.changePath)
+        grid.addWidget(self.chose_button, 0, 2)
+        
+        grid.addWidget(QtWidgets.QLabel('File name：'), 1, 0)
+        self.filenamelineEdit=QtWidgets.QLineEdit()
+        self.filenamelineEdit.setFixedWidth(200)
+        self.filenamelineEdit.setText(self.save_name)
+        self.filenamelineEdit.textChanged.connect(self.changename)
+        grid.addWidget(self.filenamelineEdit,1, 1 )
+        self.comboBox=QtWidgets.QComboBox()
+        self.comboBox.addItem('.dat')
+        grid.addWidget(self.comboBox, 1, 2)
+        
+        
+        self.buttonBox = QtWidgets.QDialogButtonBox()
+        #buttonBox.setOrientation())# 设置为水平方向
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Ok|QtWidgets.QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self.ok_button_click)  # 确定
+        self.buttonBox.rejected.connect(self.cancel_button_click)  # 取消
+        grid.addWidget(self.buttonBox, 2, 1)
+        self.setLayout(grid)
+        
+    def ok_button_click(self):
+        path_input=self.pathLineEdit.text()
+        name_input=self.filenamelineEdit.text()
+        if path_input and name_input :
+            self.save_path=path_input
+            self.save_name=name_input
+            self.accept()
+        else:
+            QtWidgets.QMessageBox.critical(self,'error','Input is empty！', QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel)
+        
+    def cancel_button_click(self):
+        reply=QtWidgets.QMessageBox.question(self, '?','Use default setting?', QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.Cancel,QtWidgets.QMessageBox.Yes )
+        if reply==QtWidgets.QMessageBox.Yes:
+            self.reject()
+        
+        
+    def changePath(self):
+        open = QtWidgets.QFileDialog()
+        open.setWindowModality(QtCore.Qt.WindowModal)
+        text_path=open.getExistingDirectory(self, 'Chose the directory to save data',self.save_path)
+        #print(self.path)
+        self.pathLineEdit.setText(text_path)
+        
+    def changename(self):
+        self.save_name=self.filenamelineEdit.text()
+        
+    def get_save_path_and_name(self):
+        tmp=os.getcwd()+'/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'.dat'
+        if self.Accepted:
+            fpath=self.save_path
+            if fpath[-1]=='/':
+                fpath=fpath.rstrip('/')
+            fname=self.save_name+self.comboBox.currentText()
+            tmp=fpath+'/'+fname
+            
+            
+        return tmp
+        
+##############################################################################
+##############################################################################
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
@@ -255,9 +326,15 @@ def main():
 
     
     win = MainWindow()
+    
+    splash.finish(win)
 
     win.show()
-    splash.finish(win)
+    win.select_dialog.show()
+    
+    if win.select_dialog.exec_():
+        win.file_name=win.select_dialog.get_save_path_and_name()
+       
     # really quit even if we have running threads
     # this does not e.g. write buffered files to disk,
     # I'm using it for testing only:

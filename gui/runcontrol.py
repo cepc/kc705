@@ -157,7 +157,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         """)
 
     def btnStartRun_clicked(self, arg):
-        self.dataTaker.set_filename("C:\\Users\\daq\\Desktop\\data\\test.dat")  ## set the filename. test input 
+        self.dataTaker.set_filename("File20171108_run1.dat")  ## set the filename. test input 
         self.dataTaker.start_run()
         self.update_state()
         # Bugfix: Without this, the button appears still "hovered"

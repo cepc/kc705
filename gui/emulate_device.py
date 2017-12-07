@@ -8,9 +8,6 @@ import win32con
 import win32file
 import win32pipe
 
-#import fakedata
-#import fakespot
-
 # Lets us exit with CTRL+C
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 

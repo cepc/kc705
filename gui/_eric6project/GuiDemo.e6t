@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-6.0.dtd">
 <!-- eric6 tasks file for project GuiDemo -->
-<!-- Saved: 2017-12-06, 20:33:53 -->
+<!-- Saved: 2017-12-07, 10:41:04 -->
 <Tasks version="6.0">
   <ProjectScanFilter></ProjectScanFilter>
-  <Task priority="1" completed="False" type="2" uid="{41e75fb6-6de6-4b6a-a8cf-6e2ff8856217}">
+  <Task priority="1" completed="False" type="2" uid="{aef0dec3-68f2-4613-b08d-ea318d9c9892}">
     <Summary>WARNING: 'warning',</Summary>
     <Description></Description>
-    <Created>2017-12-06, 20:33:50</Created>
+    <Created>2017-12-07, 10:41:01</Created>
     <Resource>
       <Filename>runcontrol.py</Filename>
-      <Linenumber>140</Linenumber>
+      <Linenumber>147</Linenumber>
     </Resource>
   </Task>
 </Tasks>

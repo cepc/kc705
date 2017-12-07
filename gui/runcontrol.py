@@ -23,6 +23,8 @@ win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\
 
 import daq 
 from qtthreadutils import invoke_in_main_thread
+import OnlineAnalysis
+import OfflineAnalysis
 import numpy as np
 import time
 
@@ -40,6 +42,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         #self.setupStyle(sf)
         self.dpi = 100 * sf
         
+        ##########OnlineAnalysis init#########
         file_name=time.strftime('%Y-%m-%d',time.localtime(time.time()))
         file_path= os.getcwd()
         
@@ -71,8 +74,15 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.statusBar().addWidget(self.LabelStatus)
 
         self.update_state()
+        
+        ##########OfflineAnalysis init##########
+        self.OfflineThread=OfflineAnalysis.OfflineThread()
+        self.BtnSartRead.clicked.connect(self.BtnSartRead_clicked)
+        #self.DataEdit
+        self.OfflineUpdate()
  
  
+     ##########OnlineAnalysis Fun#########
     def Draw_online_image(self):
      
         fig = Figure((3.0, 4.0), dpi=self.dpi)
@@ -89,7 +99,6 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         online_mpl_toolbar = NavigationToolbar(self.online_canvas, self.OnlineGraph)
 
-
     def BtnStartRun_clicked(self, arg):
         self.dataTaker.set_filename(self.GetPathAndName())  
         self.dataTaker.start_run()
@@ -103,7 +112,6 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.update_state()
         self.BtnStopRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
 
-################################################3333
     def ChangePath(self):
         open = QtWidgets.QFileDialog()
         open.setWindowModality(QtCore.Qt.WindowModal)
@@ -124,7 +132,6 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         
         return tmp
 
-#####################################################
 
     def logMessage(self, level, thread_name, string):
         print(string)
@@ -180,7 +187,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         thebytes = self.dataTaker.getRecentEvent()
         #print(thebytes)
         
-        frame=self.rebuild_data(thebytes)#rebuild data
+        frame=OnlineAnalysis.rebuild_data(thebytes)#rebuild data
         last_events=[frame]
         
         if last_events:
@@ -191,42 +198,16 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
             self.online_axes.draw_artist(self.online_image)
             self.online_canvas.update()
 
-    def rebuild_data(self, thebytes):
-        event_data=np.frombuffer(thebytes, dtype=np.uint8, count=1928)
+    ##########OnlineAnalysis Fun#########
+    def BtnSartRead_clicked(self):
+        self.BtnSartRead.setEnabled(False)
+        self.OfflineThread.start()
         
-        event_data_list=event_data.tolist()
-        
-        frame_list=event_data_list
-        
-        #delete  event_header and event_footer
-        for j in range(0, 4):
-            frame_list.remove(frame_list[0])
-            frame_list.pop()
-        
-        mark=0
-        tmp_list=np.zeros(1536, dtype=int)
-        x=0
-        
-        for k in range(0, 1920):
-            if k%40==0 or  k%40==1 or k%40==2 or k%40==3 or k%40==36 or k%40==37 or k%40==38 or k%40==39:
-                x=1
-            if x==0:
-                tmp_list[mark]=frame_list[k]
-                mark=mark+1
-            x=0
-            
-        frame_list=tmp_list
-        #length=len(frame_list)
-        #print(length)
-        
-        frame_array=np.reshape(frame_list, newshape=(48, 16, 2))
-        
-        frame=np.zeros((48, 16), dtype=int)
-        for i in range(0, 48):
-            for j in range(0, 16):
-                tmp=frame_array[i, j, 0]*256+frame_array[i, j, 1]
-                frame[i, j]=tmp
-        return frame        
+    def OfflineUpdate(self):
+        self.OfflineThread.SendCount.connect(self.LabelReadNumber.setText)
+        self.OfflineThread.SendFormat.connect(self.LabelFormat.setText)
+        self.OfflineThread.SendTotal.connect(self.LabelEventTotal.setText)
+        self.OfflineThread.SendLog.connect(self.OfflineTextEdit.insertPlainText)
 
 #############################################################################
 #############################################################################

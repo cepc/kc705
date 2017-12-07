@@ -18,6 +18,11 @@ class OfflineThread(QThread):
     SendCount=pyqtSignal(str)
     SendTotal=pyqtSignal(str)
     SendLog=pyqtSignal(str)
+    SendOver=pyqtSignal(str)
+    
+    #fname="../test/dat/RawEventData_0000.dat"
+    fname=''
+    frame=np.zeros((48, 16), dtype=int)
     
     def __init__(self, parent=None):
         super(OfflineThread, self).__init__(parent)
@@ -78,7 +83,7 @@ class OfflineThread(QThread):
         
         allHex = self.Byte2Hex(all[35:])
         EventCount=0
-        pixelData=np.zeros((48,16))
+        pixelData=np.zeros((48, 16), dtype=int)
         while(len(allHex)>EVENTLENGTH):
             if(allHex.find(EVENTHEADER)):
                 
@@ -128,7 +133,10 @@ class OfflineThread(QThread):
         print("Event Total: ", EventCount)
         self.SendTotal.emit(str(EventCount))
         self.SendLog.emit("Event Total: "+str(EventCount))
-        
+        print('Finish Read')
+        self.frame=pixelData
+        self.SendOver.emit('Finish Read')
+        self.SendLog.emit('Finish Read')
 #        fig=plt.figure(1,figsize=(6,6))
 #        plt.imshow(pixelData)
 #        plt.colorbar()
@@ -137,15 +145,12 @@ class OfflineThread(QThread):
         #input("Please press enter to exit")
     
     def run(self):
-        while self.working==True:
-            fname="../test/dat/RawEventData_0000.dat"
+        if self.working==True:
+            fname=self.fname
             self.JadiPixRawDataFile(fname)
-            self.working=False
 
 if __name__ == "__main__":
     Thr=OfflineThread()
-    #Thr.start()
     Thr.run()
-    if Thr.working==False:
-        sys.exit()
+
     

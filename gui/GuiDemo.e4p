@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric project file for project GuiDemo -->
-<!-- Saved: 2017-12-07, 00:04:40 -->
+<!-- Saved: 2017-12-07, 13:34:20 -->
 <!-- Copyright (C) 2017 ,  -->
 <Project version="5.1">
   <Language></Language>
@@ -14,7 +14,7 @@
   <Eol index="0"/>
   <Sources>
     <Source>OfflineAnalysis.py</Source>
-    <Source>OnlineAnalysis.py</Source>
+    <Source>OnlineDataRebuild.py</Source>
     <Source>emulate_device.py</Source>
     <Source>fakedata.py</Source>
     <Source>pixeldata.py</Source>

@@ -23,7 +23,7 @@ win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\
 
 import daq 
 from qtthreadutils import invoke_in_main_thread
-import OnlineAnalysis
+import OnlineDataRebuild
 import OfflineAnalysis
 import numpy as np
 import time
@@ -42,7 +42,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         #self.setupStyle(sf)
         self.dpi = 100 * sf
         
-        ##########OnlineAnalysis init#########
+        ##########OnlineDataRebuild init#########
         file_name=time.strftime('%Y-%m-%d',time.localtime(time.time()))
         file_path= os.getcwd()
         
@@ -76,13 +76,15 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.update_state()
         
         ##########OfflineAnalysis init##########
+        self.Draw_offline_image()
         self.OfflineThread=OfflineAnalysis.OfflineThread()
         self.BtnSartRead.clicked.connect(self.BtnSartRead_clicked)
-        #self.DataEdit
+        self.DataEdit.setText("../test/dat/RawEventData_0000.dat")
+        self.BtnDataChoose.clicked.connect(self.ChangeName)
         self.OfflineUpdate()
  
  
-     ##########OnlineAnalysis Fun#########
+     ##########OnlineDataRebuild Fun#########
     def Draw_online_image(self):
      
         fig = Figure((3.0, 4.0), dpi=self.dpi)
@@ -112,11 +114,10 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.update_state()
         self.BtnStopRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
 
-    def ChangePath(self):
+    def ChangePath(self):  #OnlineDataRebuild
         open = QtWidgets.QFileDialog()
         open.setWindowModality(QtCore.Qt.WindowModal)
         file_path=open.getExistingDirectory(self, 'Chose the directory to save data',os.getcwd())
-        #print(self.path)
         self.FilePathEdit.setText(file_path)
         
         
@@ -187,7 +188,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         thebytes = self.dataTaker.getRecentEvent()
         #print(thebytes)
         
-        frame=OnlineAnalysis.rebuild_data(thebytes)#rebuild data
+        frame=OnlineDataRebuild.rebuild_data(thebytes)#rebuild data
         last_events=[frame]
         
         if last_events:
@@ -198,16 +199,61 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
             self.online_axes.draw_artist(self.online_image)
             self.online_canvas.update()
 
-    ##########OnlineAnalysis Fun#########
+    ##########OnlineDataRebuild Fun#########
+    def Draw_offline_image(self):
+     
+        fig = Figure((3.0, 4.0), dpi=self.dpi)
+        fig.patch.set_visible(False)
+        self.offline_canvas = FigureCanvas(fig)
+        self.offline_canvas.setParent(self.OfflineGraph)
+        size = fig.get_size_inches()*fig.dpi
+        self.OfflineGraph.setMinimumSize(*size)
+        self.offline_axes = fig.add_subplot(111)
+
+        zeros = np.zeros(shape=(48,16))
+        self.offline_image = self.offline_axes.imshow(zeros, animated=True, interpolation='nearest')
+        self.offline_canvas.draw()
+
+        offline_mpl_toolbar = NavigationToolbar(self.offline_canvas, self.OfflineGraph)    
+    
+    
+    
     def BtnSartRead_clicked(self):
         self.BtnSartRead.setEnabled(False)
+        self.BtnDataChoose.setEnabled(False)
+        self.OfflineThread.fname=self.DataEdit.text()
+        self.LabelEventTotal.setText('???')
+        
+        frame = np.zeros(shape=(48,16))
+        self.offline_image.set_data(frame)
+        self.offline_image.autoscale()
+        self.offline_axes.draw_artist(self.offline_image)
+        self.offline_canvas.update()
+        
         self.OfflineThread.start()
+        
+    def ChangeName(self):   #OfflineAnalysis
+        open = QtWidgets.QFileDialog()
+        open.setWindowModality(QtCore.Qt.WindowModal)
+        file_name, _=open.getOpenFileName(self, 'Open file', os.getcwd(), 'Data Files (*.dat)')
+        self.DataEdit.setText(file_name)
         
     def OfflineUpdate(self):
         self.OfflineThread.SendCount.connect(self.LabelReadNumber.setText)
         self.OfflineThread.SendFormat.connect(self.LabelFormat.setText)
         self.OfflineThread.SendTotal.connect(self.LabelEventTotal.setText)
         self.OfflineThread.SendLog.connect(self.OfflineTextEdit.insertPlainText)
+        self.OfflineThread.SendOver.connect(self.OfflineBtnUpdate)
+        
+    def OfflineBtnUpdate(self):
+        self.BtnSartRead.setEnabled(True)
+        self.BtnDataChoose.setEnabled(True)
+        frame = self.OfflineThread.frame
+        self.offline_image.set_data(frame)
+        self.offline_image.autoscale()
+        self.offline_axes.draw_artist(self.offline_image)
+        self.offline_canvas.update()
+
 
 #############################################################################
 #############################################################################

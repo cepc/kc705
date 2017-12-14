@@ -8,9 +8,11 @@ EVENTTRILER = "f0f0"
 EVENTLENGTH = 3840
 ROWHEADER_AHEAD = "5753"
 ROWTRAILER_AHEAD = "002f"
-CONTROLVIEWNUMBER = 1000
+CONTROLVIEWNUMBER = 100
+TIMESTAMPEFLAGS = False
 
-VERBOSE = 1
+MAXFRAMES =1000
+VERBOSE = 0
 
 def Hex2Byte(hexStr):
     bytes=[]
@@ -45,19 +47,26 @@ def JadiPixRawDataFile(fname):
     f = open(fname, "rb")
 
     all = f.read()
-    timeStamp = all[:35]
-    print("Jadipix time stamp")
-    print("Binary format: ", timeStamp)
-    print("Hex format: ", Byte2Hex(timeStamp))
-    print("String format: ", Byte2Text(timeStamp))
-    allHex = Byte2Hex(all[35:])
+    if TIMESTAMPEFLAGS == True:
+        timeStamp = all[:35]
+        print("Jadipix time stamp")
+        print("Binary format: ", timeStamp)
+        print("Hex format: ", Byte2Hex(timeStamp))
+        #print("String format: ", Byte2Text(timeStamp))
+        allHex = Byte2Hex(all[35:])
+    else:
+        print("There is no time stamp")
+        allHex = Byte2Hex(all[:])
+
     EventCount=0
-    pixelData=np.zeros((48,16))
+    pixelData=np.zeros((MAXFRAMES,48,16))
     while(len(allHex)>EVENTLENGTH):
         if(allHex.find(EVENTHEADER)):
-            print("Find event header.")
+            if(EventCount%1000==0):
+                print("Find event header.")
             EventCount += 1
-            print("Event number: ", EventCount)
+            if(EventCount%1000==0):
+                print("Event number: ", EventCount)
             if(EventCount > CONTROLVIEWNUMBER):
                 break
             indexEvent = allHex.index(EVENTHEADER)
@@ -73,8 +82,8 @@ def JadiPixRawDataFile(fname):
             logPrintLevel1(subHex[8:EVENTLENGTH+8])
             logPrintLevel1("Type of data: " + str(type(subHex)))
             frameDataHex=np.reshape(list(subHex[8:EVENTLENGTH+8]), (48,80))
-            logPrintLevel0("Row trailer: " + str(frameDataHex[0,0:4]))
-            logPrintLevel0("col 01, row 01" + str(frameDataHex[0,8:12]))
+            #logPrintLevel0("Row trailer: " + str(frameDataHex[0,0:4]))
+            #logPrintLevel0("col 01, row 01" + str(frameDataHex[0,8:12]))
             frameData=[]
             for i in range(0,48):
                 colData=[]
@@ -83,23 +92,27 @@ def JadiPixRawDataFile(fname):
                     colData.append(int(''.join(frameDataHex[i,j*4:(j+1)*4]),16))
                 frameData.append(colData)
                 logPrintLevel1(frameData)
-            pixelData += np.array(frameData)
+            pixelData[EventCount] = np.array(frameData)
 
         else:
-            allHex=subHex[EVENTLENGTH:]
+            subHex=allHex[EVENTLENGTH:]
+            allHex=subHex
             print("There are no events for this raw data.")
             continue
 
     print("Event Total: ", EventCount)
     fig=plt.figure(1,figsize=(6,6))
-    plt.imshow(pixelData)
+    plt.imshow(pixelData[100])
     plt.colorbar()
 
     fig.show()
     input("Please press enter to exit")
 
 def main():
-    fname="../test/dat/RawEventData_0000.dat"
+    #fname="../data/RawRunData_0000.dat"
+    #fname="../data/RawRunData_0001.dat"
+    fname="../data/RawRunData_0002.dat"
+    #fname="../data/2017-12-07-1.dat"
     JadiPixRawDataFile(fname)
 
 if __name__ == "__main__":

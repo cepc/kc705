@@ -1,6 +1,9 @@
 #ifndef  Decode_H
 #define Decode_H
 
+#include <fstream>
+#include <iostream>
+#include "TTree.h"
 
 class Decode
 {
@@ -27,7 +30,7 @@ public:
    void write_hist();
 
    // Init 
-   int set_loop_counter(int frame_number){decode_frame_num = frame_number;}
+   void set_loop_counter(int frame_number){decode_frame_num = frame_number;}
    void init_loop_counter(); 
    void init_variables();
 

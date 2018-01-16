@@ -9,7 +9,7 @@ include_directories(../..)
 
 # Add swig module
 swig_add_module(pydecode2root python ../decode2root.i)
-swig_link_libraries(pydecode2root libdecode2root ${PYTHON_LIBRARIES})
+swig_link_libraries(pydecode2root wrapdecode2root ${PYTHON_LIBRARIES})
 
 if(UNIX)
 # Files to install with Python

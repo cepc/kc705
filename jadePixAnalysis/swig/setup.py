@@ -5,7 +5,7 @@ setup.py file for SWIG C\+\+/Python daq program version one
 """
 from distutils.core import setup, Extension
 decode2root_module = Extension('_pydecode2root',
-sources=['decode2root.cc', 'decode2rootPYTHON_wrap.cxx',],
+sources=['wrapdecode2root.cc', 'decode2rootPYTHON_wrap.cxx',],
 )
 setup (name = 'pydecode2root',
 version = '0.1',

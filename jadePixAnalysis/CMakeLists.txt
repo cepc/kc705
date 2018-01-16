@@ -32,23 +32,22 @@ if(WITH_ROOT_BUILD)
     target_link_libraries(decode2root ${ROOT_LIBRARIES})
     target_link_libraries(libdecode2root ${ROOT_LIBRARIES})
 endif()
-# Set up public headers for daq
-#set_target_properties(daq PROPERTIES PUBLIC_HEADER "daq.h" "daq_private.h")
 
-add_executable(pixelana pixelana.cc ${sources} ${headers})
-add_library(libpixelana pixelana.cc ${sources})
-if(WITH_ROOT_BUILD)
-    target_link_libraries(pixelana ${ROOT_LIBRARIES})
-    target_link_libraries(libpixelana ${ROOT_LIBRARIES})
-endif()
+#add_executable(pixelana pixelana.cc ${sources} ${headers})
+#add_library(libpixelana pixelana.cc ${sources})
+#if(WITH_ROOT_BUILD)
+#    target_link_libraries(pixelana ${ROOT_LIBRARIES})
+#    target_link_libraries(libpixelana ${ROOT_LIBRARIES})
+#endif()
 
-option(WITH_SWIG_BUILD "Build example with SWIG" OFF)
+option(WITH_SWIG_BUILD "Build example with SWIG" ON)
 if(WITH_SWIG_BUILD)
     add_subdirectory(swig)
 endif()
 
 # Add install target
-install(TARGETS decode2root pixelana  libdecode2root libpixelana
+#install(TARGETS decode2root pixelana  libdecode2root libpixelana
+install(TARGETS decode2root libdecode2root
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib/static

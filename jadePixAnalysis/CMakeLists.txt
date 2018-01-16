@@ -26,11 +26,14 @@ endif()
 
 # Create main and link 
 add_executable(decode2root decode2root.cc ${sources} ${headers})
-add_library(libdecode2root decode2root.cc ${sources})
+
+#include_directories(${PROJECT_SOURCE_DIR}/wrapdecode2root)
+#aux_source_directory(${PROJECT_SOURCE_DIR}/wrapdecode2root/src DECODE2ROOT_SRC)
+add_library(wrapJadePixAna ${sources})
 
 if(WITH_ROOT_BUILD)
     target_link_libraries(decode2root ${ROOT_LIBRARIES})
-    target_link_libraries(libdecode2root ${ROOT_LIBRARIES})
+    target_link_libraries(wrapJadePixAna ${ROOT_LIBRARIES})
 endif()
 
 #add_executable(pixelana pixelana.cc ${sources} ${headers})
@@ -47,7 +50,7 @@ endif()
 
 # Add install target
 #install(TARGETS decode2root pixelana  libdecode2root libpixelana
-install(TARGETS decode2root libdecode2root
+install(TARGETS decode2root 
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib/static

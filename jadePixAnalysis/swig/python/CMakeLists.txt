@@ -8,18 +8,18 @@ set_source_files_properties(../decode2root.i PROPERTIES CPLUSPLUS ON)
 include_directories(../..)
 
 # Add swig module
-swig_add_module(pydecode2root python ../decode2root.i)
-swig_link_libraries(pydecode2root wrapdecode2root ${PYTHON_LIBRARIES})
+swig_add_module(pyJadePixAna python ../decode2root.i)
+swig_link_libraries(pyJadePixAna wrapJadePixAna ${PYTHON_LIBRARIES})
 
 if(UNIX)
 # Files to install with Python
 set(PYTHON_INSTALL_FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/pydecode2root.py
-        ${CMAKE_CURRENT_BINARY_DIR}/_pydecode2root.so)
+        ${CMAKE_CURRENT_BINARY_DIR}/pyJadePixAna.py
+        ${CMAKE_CURRENT_BINARY_DIR}/_pyJadePixAna.so)
 elseif(WIN32)
 set(PYTHON_INSTALL_FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/pydecode2root.py
-        ${CMAKE_CURRENT_BINARY_DIR}/Release/_pydecode2root.pyd)
+        ${CMAKE_CURRENT_BINARY_DIR}/pyJadePixAna.py
+        ${CMAKE_CURRENT_BINARY_DIR}/Release/_pyJadePixAna.pyd)
 endif()
 
 # Configure setup.py and copy to output directory
@@ -34,5 +34,5 @@ configure_file(${SETUP_PY_IN} ${SETUP_PY_OUT})
 
 # Install target to call setup.py
 add_custom_target(install-python
-        DEPENDS _pydecode2root
+        DEPENDS _pyJadePixAna
         COMMAND python ${SETUP_PY_OUT} install)

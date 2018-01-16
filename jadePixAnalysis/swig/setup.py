@@ -4,13 +4,13 @@
 setup.py file for SWIG C\+\+/Python daq program version one
 """
 from distutils.core import setup, Extension
-decode2root_module = Extension('_pydecode2root',
-sources=['wrapdecode2root.cc', 'decode2rootPYTHON_wrap.cxx',],
+jadePixAna_module = Extension('_pyJadePixAna',
+sources=['Wrapdecode2root.cc', 'Wrappixelana.cc', jadePixAnaPYTHON_wrap.cxx',],
 )
-setup (name = 'pydecode2root',
+setup (name = 'pyJadePixAna',
 version = '0.1',
 author = "Liejian Chen",
 description = """swig C\+\+/Python decode2root program version one""",
-ext_modules = [decode2root_module],
-py_modules = ["pydecode2root"],
+ext_modules = [jadePixAna_module],
+py_modules = ["pyJadePixAna"],
 )

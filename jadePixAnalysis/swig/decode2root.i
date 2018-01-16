@@ -1,8 +1,9 @@
-%module(directors="1") pydecode2root
+%module(directors="1") pyJadePixAna
 %include "std_string.i"
 %{
 #include "Decode.hh"
 #include "wrapdecode2root.hh"
+#include "wrappixelana.hh"
 %}
 
 // This is copied from cstring.i,
@@ -19,3 +20,4 @@
 
 %include "Decode.hh"
 %include "wrapdecode2root.hh"
+%include "wrappixelana.hh"

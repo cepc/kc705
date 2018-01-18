@@ -19,7 +19,7 @@ set(PYTHON_INSTALL_FILES
 elseif(WIN32)
 set(PYTHON_INSTALL_FILES
         ${CMAKE_CURRENT_BINARY_DIR}/daq.py
-        ${CMAKE_CURRENT_BINARY_DIR}/_daq.pyd)
+        ${CMAKE_CURRENT_BINARY_DIR}/Release/_daq.pyd)
 endif()
 
 # Configure setup.py and copy to output directory

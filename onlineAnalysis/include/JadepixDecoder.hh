@@ -44,7 +44,7 @@ class JadepixDecoder{
     
     int CompareTwoFrame();       
 
-    int FillFrame();
+    int FillFrame(long);
 
     void ReSet();
 

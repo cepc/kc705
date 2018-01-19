@@ -76,8 +76,8 @@ void JadepixDecoder::SkipTimeStamp()
     unsigned char tmp_buf_skip;
     jadepix_rawFile->read((char *)&tmp_buf_skip, sizeof(tmp_buf_skip));
 
-    //std::cout << std::dec << "i = " << i << " : ";
-    //std::cout << std::setw(9) << std::hex << tmp_buf_skip << std::dec << std::endl;
+    std::cout << std::dec << "i = " << i << " : ";
+    std::cout << std::setw(9) << std::hex << tmp_buf_skip << std::dec << std::endl;
   }
 }
 
@@ -278,9 +278,9 @@ int JadepixDecoder::CompareTwoFrame()
 }
 
 
-int JadepixDecoder::FillFrame()
+int JadepixDecoder::FillFrame(long nFrame)
 {
-  JadepixFrame *_frame = new JadepixFrame(m_frameId);
+  JadepixFrame *_frame = new JadepixFrame(nFrame);
   
   for (int ch = 0; ch < 16; ch++)
   {
@@ -303,7 +303,6 @@ int JadepixDecoder::FillFrame()
     }
   }
   m_frameVec.push_back(_frame);
-  m_frameId++;
 
   return 0;
 }
@@ -343,7 +342,7 @@ int JadepixDecoder::Decode(std::string datafile, int data_structure, int max_dec
 
     for (int nFrame = 0; nFrame < max_decode_frame; nFrame++)
     {
-        std::cout << "Frame number = " << nFrame << std::endl;
+        //std::cout << "Frame number = " << nFrame << std::endl;
         SetLoopCounter(nFrame);
 
         // Frame Header
@@ -363,7 +362,7 @@ int JadepixDecoder::Decode(std::string datafile, int data_structure, int max_dec
             break;
 
         // Fill to the struct
-        FillFrame();
+        FillFrame(nFrame);
     }
     return 0;
 }

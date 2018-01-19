@@ -16,11 +16,8 @@
 
 class JadepixDecoder{
   public:
-    JadepixDecoder():jadepix_rawFile(NULL),m_frameId(0){
-      if(jadepix_decoder){ std::cout<<"Warning::IO is constructed twice."<< std::endl;}
-      jadepix_decoder=this;
-    };
-    ~JadepixDecoder(){if(jadepix_rawFile) delete jadepix_rawFile;};
+    JadepixDecoder();
+    ~JadepixDecoder();
 
     int OpenRawFile(std::string);
     

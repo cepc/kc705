@@ -39,11 +39,14 @@ public:
     int get_event_number();
     int get_run_number();
     size_t get_bytes_read();
+    void set_simulate_state(int sim);
+    int get_simulate_state();
+    void re_set();
     // get_accumulated_events
     // get_event_number
     // get_run_number
 
-	void getRecentEvent(char *data);
+	void get_recent_event(char *data);
 	
 	const std::string& get_filename(){ return m_filename; }
 	void set_filename( const std::string &fname ){ m_filename = fname; }
@@ -55,4 +58,5 @@ private:
 
 	void reportThreadStopped();
 	std::string m_filename;
+    int m_simulate;
 };

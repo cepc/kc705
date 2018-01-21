@@ -52,7 +52,7 @@ using namespace std::chrono_literals;
 #define DAQ_ERROR(x)    DAQ_LOG(LOG_ERROR, x)
 
 
-DataTaker::DataTaker(EventListener *listener): m_listener(listener), m_state(STATE_STOPPED), m_threadObj(nullptr) {
+DataTaker::DataTaker(EventListener *listener): m_listener(listener), m_state(STATE_STOPPED), m_threadObj(nullptr),m_simulate(0){
     //std::cout << "m_listener: " << m_listener << std::endl;
     // m_listener->logMessage(LOG_INFO, "In constructor");
     DAQ_INFO("In constructor");
@@ -115,15 +115,32 @@ size_t DataTaker::get_bytes_read() {
 	return 0;
 }
 
-void DataTaker::getRecentEvent(char * data) {
+void DataTaker::get_recent_event(char * data) {
 //	strcpy(data, "Hello Event!");*/
 	if (m_threadObj) {
 		std::lock_guard<std::mutex> guard(m_threadObj->eventDataMutex);
-		memcpy(data, m_threadObj->m_recentEvent, 1928);
+		//memcpy(data, m_threadObj->m_recentEvent, 1928);
+		memcpy(data, m_threadObj->m_recentEvent, 1920);
 	} else {
-		memset(data, 0xAA, 1928);
+		//memset(data, 0xAA, 1928);
+		memset(data, 0xAA, 1920);
 	}
 
+}
+
+void DataTaker::set_simulate_state(int sim) {
+	m_simulate = sim;
+}
+
+int DataTaker::get_simulate_state()[
+	return m_simulate;
+]
+
+void DataTaker::re_set() {
+    // Send Reset Command to FPGA
+    char *reset_init = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15" ;
+
+    system(reset_init);     
 }
 
 // This is called from DataTakingThread, on the thread.
@@ -136,7 +153,8 @@ void DataTaker::reportThreadStopped() {
 ////////////////
 
 void DataTakingThread::threadMain() {
-    DAQ_INFO("Hello from threadMain!");
+    //DAQ_INFO("Hello from threadMain!");
+    std::cout << "Hello from threadMain!" << std::endl;
 
 	FILE *fd = fopen("//./xillybus_read_32", "rb");
 	//int fd = _open("//./xillybus_read_32", O_RDONLY | _O_BINARY);
@@ -145,12 +163,14 @@ void DataTakingThread::threadMain() {
 		DAQ_ERROR("Could not open stream");
 		m_dataTaker->reportThreadStopped();
 		return;
+	}else{
+		std::cout << "The pipe is open! " << std::endl;
 	}
 
     // Send Reset Command to FPGA
-    char *reset_init = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15" ;
-
-    system(reset_init);     
+	if(!m_simulate){
+		m_dataTaker->re_set();
+	}
 			
     // Sleep until FIFO in FPGA is filled 
     std::cout << "Waiting . . . " << std::endl;
@@ -158,7 +178,11 @@ void DataTakingThread::threadMain() {
 
 	FILE *outf {nullptr};
 
-    const size_t frame_size = 1920+8;
+    //const size_t frame_size = 1920+8; 
+    //const size_t buffer_size = 32768*4;  // FIFO depth 32768 * 4 bytes
+    //const size_t read_size = 10000;
+
+    const size_t frame_size = 1920; 
     const size_t buffer_size = 32768*4;  // FIFO depth 32768 * 4 bytes
     const size_t read_size = 10000;
 
@@ -195,9 +219,9 @@ void DataTakingThread::threadMain() {
                 // would write past end of buffer
                 // copy what we have to beginning
 
-                //memcpy(&buffer[0], used, pos-used); // Comment out
-                //used = &buffer[0];                  // Comment out
-                //pos = used + bytes_avail;           // Comment out
+                memcpy(&buffer[0], used, pos-used); // Comment out
+                used = &buffer[0];                  // Comment out
+                pos = used + bytes_avail;           // Comment out
 
                 std::cout << "End of Buffer Size" << std::endl;
 			
@@ -239,12 +263,14 @@ void DataTakingThread::threadMain() {
 
 		while (bytes_avail >= frame_size) {
 
-			if (used[0] != '\xAA' || used[4+1920] != '\xF0') { // 4(header)+(4byte*10)*48rows
+			//if (used[0] != '\xAA' || used[4+1920] != '\xF0') { // 4(header)+(4byte*10)*48rows
+			if (used[0] != '\xAA' || used[1920] != '\xF0') { // 4(header)+(4byte*10)*48rows
 			//if (0){
 				// Not synchronized
 				//DAQ_DEBUG("Unsynchronized after " << m_eventNumber << " events");
 				for (char *offset = used; offset < pos; offset++) {
-					if (offset[0] == '\xAA' && offset[4+1920] == '\xF0') {
+					//if (offset[0] == '\xAA' && offset[4+1920] == '\xF0') {
+					if (offset[0] == '\xAA' && offset[1920] == '\xF0') {
 						DAQ_DEBUG("Resynchronized! Skipped " << (offset - used) << " bytes");
 						// found head/tail
 						used = offset;
@@ -300,7 +326,8 @@ void DataTakingThread::threadMain() {
 				//}
 				if (m_eventNumber % 2000 == 0) {
 					DAQ_DEBUG("Read " << m_eventNumber << " events");
-					memcpy(m_recentEvent, used, 1928);  // Send the entire frame
+					//memcpy(m_recentEvent, used, 1928);  // Send the entire frame
+					memcpy(m_recentEvent, used, 1920);  // Send the entire frame
 					//memcpy(m_recentEvent, used+4, 96);
 					//char c = m_eventNumber / 100 % 256;
 					//for (size_t i = 0; i < 98; i++) {
@@ -348,7 +375,6 @@ void DataTakingThread::threadMain() {
 			//);
 
 		}
-
     }
     end:
     DAQ_INFO("Quit taking data");

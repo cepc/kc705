@@ -195,6 +195,13 @@
             </spacer>
            </item>
            <item>
+            <widget class="QPushButton" name="btnSimulateRun">
+             <property name="text">
+              <string>&amp;Simulate</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="btnStartRun">
              <property name="text">
               <string>&amp;Start run</string>
@@ -207,7 +214,7 @@
               <bool>false</bool>
              </property>
              <property name="text">
-              <string>S&amp;top run</string>
+              <string>&amp;Stop run</string>
              </property>
             </widget>
            </item>

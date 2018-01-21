@@ -123,7 +123,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.update_state()
         # Bugfix: Without this, the button appears still "hovered"
         # if disabled
-        self.btnSimulate.setAttribute(QtCore.Qt.WA_UnderMouse, False)
+        self.btnSimulateRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
 
     def btnStopRun_clicked(self, arg):
         self.dataTaker.stop_run()
@@ -179,7 +179,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         # last_events = self.dataTaker.get_accumulated_events()
         # last_events = None
-        thebytes = self.dataTaker.getRecentEvent()
+        thebytes = self.dataTaker.get_recent_event()
         #print(thebytes)
         
         '''

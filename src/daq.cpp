@@ -128,14 +128,6 @@ void DataTaker::get_recent_event(char * data) {
 
 }
 
-void DataTaker::set_simulate_state(int sim) {
-	m_simulate = sim;
-}
-
-int DataTaker::get_simulate_state()[
-	return m_simulate;
-]
-
 void DataTaker::re_set() {
     // Send Reset Command to FPGA
     char *reset_init = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15" ;
@@ -168,7 +160,7 @@ void DataTakingThread::threadMain() {
 	}
 
     // Send Reset Command to FPGA
-	if(!m_simulate){
+	if(!m_dataTaker->get_simulate_state()){
 		m_dataTaker->re_set();
 	}
 			

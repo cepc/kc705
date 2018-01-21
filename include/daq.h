@@ -39,8 +39,8 @@ public:
     int get_event_number();
     int get_run_number();
     size_t get_bytes_read();
-    void set_simulate_state(int sim);
-    int get_simulate_state();
+	void set_simulate_state(int sim) { m_simulate = sim; };
+	int get_simulate_state() { return m_simulate; };
     void re_set();
     // get_accumulated_events
     // get_event_number

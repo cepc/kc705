@@ -48,7 +48,7 @@ class JadepixDecoder{
     long NoOfFrame() { return m_frameVec.size(); };
     JadepixFrame *GetFrame(long frameId) const { return m_frameVec[frameId]; };
 
-    int Decode(std::string datafile, int data_structure, int max_decode_frame);
+    int Decode(std::string datafile, int data_structure, long max_decode_frame);
 
     static JadepixDecoder* Instance();
 

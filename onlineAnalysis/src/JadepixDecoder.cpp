@@ -14,6 +14,7 @@ JadepixDecoder::~JadepixDecoder()
   if (jadepix_rawFile)
     delete jadepix_rawFile;
   ReSet();
+  std::cout << "Decode is finished.  " << std::endl;
 };
 
 JadepixDecoder *JadepixDecoder::jadepix_decoder = NULL;
@@ -30,7 +31,7 @@ int JadepixDecoder::OpenRawFile(std::string fname)
   jadepix_rawFile = new std::fstream();
   jadepix_rawFile->open(fname, std::ios::binary | std::ios::in);
 
-  if (!jadepix_rawFile)
+  if (!jadepix_rawFile->is_open())
   {
     std::cout << "" << std::endl;
     std::cout << "------------> Error:: " << fname << " can NOT be opened!!!" << std::endl;
@@ -87,13 +88,14 @@ void JadepixDecoder::InitVariables()
 
 void JadepixDecoder::SkipTimeStamp()
 {
+  std::cout << "Skip time stampe" << std::endl;
   for (int i = 0; i < 35; i++)
   {
     unsigned char tmp_buf_skip;
     jadepix_rawFile->read((char *)&tmp_buf_skip, sizeof(tmp_buf_skip));
 
-    std::cout << std::dec << "i = " << i << " : ";
-    std::cout << std::setw(9) << std::hex << tmp_buf_skip << std::dec << std::endl;
+    //std::cout << std::dec << "i = " << i << " : ";
+    //std::cout << std::setw(9) << std::hex << tmp_buf_skip << std::dec << std::endl;
   }
 }
 
@@ -110,6 +112,7 @@ int JadepixDecoder::FindFrameHeader()
     unsigned int tmp_buf_header;
     jadepix_rawFile->read((char *)&tmp_buf_header, sizeof(tmp_buf_header));
     read_count++;
+
     if (jadepix_rawFile->eof())
     {
       std::cout << "End of File" << std::endl;
@@ -336,7 +339,7 @@ void JadepixDecoder::InitLoopCounter()
    decode_frame_num = 0;
 }
 
-int JadepixDecoder::Decode(std::string datafile, int data_structure, int max_decode_frame)
+int JadepixDecoder::Decode(std::string datafile, int data_structure, long max_decode_frame)
 {
     // Set Header & Footer word
     SetHeaderFooterWord();

@@ -17,20 +17,13 @@ class OfflineThread(QThread):
 
     frame=np.zeros((16, 48), dtype=int)
     frameId=0
-    fname='C:/Users/Lenovo/Desktop/JadePixelAnalysis/kc705/test/dat/TestFile20180105-000.dat'
+    fname='D:code\\kc705\\onlineAnaysis\\data\\TestFile20180105-000.dat'
     struceture=2
     maxframe=5
 
     PixelADC = []
     col = 7
     row = 21
-
-    
-
-
-
-    
-    
     
     def __init__(self, parent=None):
         super(OfflineThread, self).__init__(parent)
@@ -44,6 +37,7 @@ class OfflineThread(QThread):
         dataFile = filestr
         dataStructure = struc
         maxDecodeFrame = maxf
+        print("maxDecodeFrame: ", maxf)
         decode = jp.JadepixDecoder.Instance()
         decode.Decode(dataFile, dataStructure, maxDecodeFrame) 
         
@@ -71,18 +65,15 @@ class OfflineThread(QThread):
 
             hitMaps = np.reshape(frameMap,(16,48))
 
-
-            #print("------------->", frameMap)
-
-
             self.frameId=frame.GetFrameId()
             self.frame=frameMap#
             #print(frameMap)
             self.SendOneFrame.emit('Receive one Frame')
                 
-            time.sleep(2)     
+            time.sleep(1)     
 
         self.PixelADC = tmpPixelADC
+        decode.ReSet()
         self.SendOver.emit('Finish Read')
         
     def run(self):

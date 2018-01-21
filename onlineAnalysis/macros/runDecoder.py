@@ -16,9 +16,9 @@ def drawHitMaps(j, data):
 
 
 def readRawFile():
-    dataFile = "..\\data\\TestFile20180105-000.dat" 
+    dataFile = "D:\code\kc705\onlineAnalysis\data\Test201712231.dat" 
     dataStructure = 2
-    maxDecodeFrame = 8000
+    maxDecodeFrame = 5
     decode = jp.JadepixDecoder.Instance()
     decode.Decode(dataFile, dataStructure, maxDecodeFrame) 
     

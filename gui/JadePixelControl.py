@@ -65,17 +65,22 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         #Online Init
 
+        file_name=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+        file_path= os.getcwd()
+
         self.events = MyEventListener(self)
         self.dataTaker = daq.DataTaker(self.events)
-        self.file_name='C:/Users/Lenovo/Desktop/kc705/test/sim/test.bat'
         
         # scale factor for high dpi screens
-
+        self.LineEdit_Online_FilePath.setText(file_path)
+        self.LineEdit_Online_FileName.setText(file_name)
         
         self.Draw_Online_Image()
 
         self.Btn_Online_StartRun.clicked.connect(self.Btn_Online_StartRun_clicked)
+        self.Btn_Online_SimStart.clicked.connect(self.Btn_Online_SimStart_clicked)
         self.Btn_Online_StopRun.clicked.connect(self.Btn_Online_StopRun_clicked)
+        self.Btn_Online_Chose.clicked.connect(self.Btn_Online_Chose_clicked)
 
         self.timer = Qt.QTimer()
         self.timer.timeout.connect(self.Online_Update)
@@ -96,18 +101,6 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.statusBar().addWidget(self.lblStatus)
 
         self.Online_Update()
-
-        
-
-
-
-
-
-
-
-
-
-
 
 #####################################################################
 
@@ -248,16 +241,48 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         self.Pixel_Online_Canvas.draw()
         Pixel_Online_mpl_toolbar = NavigationToolbar(self.Pixel_Online_Canvas, self.Pixel_Online_Graph)
+
+
+    def Btn_Online_Chose_clicked(self):
+        open = QtWidgets.QFileDialog()
+        open.setWindowModality(QtCore.Qt.WindowModal)
+        file_path=open.getExistingDirectory(self, 'Chose the directory to save data',os.getcwd())
+        self.LineEdit_Online_FilePath.setText(file_path)
+
+    def GetPathAndName(self):
+        tmp=os.getcwd()+'/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'.dat'
+        file_path=self.LineEdit_Online_FilePath.text()
+        file_name=self.LineEdit_Online_FileName.text()
+        if file_path[-1]=='/':
+            file_path=file_path.rstrip('/')
+            
+        name=file_name+self.ComboBox_Data_Type.currentText()
+        tmp=file_path+'/'+name
+        
+        return tmp
+
+
         
 
     def Btn_Online_StartRun_clicked(self, arg):
-        self.dataTaker.set_filename(self.file_name)  ## set the filename. test input 
+        self.dataTaker.set_filename(self.GetPathAndName())  ## set the filename. test input 
+        self.dataTaker.set_simulate_state(0)
+        self.dataTaker.start_run()
+        self.Online_Update()
+        # Bugfix: Without this, the button appears still "hovered"
+        # if disabled
+        self.Btn_Online_StartRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
+
+
+    def Btn_Online_SimStart_clicked(self):
+        self.dataTaker.set_filename(self.GetPathAndName())  ## set the filename. test input 
         self.dataTaker.set_simulate_state(1)
         self.dataTaker.start_run()
         self.Online_Update()
         # Bugfix: Without this, the button appears still "hovered"
         # if disabled
         self.Btn_Online_StartRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
+
 
 
 
@@ -313,23 +338,43 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
             if not self.timer.isActive():
                 self.timer.start()
 
-        # last_events = self.dataTaker.get_accumulated_events()
-        # last_events = None
+    
         thebytes = self.dataTaker.get_recent_event()
-        #print(thebytes)
+        print(thebytes)
         
-        '''
         frame=self.rebuild_data(thebytes)#rebuild data
         last_events=[frame]
-        
+        print(last_events)
+
         if last_events:
             summed = sum(last_events)
-            self.image.set_data(summed)
-            self.image.autoscale()
+            self.Pixel_Online_Image.set_data(summed)
+            self.Pixel_Online_Image.autoscale()
             
-            self.axes.draw_artist(self.image)
-            self.canvas.update()
-        '''
+            self.Pixel_Online_Axes.draw_artist(self.Pixel_Online_Image)
+            self.Pixel_Online_Canvas.update()
+
+    def rebuild_data(self, thebytes):
+        event_data=np.frombuffer(thebytes, dtype=np.uint8, count=1536+8)
+        
+        event_data_list=event_data.tolist()
+        
+        frame_list=event_data_list
+        
+        #delete  event_header and event_footer
+        for j in range(0, 4):
+            frame_list.remove(frame_list[0])
+            frame_list.pop()
+        
+        frame_array=np.reshape(frame_list, newshape=(16, 48, 2))
+        
+        frame=np.zeros((16, 48), dtype=int)
+        for i in range(0, 16):
+            for j in range(0, 48):
+                tmp=frame_array[i, j, 0]*256+frame_array[i, j, 1]
+                frame[i, j]=tmp
+        return frame        
+
 
 class MyEventListener(daq.EventListener):
     def __init__(self, window):

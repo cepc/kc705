@@ -162,7 +162,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.lblStatus.setText(state_names[state])
         self.btnStartRun.setEnabled(state == daq.STATE_STOPPED)
         self.btnStopRun.setEnabled(state == daq.STATE_RUNNING)
-        #nevents = self.dataTaker.get_event_number()
+        nevents = self.dataTaker.get_event_number()
         #self.lblEventNumber.setText(str(nevents))
         #runNumber = self.dataTaker.get_run_number()
         #self.lblRunNumber.setText(str(runNumber))
@@ -180,12 +180,12 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         # last_events = self.dataTaker.get_accumulated_events()
         # last_events = None
         thebytes = self.dataTaker.get_recent_event()
-        #print(thebytes)
+        print(thebytes)
         
-        '''
         frame=self.rebuild_data(thebytes)#rebuild data
         last_events=[frame]
-        
+        print(last_events)
+
         if last_events:
             summed = sum(last_events)
             self.image.set_data(summed)
@@ -193,10 +193,10 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
             
             self.axes.draw_artist(self.image)
             self.canvas.update()
-        '''
+
 
     def rebuild_data(self, thebytes):
-        event_data=np.frombuffer(thebytes, dtype=np.uint8, count=1928)
+        event_data=np.frombuffer(thebytes, dtype=np.uint8, count=1536+8)
         
         event_data_list=event_data.tolist()
         
@@ -206,22 +206,6 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         for j in range(0, 4):
             frame_list.remove(frame_list[0])
             frame_list.pop()
-        
-        mark=0
-        tmp_list=np.zeros(1536, dtype=int)
-        x=0
-        
-        for k in range(0, 1920):
-            if k%40==0 or  k%40==1 or k%40==2 or k%40==3 or k%40==36 or k%40==37 or k%40==38 or k%40==39:
-                x=1
-            if x==0:
-                tmp_list[mark]=frame_list[k]
-                mark=mark+1
-            x=0
-            
-        frame_list=tmp_list
-        #length=len(frame_list)
-        #print(length)
         
         frame_array=np.reshape(frame_list, newshape=(48, 16, 2))
         

@@ -120,10 +120,10 @@ void DataTaker::get_recent_event(char * data) {
 	if (m_threadObj) {
 		std::lock_guard<std::mutex> guard(m_threadObj->eventDataMutex);
 		//memcpy(data, m_threadObj->m_recentEvent, 1928);
-		memcpy(data, m_threadObj->m_recentEvent, 1920);
+		memcpy(data, m_threadObj->m_recentEvent, 1536+8);
 	} else {
 		//memset(data, 0xAA, 1928);
-		memset(data, 0xAA, 1920);
+		memset(data, 0xAA, 1536+8);
 	}
 
 }
@@ -174,7 +174,7 @@ void DataTakingThread::threadMain() {
     //const size_t buffer_size = 32768*4;  // FIFO depth 32768 * 4 bytes
     //const size_t read_size = 10000;
 
-    const size_t frame_size = 1920; 
+    const size_t frame_size = 1536+8; 
     const size_t buffer_size = 32768*4;  // FIFO depth 32768 * 4 bytes
     const size_t read_size = 10000;
 
@@ -230,19 +230,23 @@ void DataTakingThread::threadMain() {
 				std::cout << "endpos: " << (void*)endpos << std::endl;
 				std::cout << "bytes_avail: " << bytes_avail << std::endl;
 			}
-			
+
+			/*	
 			CHECK(pos + read_size <= endpos);
 			CHECK(used <= pos);
 			CHECK(pos - used == bytes_avail);
 			CHECK(bytes_avail <= buffer_size);
+			*/
 
 			size_t bytes_got = fread(pos, 1, read_size, fd);
 			m_bytesRead += bytes_got;
 
-            std::cout << "readout size (byte) = " << bytes_got << "  " ;
-            std::cout << "total readout size (byte) = " << m_bytesRead << std::endl;
+            //std::cout << "readout size (byte) = " << bytes_got << "  " ;
+            //std::cout << "total readout size (byte) = " << m_bytesRead << std::endl;
 
+			/*
             CHECK(bytes_got > 0);
+			*/
 
 			pos += bytes_got;
             bytes_avail = pos-used;
@@ -256,14 +260,14 @@ void DataTakingThread::threadMain() {
 		while (bytes_avail >= frame_size) {
 
 			//if (used[0] != '\xAA' || used[4+1920] != '\xF0') { // 4(header)+(4byte*10)*48rows
-			if (used[0] != '\xAA' || used[1920] != '\xF0') { // 4(header)+(4byte*10)*48rows
+			if (used[0] != '\xAA' || used[1536+8] != '\xF0') { // (4byte*10)*48rows
 			//if (0){
 				// Not synchronized
 				//DAQ_DEBUG("Unsynchronized after " << m_eventNumber << " events");
 				for (char *offset = used; offset < pos; offset++) {
 					//if (offset[0] == '\xAA' && offset[4+1920] == '\xF0') {
-					if (offset[0] == '\xAA' && offset[1920] == '\xF0') {
-						DAQ_DEBUG("Resynchronized! Skipped " << (offset - used) << " bytes");
+					if (offset[0] == '\xAA' && offset[1536+8] == '\xF0') {
+						//DAQ_DEBUG("Resynchronized! Skipped " << (offset - used) << " bytes");
 						// found head/tail
 						used = offset;
 						bytes_avail = pos - used;
@@ -289,7 +293,6 @@ void DataTakingThread::threadMain() {
 						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-2] << "-"
 						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-1] << "-"
 						//);
-
 
 						break;
 					}
@@ -317,9 +320,9 @@ void DataTakingThread::threadMain() {
 				//	break;
 				//}
 				if (m_eventNumber % 2000 == 0) {
-					DAQ_DEBUG("Read " << m_eventNumber << " events");
+					//DAQ_DEBUG("Read " << m_eventNumber << " events");
 					//memcpy(m_recentEvent, used, 1928);  // Send the entire frame
-					memcpy(m_recentEvent, used, 1920);  // Send the entire frame
+					memcpy(m_recentEvent, used, 1536+8);  // Send the entire frame
 					//memcpy(m_recentEvent, used+4, 96);
 					//char c = m_eventNumber / 100 % 256;
 					//for (size_t i = 0; i < 98; i++) {

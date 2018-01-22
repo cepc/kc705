@@ -72,7 +72,7 @@ class OfflineThread(QThread):
                 
             time.sleep(1)     
 
-        self.PixelADC = tmpPixelADC
+            self.PixelADC = tmpPixelADC##################
         decode.ReSet()
         self.SendOver.emit('Finish Read')
         

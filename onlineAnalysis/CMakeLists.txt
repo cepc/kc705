@@ -14,7 +14,9 @@ aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src ARP_SRC)
 
 # Set the CXX compile option
 # similar to gmake: g++ -std=c++1y ...
-if(UNIX)
+if(WIN32)
+    set(CMAKE_CXX_FLGAS "-D_hypot=hypot -std=c++1y -Wall -Wextra -Wno-unused-parameter -fPIC ${CMAKE_CXX_FLAGS}")
+elseif(UNIX)
     set(CMAKE_CXX_FLAGS "-std=c++1y -Wall -Wextra -Wno-unused-parameter -fPIC ${CMAKE_CXX_FLAGS}")
 endif()
 

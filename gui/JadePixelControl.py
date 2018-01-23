@@ -340,11 +340,11 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
     
         thebytes = self.dataTaker.get_recent_event()
-        print(thebytes)
+        #print(thebytes)
         
         frame=self.rebuild_data(thebytes)#rebuild data
         last_events=[frame]
-        print(last_events)
+        #print(last_events)
 
         if last_events:
             summed = sum(last_events)

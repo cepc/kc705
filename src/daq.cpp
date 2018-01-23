@@ -52,10 +52,11 @@ using namespace std::chrono_literals;
 #define DAQ_ERROR(x)    DAQ_LOG(LOG_ERROR, x)
 
 
-DataTaker::DataTaker(EventListener *listener): m_listener(listener), m_state(STATE_STOPPED), m_threadObj(nullptr),m_simulate(0){
+DataTaker::DataTaker(EventListener *listener): m_listener(listener), m_state(STATE_STOPPED), m_threadObj(nullptr),m_simulate(0),m_max_event_number(10000){
     //std::cout << "m_listener: " << m_listener << std::endl;
     // m_listener->logMessage(LOG_INFO, "In constructor");
-    DAQ_INFO("In constructor");
+    //DAQ_INFO("In constructor");
+    std::cout << "In constructor" << std::endl;
 }
 
 DataTaker::~DataTaker() {};
@@ -63,7 +64,7 @@ DataTaker::~DataTaker() {};
 void DataTaker::start_run() {
     //std::cout << "m_listener: " << m_listener << std::endl;
     //m_listener->logMessage(LOG_INFO, "Starting run");
-    DAQ_INFO("start_run");
+    //DAQ_INFO("start_run");
 
     m_threadObj = std::make_unique<DataTakingThread>(this);
     m_threadObj->start();
@@ -74,7 +75,7 @@ void DataTaker::start_run() {
 void DataTaker::stop_run() {
     // std::cout << "m_listener: " << m_listener << std::endl;
     // m_listener->logMessage(LOG_INFO, "Stopping run");
-    DAQ_INFO("Stopping run");
+    //DAQ_INFO("Stopping run");
 
 	// Don't join... if the thread is hanging (waiting for data),
 	// this will hang the GUI too
@@ -138,7 +139,7 @@ void DataTaker::re_set() {
 // This is called from DataTakingThread, on the thread.
 // Only use atomic access, or a lock in here.
 void DataTaker::reportThreadStopped() {
-	DAQ_INFO("Thread reported that it stopped.");
+	//DAQ_INFO("Thread reported that it stopped.");
 	m_state = STATE_STOPPED;
 }
 
@@ -152,10 +153,12 @@ void DataTakingThread::threadMain() {
 	//int fd = _open("//./xillybus_read_32", O_RDONLY | _O_BINARY);
 
 	if (!fd) {
-		DAQ_ERROR("Could not open stream");
+		//DAQ_ERROR("Could not open stream");
+		std::cout << "Could not open stream" << std::endl;
 		m_dataTaker->reportThreadStopped();
 		return;
 	}else{
+		//DAQ_INFO("The pipe is open! ");
 		std::cout << "The pipe is open! " << std::endl;
 	}
 
@@ -203,7 +206,7 @@ void DataTakingThread::threadMain() {
     while (!m_stop) {
 		while (bytes_avail < frame_size) {
 			if (ferror(fd)) {
-                DAQ_ERROR("ERROR");
+                //DAQ_ERROR("ERROR");
 				goto end;
 			}
 
@@ -215,7 +218,7 @@ void DataTakingThread::threadMain() {
                 used = &buffer[0];                  // Comment out
                 pos = used + bytes_avail;           // Comment out
 
-                std::cout << "End of Buffer Size" << std::endl;
+                //std::cout << "End of Buffer Size" << std::endl;
 			
                 // Initialization of pointers
                 pos = &buffer[0];
@@ -307,16 +310,17 @@ void DataTakingThread::threadMain() {
 			{
 				std::lock_guard<std::mutex> guard(eventDataMutex);
 				m_eventNumber++;
-                if (m_eventNumber % 100 == 0) {
+                if (m_eventNumber % 1000 == 0) {
                     std::cout << "Event Number = " << m_eventNumber << std::endl;
                 }
 
-				//if (used[0] != '\xF0') {
-				//	DAQ_ERROR("Wrong header");
+				//if (used[0] != '\xAA') {
+				//	//DAQ_ERROR("Wrong header");
+				//	std::cout << "Wrong header" << std::endl;
 				//	break;
 				//}
-				//if (used[97] != '\xAA') {
-				//	DAQ_ERROR("Wrong tail");
+				//if (used[49] != '\xF0') {
+				//	std::cout << "Wrong tail" << std::endl;
 				//	break;
 				//}
 				if (m_eventNumber % 2000 == 0) {
@@ -336,11 +340,13 @@ void DataTakingThread::threadMain() {
 			// write event
 			//fwrite(used, 104, 1, outf);
 
-			 //if (m_eventNumber > 10000) {
+			 if (m_eventNumber > m_dataTaker->get_max_event_number()) {
 			 //	DAQ_INFO("Event limit reached.");
 			 //	DAQ_INFO("Read " << m_eventNumber << " events");
-			 //	goto end;
-			 //}
+			 	std::cout << "Event limit reached." << std::endl;
+				std::cout << "Read " << m_eventNumber << " events" << std::endl;
+				goto end;
+			 }
 
 			used += frame_size;
 			bytes_avail = pos - used;
@@ -372,9 +378,15 @@ void DataTakingThread::threadMain() {
 		}
     }
     end:
-    DAQ_INFO("Quit taking data");
+    //DAQ_INFO("Quit taking data");
 	m_dataTaker->reportThreadStopped();
 	fclose(fd);
 	if (outf)
 		fclose(outf);
+
+	delete pos;
+	delete used;
+	delete endpos;
+	delete fd;
+	delete outf;
 }

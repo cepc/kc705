@@ -258,8 +258,6 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         return tmp
 
 
-        
-
     def Btn_Online_StartRun_clicked(self, arg):
         self.dataTaker.set_filename(self.GetPathAndName())  ## set the filename. test input 
         self.dataTaker.set_simulate_state(0)

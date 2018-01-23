@@ -78,10 +78,10 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         
         self.Draw_Online_Image()
 
-        self.Btn_Online_StartRun.clicked.connect(self.Btn_Online_StartRun_clicked)
-        self.Btn_Online_SimStart.clicked.connect(self.Btn_Online_SimStart_clicked)
-        self.Btn_Online_StopRun.clicked.connect(self.Btn_Online_StopRun_clicked)
-        self.Btn_Online_Chose.clicked.connect(self.Btn_Online_Chose_clicked)
+        self.Btn_Online_StartRun.clicked.connect(self.Btn_Online_StartRun_Clicked)
+        self.Btn_Online_SimStart.clicked.connect(self.Btn_Online_SimStart_Clicked)
+        self.Btn_Online_StopRun.clicked.connect(self.Btn_Online_StopRun_Clicked)
+        self.Btn_Online_Chose.clicked.connect(self.Btn_Online_Chose_Clicked)
 
         self.timer = Qt.QTimer()
         self.timer.timeout.connect(self.Online_Update)
@@ -244,13 +244,13 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         Pixel_Online_mpl_toolbar = NavigationToolbar(self.Pixel_Online_Canvas, self.Pixel_Online_Graph)
 
 
-    def Btn_Online_Chose_clicked(self):
+    def Btn_Online_Chose_Clicked(self):
         open = QtWidgets.QFileDialog()
         open.setWindowModality(QtCore.Qt.WindowModal)
         file_path=open.getExistingDirectory(self, 'Chose the directory to save data',os.getcwd())
         self.LineEdit_Online_FilePath.setText(file_path)
 
-    def GetPathAndName(self):
+    def Get_Path_And_Name(self):
         tmp=os.getcwd()+'/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'.dat'
         file_path=self.LineEdit_Online_FilePath.text()
         file_name=self.LineEdit_Online_FileName.text()
@@ -265,8 +265,8 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         
 
-    def Btn_Online_StartRun_clicked(self, arg):
-        self.dataTaker.set_filename(self.GetPathAndName())  ## set the filename. test input 
+    def Btn_Online_StartRun_Clicked(self, arg):
+        self.dataTaker.set_filename(self.Get_Path_And_Name())  ## set the filename. test input 
         self.dataTaker.set_simulate_state(0)
         self.dataTaker.start_run()
         self.Online_Update()
@@ -275,8 +275,8 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.Btn_Online_StartRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)
 
 
-    def Btn_Online_SimStart_clicked(self):
-        self.dataTaker.set_filename(self.GetPathAndName())  ## set the filename. test input 
+    def Btn_Online_SimStart_Clicked(self):
+        self.dataTaker.set_filename(self.Get_Path_And_Name())  ## set the filename. test input 
         self.dataTaker.set_simulate_state(1)
         self.dataTaker.start_run()
         self.Online_Update()
@@ -287,7 +287,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
 
 
-    def Btn_Online_StopRun_clicked(self, arg):
+    def Btn_Online_StopRun_Clicked(self, arg):
         self.dataTaker.stop_run()
         self.Online_Update()
         self.Btn_Online_StopRun.setAttribute(QtCore.Qt.WA_UnderMouse, False)

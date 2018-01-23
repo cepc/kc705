@@ -1,15 +1,9 @@
-# Include python
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_PATH})
-
-
 set(CMAKE_SWIG_FLAGS "")
-set_source_files_properties(../${PROJECT_NAME}.i PROPERTIES CPLUSPLUS ON)
-include_directories(../..)
+set_source_files_properties(../jadepix.i PROPERTIES CPLUSPLUS ON)
 
 # Add swig module
-swig_add_module(jadepix python ../${PROJECT_NAME}.i)
-swig_link_libraries(jadepix ${PROJECT_NAME} ${PYTHON_LIBRARIES})
+swig_add_module(jadepix python ../jadepix.i)
+swig_link_libraries(jadepix jadepix ${PYTHON_LIBRARIES})
 
 if(UNIX)
 # Files to install with Python
@@ -28,12 +22,7 @@ set(SETUP_PY_IN ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in)
 set(SETUP_PY_OUT ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 configure_file(${SETUP_PY_IN} ${SETUP_PY_OUT})
 
-## Declare install target for python
-#install(TARGETS jadepix
-#        COMMAND "${PYTHON_EXECUTABLE} setup.py"
-#        COMPONENT python)
-
 # Install target to call setup.py
-add_custom_target(install-python
+add_custom_target(install-python-decode
         DEPENDS _jadepix
         COMMAND python ${SETUP_PY_OUT} install)

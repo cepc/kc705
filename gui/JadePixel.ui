@@ -154,7 +154,7 @@
          <item row="1" column="0">
           <widget class="QLabel" name="label_14">
            <property name="text">
-            <string>Max Frame:</string>
+            <string>Max Events:</string>
            </property>
           </widget>
          </item>
@@ -172,7 +172,7 @@
           </widget>
          </item>
          <item row="1" column="1" colspan="2">
-          <widget class="QSpinBox" name="SpinBox_Online_MaxFrame">
+          <widget class="QSpinBox" name="SpinBox_Online_MaxEvents">
            <property name="minimum">
             <number>1</number>
            </property>
@@ -180,7 +180,7 @@
             <number>999999999</number>
            </property>
            <property name="value">
-            <number>10</number>
+            <number>100000</number>
            </property>
           </widget>
          </item>

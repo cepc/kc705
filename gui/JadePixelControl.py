@@ -70,6 +70,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
         self.events = MyEventListener(self)
         self.dataTaker = daq.DataTaker(self.events)
+        self.dataTaker.set_max_event_number(self.SpinBox_Online_MaxEvents.value())
         
         # scale factor for high dpi screens
         self.LineEdit_Online_FilePath.setText(file_path)
@@ -206,7 +207,7 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         #print(np.reshape(data,  (48, 16)))
         self.Pixel_Offline_Image.set_data(np.reshape(self.OfflineThread.frame, (16, 48))) 
 
-        print('Current ADC : ',self.OfflineThread.PixelADC)
+        #print('Current ADC : ',self.OfflineThread.PixelADC)
         self.Pixel_Offline_Hist_Image= self.Pixel_Offline_Axes_hist.hist(self.OfflineThread.PixelADC, 20, histtype='stepfilled')
 
         #print(self.OfflineThread.frame)

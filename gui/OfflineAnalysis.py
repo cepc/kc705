@@ -70,7 +70,7 @@ class OfflineThread(QThread):
             #print(frameMap)
             self.SendOneFrame.emit('Receive one Frame')
                 
-            time.sleep(1)     
+            time.sleep(0.1)     
 
             self.PixelADC = tmpPixelADC##################
         decode.ReSet()

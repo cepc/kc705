@@ -3,10 +3,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets, uic, Qt
 from PyQt5.QtCore import pyqtSignal
 import os, sys
 
-
 import numpy as np
-
-
 
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -16,7 +13,6 @@ from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 
 import OfflineAnalysis
-
 
 import signal
 import threading
@@ -28,7 +24,6 @@ import win32file
 from qtthreadutils import invoke_in_main_thread
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
-import OnlineDataRebuild
 
 form_class = uic.loadUiType("JadePixel.ui")[0]
 
@@ -324,8 +319,9 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         self.lblStatus.setText(state_names[state])
         self.Btn_Online_StartRun.setEnabled(state == daq.STATE_STOPPED)
         self.Btn_Online_StopRun.setEnabled(state == daq.STATE_RUNNING)
-        #nevents = self.dataTaker.get_event_number()
-        #self.lblEventNumber.addsetText(str(nevents))
+
+        nevents = self.dataTaker.get_event_number()
+        self.Label_Online_FrameNumber.setText(str(nevents))
         #runNumber = self.dataTaker.get_run_number()
         #self.lblRunNumber.setText(str(runNumber))
 
@@ -385,7 +381,6 @@ class MyEventListener(daq.EventListener):
     def logMessage(self, level, string):
         print("In logMessage")
         thread = threading.current_thread()
-        # invoke_in_main_thread(self._window.logMessage, level, thread.name, string)
         invoke_in_main_thread(self._window.logMessage, level, thread.name, string)
 
 

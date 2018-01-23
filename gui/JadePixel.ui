@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>835</width>
+    <width>894</width>
     <height>877</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>JadePixel</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>iheplogo.gif</normaloff>iheplogo.gif</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="tabWidget">
@@ -19,7 +23,7 @@
      <rect>
       <x>10</x>
       <y>0</y>
-      <width>801</width>
+      <width>871</width>
       <height>831</height>
      </rect>
     </property>
@@ -35,7 +39,7 @@
        <rect>
         <x>11</x>
         <y>10</y>
-        <width>388</width>
+        <width>401</width>
         <height>781</height>
        </rect>
       </property>
@@ -443,7 +447,7 @@
        <rect>
         <x>420</x>
         <y>0</y>
-        <width>361</width>
+        <width>431</width>
         <height>791</height>
        </rect>
       </property>
@@ -466,7 +470,7 @@
        <rect>
         <x>17</x>
         <y>10</y>
-        <width>371</width>
+        <width>401</width>
         <height>791</height>
        </rect>
       </property>
@@ -838,9 +842,9 @@
      <widget class="QGroupBox" name="groupBox_4">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>430</x>
         <y>0</y>
-        <width>381</width>
+        <width>421</width>
         <height>811</height>
        </rect>
       </property>
@@ -861,7 +865,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>835</width>
+     <width>894</width>
      <height>26</height>
     </rect>
    </property>

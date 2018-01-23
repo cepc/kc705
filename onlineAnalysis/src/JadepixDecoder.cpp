@@ -1,5 +1,22 @@
 #include "JadepixDecoder.hh"
 
+JadepixDecoder::JadepixDecoder() : jadepix_rawFile(NULL), m_frameId(0)
+{
+  if (jadepix_decoder)
+  {
+    std::cout << "Warning::IO is constructed twice." << std::endl;
+  }
+  jadepix_decoder = this;
+};
+
+JadepixDecoder::~JadepixDecoder()
+{
+  if (jadepix_rawFile)
+    delete jadepix_rawFile;
+  ReSet();
+  std::cout << "Decode is finished.  " << std::endl;
+};
+
 JadepixDecoder *JadepixDecoder::jadepix_decoder = NULL;
 
 JadepixDecoder *JadepixDecoder::Instance()
@@ -14,7 +31,7 @@ int JadepixDecoder::OpenRawFile(std::string fname)
   jadepix_rawFile = new std::fstream();
   jadepix_rawFile->open(fname, std::ios::binary | std::ios::in);
 
-  if (!jadepix_rawFile)
+  if (!jadepix_rawFile->is_open())
   {
     std::cout << "" << std::endl;
     std::cout << "------------> Error:: " << fname << " can NOT be opened!!!" << std::endl;
@@ -71,6 +88,7 @@ void JadepixDecoder::InitVariables()
 
 void JadepixDecoder::SkipTimeStamp()
 {
+  std::cout << "Skip time stampe" << std::endl;
   for (int i = 0; i < 35; i++)
   {
     unsigned char tmp_buf_skip;
@@ -94,6 +112,7 @@ int JadepixDecoder::FindFrameHeader()
     unsigned int tmp_buf_header;
     jadepix_rawFile->read((char *)&tmp_buf_header, sizeof(tmp_buf_header));
     read_count++;
+
     if (jadepix_rawFile->eof())
     {
       std::cout << "End of File" << std::endl;
@@ -278,9 +297,9 @@ int JadepixDecoder::CompareTwoFrame()
 }
 
 
-int JadepixDecoder::FillFrame()
+int JadepixDecoder::FillFrame(long nFrame)
 {
-  JadepixFrame *_frame = new JadepixFrame(m_frameId);
+  JadepixFrame *_frame = new JadepixFrame(nFrame);
   
   for (int ch = 0; ch < 16; ch++)
   {
@@ -303,7 +322,6 @@ int JadepixDecoder::FillFrame()
     }
   }
   m_frameVec.push_back(_frame);
-  m_frameId++;
 
   return 0;
 }
@@ -321,7 +339,7 @@ void JadepixDecoder::InitLoopCounter()
    decode_frame_num = 0;
 }
 
-int JadepixDecoder::Decode(std::string datafile, int data_structure, int max_decode_frame)
+int JadepixDecoder::Decode(std::string datafile, int data_structure, long max_decode_frame)
 {
     // Set Header & Footer word
     SetHeaderFooterWord();
@@ -343,7 +361,7 @@ int JadepixDecoder::Decode(std::string datafile, int data_structure, int max_dec
 
     for (int nFrame = 0; nFrame < max_decode_frame; nFrame++)
     {
-        std::cout << "Frame number = " << nFrame << std::endl;
+        //std::cout << "Frame number = " << nFrame << std::endl;
         SetLoopCounter(nFrame);
 
         // Frame Header
@@ -363,7 +381,7 @@ int JadepixDecoder::Decode(std::string datafile, int data_structure, int max_dec
             break;
 
         // Fill to the struct
-        FillFrame();
+        FillFrame(nFrame);
     }
     return 0;
 }

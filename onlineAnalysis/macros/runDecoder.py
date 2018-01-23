@@ -16,21 +16,30 @@ def drawHitMaps(j, data):
 
 
 def readRawFile():
-    dataFile = "..\\data\\Test201712231.dat" 
-    dataStructure = 1
-    maxDecodeFrame = 10
+    dataFile = "D:\code\kc705\onlineAnalysis\data\Test201712231.dat" 
+    dataStructure = 2
+    maxDecodeFrame = 5
     decode = jp.JadepixDecoder.Instance()
     decode.Decode(dataFile, dataStructure, maxDecodeFrame) 
     
     frameNumbers=decode.NoOfFrame()
     print("Frame numbers per event: ", frameNumbers)
 
+    pixelADC = []
+    col = 7
+    row = 21
     for j in range(0, frameNumbers):
         frame=decode.GetFrame(j)
-        print("Digi numbers per frame: ", frame.NoOfDigi())
+        if j%100 == 0:
+            print("Frame: ", j)
+        #print("Digi numbers per frame: ", frame.NoOfDigi())
 
-        digi=frame.GetDigi(1)
-        print("Digi ADC: ", digi.GetADC())
+        digi=frame.GetDigi(col*48+row)
+        #print("Digi Row: ", digi.GetRowId())
+        #print("Digi Col: ", digi.GetColId())
+        #print("Digi ADC: ", digi.GetADC())
+
+        pixelADC.append(digi.GetADC())
 
         frameMap=[]
         for i in range(0,768):
@@ -38,12 +47,16 @@ def readRawFile():
             frameMap.append(digi.GetADC())
 
         hitMaps = np.reshape(frameMap,(16,48))
-        drawHitMaps(j, hitMaps)
+        #drawHitMaps(j, hitMaps)
 
     fPdf = PdfPages('Hit_Map.pdf')
-    for n in range(0, int(frameNumbers/8)):
-        fig=plt.figure(n,figsize=(12,12))
-        fPdf.savefig()
+    #for n in range(0, int(frameNumbers/8)):
+    #    fig=plt.figure(n,figsize=(12,12))
+    #    fPdf.savefig()
+
+    fig = plt.figure(frameNumbers+1,figsize=(12,12))
+    plt.hist(pixelADC, 20, histtype='stepfilled')
+    fPdf.savefig()
 
     fPdf.close()
     input("Please press enter to exit")

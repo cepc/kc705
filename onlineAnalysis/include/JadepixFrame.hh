@@ -1,4 +1,3 @@
-
 #ifndef JADEPIXFRAME_HH
 #define JADEPIXFRAME_HH
 
@@ -12,9 +11,9 @@
 class JadepixFrame
 {
     public:
-        JadepixFrame(){};
-        JadepixFrame(int frameId):m_frameId(frameId){};
-        ~JadepixFrame(){};
+        JadepixFrame();
+        JadepixFrame(int frameId);
+        ~JadepixFrame();
 
         void SetEventType(int etype) {m_event_type = etype;};
         void SetErrorFlag(int error){m_error_flag = error;};
@@ -30,6 +29,8 @@ class JadepixFrame
         JadepixDigi *GetDigi(int digiId) const { return m_digiVec[digiId]; };
 
         void AddDigi(JadepixDigi *digi) { m_digiVec.push_back(digi); };
+
+        void ReSet();
 
       private:
         unsigned int m_event_type;

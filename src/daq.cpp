@@ -52,10 +52,11 @@ using namespace std::chrono_literals;
 #define DAQ_ERROR(x)    DAQ_LOG(LOG_ERROR, x)
 
 
-DataTaker::DataTaker(EventListener *listener): m_listener(listener), m_state(STATE_STOPPED), m_threadObj(nullptr) {
+DataTaker::DataTaker(EventListener *listener): m_listener(listener), m_state(STATE_STOPPED), m_threadObj(nullptr),m_simulate(0),m_max_event_number(10000){
     //std::cout << "m_listener: " << m_listener << std::endl;
     // m_listener->logMessage(LOG_INFO, "In constructor");
-    DAQ_INFO("In constructor");
+    //DAQ_INFO("In constructor");
+    std::cout << "In constructor" << std::endl;
 }
 
 DataTaker::~DataTaker() {};
@@ -63,7 +64,7 @@ DataTaker::~DataTaker() {};
 void DataTaker::start_run() {
     //std::cout << "m_listener: " << m_listener << std::endl;
     //m_listener->logMessage(LOG_INFO, "Starting run");
-    DAQ_INFO("start_run");
+    //DAQ_INFO("start_run");
 
     m_threadObj = std::make_unique<DataTakingThread>(this);
     m_threadObj->start();
@@ -74,7 +75,7 @@ void DataTaker::start_run() {
 void DataTaker::stop_run() {
     // std::cout << "m_listener: " << m_listener << std::endl;
     // m_listener->logMessage(LOG_INFO, "Stopping run");
-    DAQ_INFO("Stopping run");
+    //DAQ_INFO("Stopping run");
 
 	// Don't join... if the thread is hanging (waiting for data),
 	// this will hang the GUI too
@@ -115,42 +116,56 @@ size_t DataTaker::get_bytes_read() {
 	return 0;
 }
 
-void DataTaker::getRecentEvent(char * data) {
+void DataTaker::get_recent_event(char * data) {
 //	strcpy(data, "Hello Event!");*/
 	if (m_threadObj) {
 		std::lock_guard<std::mutex> guard(m_threadObj->eventDataMutex);
-		memcpy(data, m_threadObj->m_recentEvent, 1928);
+		//memcpy(data, m_threadObj->m_recentEvent, 1928);
+		memcpy(data, m_threadObj->m_recentEvent, 1536+8);
 	} else {
-		memset(data, 0xAA, 1928);
+		//memset(data, 0xAA, 1928);
+		memset(data, 0xAA, 1536+8);
 	}
 
+}
+
+void DataTaker::re_set() {
+    // Send Reset Command to FPGA
+    char *reset_init = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15" ;
+
+    system(reset_init);     
 }
 
 // This is called from DataTakingThread, on the thread.
 // Only use atomic access, or a lock in here.
 void DataTaker::reportThreadStopped() {
-	DAQ_INFO("Thread reported that it stopped.");
+	//DAQ_INFO("Thread reported that it stopped.");
 	m_state = STATE_STOPPED;
 }
 
 ////////////////
 
 void DataTakingThread::threadMain() {
-    DAQ_INFO("Hello from threadMain!");
+    //DAQ_INFO("Hello from threadMain!");
+    std::cout << "Hello from threadMain!" << std::endl;
 
 	FILE *fd = fopen("//./xillybus_read_32", "rb");
 	//int fd = _open("//./xillybus_read_32", O_RDONLY | _O_BINARY);
 
 	if (!fd) {
-		DAQ_ERROR("Could not open stream");
+		//DAQ_ERROR("Could not open stream");
+		std::cout << "Could not open stream" << std::endl;
 		m_dataTaker->reportThreadStopped();
 		return;
+	}else{
+		//DAQ_INFO("The pipe is open! ");
+		std::cout << "The pipe is open! " << std::endl;
 	}
 
     // Send Reset Command to FPGA
-    char *reset_init = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15" ;
-
-    system(reset_init);     
+	if(!m_dataTaker->get_simulate_state()){
+		m_dataTaker->re_set();
+	}
 			
     // Sleep until FIFO in FPGA is filled 
     std::cout << "Waiting . . . " << std::endl;
@@ -158,7 +173,11 @@ void DataTakingThread::threadMain() {
 
 	FILE *outf {nullptr};
 
-    const size_t frame_size = 1920+8;
+    //const size_t frame_size = 1920+8; 
+    //const size_t buffer_size = 32768*4;  // FIFO depth 32768 * 4 bytes
+    //const size_t read_size = 10000;
+
+    const size_t frame_size = 1536+8; 
     const size_t buffer_size = 32768*4;  // FIFO depth 32768 * 4 bytes
     const size_t read_size = 10000;
 
@@ -187,7 +206,7 @@ void DataTakingThread::threadMain() {
     while (!m_stop) {
 		while (bytes_avail < frame_size) {
 			if (ferror(fd)) {
-                DAQ_ERROR("ERROR");
+                //DAQ_ERROR("ERROR");
 				goto end;
 			}
 
@@ -195,11 +214,11 @@ void DataTakingThread::threadMain() {
                 // would write past end of buffer
                 // copy what we have to beginning
 
-                //memcpy(&buffer[0], used, pos-used); // Comment out
-                //used = &buffer[0];                  // Comment out
-                //pos = used + bytes_avail;           // Comment out
+                memcpy(&buffer[0], used, pos-used); // Comment out
+                used = &buffer[0];                  // Comment out
+                pos = used + bytes_avail;           // Comment out
 
-                std::cout << "End of Buffer Size" << std::endl;
+                //std::cout << "End of Buffer Size" << std::endl;
 			
                 // Initialization of pointers
                 pos = &buffer[0];
@@ -214,19 +233,23 @@ void DataTakingThread::threadMain() {
 				std::cout << "endpos: " << (void*)endpos << std::endl;
 				std::cout << "bytes_avail: " << bytes_avail << std::endl;
 			}
-			
+
+			/*	
 			CHECK(pos + read_size <= endpos);
 			CHECK(used <= pos);
 			CHECK(pos - used == bytes_avail);
 			CHECK(bytes_avail <= buffer_size);
+			*/
 
 			size_t bytes_got = fread(pos, 1, read_size, fd);
 			m_bytesRead += bytes_got;
 
-            std::cout << "readout size (byte) = " << bytes_got << "  " ;
-            std::cout << "total readout size (byte) = " << m_bytesRead << std::endl;
+            //std::cout << "readout size (byte) = " << bytes_got << "  " ;
+            //std::cout << "total readout size (byte) = " << m_bytesRead << std::endl;
 
+			/*
             CHECK(bytes_got > 0);
+			*/
 
 			pos += bytes_got;
             bytes_avail = pos-used;
@@ -239,13 +262,15 @@ void DataTakingThread::threadMain() {
 
 		while (bytes_avail >= frame_size) {
 
-			if (used[0] != '\xAA' || used[4+1920] != '\xF0') { // 4(header)+(4byte*10)*48rows
+			//if (used[0] != '\xAA' || used[4+1920] != '\xF0') { // 4(header)+(4byte*10)*48rows
+			if (used[0] != '\xAA' || used[1536+8] != '\xF0') { // (4byte*10)*48rows
 			//if (0){
 				// Not synchronized
 				//DAQ_DEBUG("Unsynchronized after " << m_eventNumber << " events");
 				for (char *offset = used; offset < pos; offset++) {
-					if (offset[0] == '\xAA' && offset[4+1920] == '\xF0') {
-						DAQ_DEBUG("Resynchronized! Skipped " << (offset - used) << " bytes");
+					//if (offset[0] == '\xAA' && offset[4+1920] == '\xF0') {
+					if (offset[0] == '\xAA' && offset[1536+8] == '\xF0') {
+						//DAQ_DEBUG("Resynchronized! Skipped " << (offset - used) << " bytes");
 						// found head/tail
 						used = offset;
 						bytes_avail = pos - used;
@@ -272,7 +297,6 @@ void DataTakingThread::threadMain() {
 						//	<< std::setw(2) << (int)(uint8_t)used[frame_size-1] << "-"
 						//);
 
-
 						break;
 					}
 				}
@@ -286,21 +310,23 @@ void DataTakingThread::threadMain() {
 			{
 				std::lock_guard<std::mutex> guard(eventDataMutex);
 				m_eventNumber++;
-                if (m_eventNumber % 100 == 0) {
+                if (m_eventNumber % 1000 == 0) {
                     std::cout << "Event Number = " << m_eventNumber << std::endl;
                 }
 
-				//if (used[0] != '\xF0') {
-				//	DAQ_ERROR("Wrong header");
+				//if (used[0] != '\xAA') {
+				//	//DAQ_ERROR("Wrong header");
+				//	std::cout << "Wrong header" << std::endl;
 				//	break;
 				//}
-				//if (used[97] != '\xAA') {
-				//	DAQ_ERROR("Wrong tail");
+				//if (used[49] != '\xF0') {
+				//	std::cout << "Wrong tail" << std::endl;
 				//	break;
 				//}
 				if (m_eventNumber % 2000 == 0) {
-					DAQ_DEBUG("Read " << m_eventNumber << " events");
-					memcpy(m_recentEvent, used, 1928);  // Send the entire frame
+					//DAQ_DEBUG("Read " << m_eventNumber << " events");
+					//memcpy(m_recentEvent, used, 1928);  // Send the entire frame
+					memcpy(m_recentEvent, used, 1536+8);  // Send the entire frame
 					//memcpy(m_recentEvent, used+4, 96);
 					//char c = m_eventNumber / 100 % 256;
 					//for (size_t i = 0; i < 98; i++) {
@@ -314,11 +340,13 @@ void DataTakingThread::threadMain() {
 			// write event
 			//fwrite(used, 104, 1, outf);
 
-			 //if (m_eventNumber > 10000) {
+			 if (m_eventNumber > m_dataTaker->get_max_event_number()) {
 			 //	DAQ_INFO("Event limit reached.");
 			 //	DAQ_INFO("Read " << m_eventNumber << " events");
-			 //	goto end;
-			 //}
+			 	std::cout << "Event limit reached." << std::endl;
+				std::cout << "Read " << m_eventNumber << " events" << std::endl;
+				goto end;
+			 }
 
 			used += frame_size;
 			bytes_avail = pos - used;
@@ -348,12 +376,17 @@ void DataTakingThread::threadMain() {
 			//);
 
 		}
-
     }
     end:
-    DAQ_INFO("Quit taking data");
+    //DAQ_INFO("Quit taking data");
 	m_dataTaker->reportThreadStopped();
 	fclose(fd);
 	if (outf)
 		fclose(outf);
+
+	delete pos;
+	delete used;
+	delete endpos;
+	delete fd;
+	delete outf;
 }

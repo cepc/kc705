@@ -30,9 +30,9 @@ while True:
                 print('sending event', i)
             win32file.WriteFile(p, b'\xAA\xAA\xAA\xAA')
             for i in range(1, 49):
-                #win32file.WriteFile(p, b'\x57\x53\xFC\xFE')
+                win32file.WriteFile(p, b'\x57\x53\xFC\xFE')
                 win32file.WriteFile(p, b'\x00\x00\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07\x00\x08\x00\x09\x00\x0A\x00\x0B\x00\x0C\x00\x0D\x00\x0E\x00\x0F')
-                #win32file.WriteFile(p, b'\x97\x98\xFB\xFD')
+                win32file.WriteFile(p, b'\x97\x98\xFB\xFD')
             #win32file.WriteFile(p, bits.tobytes())
             win32file.WriteFile(p, b'\xF0\xF0\xF0\xF0')
     except win32file.error as exc:

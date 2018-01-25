@@ -1,6 +1,10 @@
 #include "daq.h"
 #include "daq_private.h"
 
+#include <string>
+#include <sstream>
+#include <iostream>
+
 
 #define CHECK(ARG)				\
   do {						\
@@ -41,12 +45,11 @@ void DataTakingThread::stopAndJoin(){
 }
 
 void DataTakingThread::threadMain() {
-  DAQ_INFO("Hello from threadMain!");
 
   FILE *fd = fopen("//./xillybus_read_32", "rb");
 
   if (!fd) {
-    DAQ_ERROR("Could not open stream");
+    std::cerr<<"Could not open stream";
     m_dataTaker->reportThreadStopped();
     return;
   }
@@ -88,8 +91,7 @@ void DataTakingThread::threadMain() {
   while (!m_stop) {
     while (bytes_avail < frame_size) {
       if (ferror(fd)) {
-	DAQ_ERROR("ERROR");
-	DAQ_INFO("Quit taking data");
+	std::cerr<<"ERROR";
 	m_dataTaker->reportThreadStopped();
 	fclose(fd);
 	if (outf)
@@ -135,7 +137,6 @@ void DataTakingThread::threadMain() {
       fwrite(used, 1, read_size, outf);
 			
       if (m_stop){
-	DAQ_INFO("Quit taking data");
 	m_dataTaker->reportThreadStopped();
 	fclose(fd);
 	if (outf)
@@ -146,14 +147,14 @@ void DataTakingThread::threadMain() {
 
     while (bytes_avail >= frame_size) {
 
-      if (used[0] != '\xAA' || used[4+1920] != '\xF0') {
+      if(used[0] != '\xAA' || used[4+1920] != '\xF0') {
 	// 4(header)+(4byte*10)*48rows
 	for (char *offset = used; offset < pos; offset++) {
 	  if (offset[0] == '\xAA' && offset[4+1920] == '\xF0') {
-	    DAQ_DEBUG("Resynchronized! Skipped " << (offset - used) << " bytes");
+	    std::cout<<"Resynchronized! Skipped " << (offset - used) << " bytes"<<std::endl;
 	    // found head/tail
 	    used = offset;
-	    bytnes_avail = pos - used;
+	    bytes_avail = pos - used;
 	    break;
 	  }
 	}
@@ -171,7 +172,7 @@ void DataTakingThread::threadMain() {
 	}
 
 	if (m_eventNumber % 2000 == 0) {
-	  DAQ_DEBUG("Read " << m_eventNumber << " events");
+	  std::cout<<"Read " << m_eventNumber << " events"<<std::endl;
 	  memcpy(m_recentEvent, used, 1928);  // Send the entire frame
 	}
       }
@@ -181,7 +182,7 @@ void DataTakingThread::threadMain() {
     }
 
   }
-  DAQ_INFO("Quit taking data");
+  std::cout<<"Quit taking data"<<std::endl;
   m_dataTaker->reportThreadStopped();
   fclose(fd);
   if (outf)

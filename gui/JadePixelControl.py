@@ -335,11 +335,11 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
 
     
         thebytes = self.dataTaker.get_recent_event()
-        #print(thebytes)
+        print(thebytes)
         
         frame=self.rebuild_data(thebytes)#rebuild data
         last_events=[frame]
-        #print(last_events)
+        print(last_events)
 
         if last_events:
             summed = sum(last_events)
@@ -350,25 +350,26 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
             self.Pixel_Online_Canvas.update()
 
     def rebuild_data(self, thebytes):
-        event_data=np.frombuffer(thebytes, dtype=np.uint8, count=1536+8)
+        event_data=np.frombuffer(thebytes, dtype=np.uint8, count=1920+8)
+        print(event_data)
         
         event_data_list=event_data.tolist()
         
         frame_list=event_data_list
         
         #delete  event_header and event_footer
-        for j in range(0, 4):
-            frame_list.remove(frame_list[0])
-            frame_list.pop()
+        frame_list = frame_list[4:-4]
+        tmp_array = np.reshape(frame_list, newshape=(48,40))
+        frame_array = tmp_array[:,4:36]
+
+        frame_array=np.reshape(frame_array, newshape=(48, 16, 2))
         
-        frame_array=np.reshape(frame_list, newshape=(16, 48, 2))
-        
-        frame=np.zeros((16, 48), dtype=int)
-        for i in range(0, 16):
-            for j in range(0, 48):
+        frame=np.zeros((48, 16), dtype=int)
+        for i in range(0, 48):
+            for j in range(0, 16):
                 tmp=frame_array[i, j, 0]*256+frame_array[i, j, 1]
                 frame[i, j]=tmp
-        return frame        
+        return frame.T     
 
 
 class MyEventListener(daq.EventListener):

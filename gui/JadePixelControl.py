@@ -257,16 +257,8 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         
         return tmp
 
-
-<<<<<<< HEAD
-        
-
     def Btn_Online_StartRun_Clicked(self, arg):
-        self.dataTaker.set_filename(self.Get_Path_And_Name())  ## set the filename. test input 
-=======
-    def Btn_Online_StartRun_clicked(self, arg):
         self.dataTaker.set_filename(self.GetPathAndName())  ## set the filename. test input 
->>>>>>> liejian/master
         self.dataTaker.set_simulate_state(0)
         self.dataTaker.start_run()
         self.Online_Update()

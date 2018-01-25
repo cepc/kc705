@@ -144,12 +144,16 @@ class MainWindow(QtWidgets.QMainWindow, form_class):
         return 0
         
     def Action_Open_Clicked(self):
-        open = QtWidgets.QFileDialog()
-        open.setWindowModality(QtCore.Qt.WindowModal)
-        files=open.getOpenFileNames(self, 'Open data files ', os.getcwd())
-        self.LineEdit_Offline_CurrentData.setText(self.ComboBox_Data.currentText())
-        #print(files)
-        self.ComboBox_Data.addItems(files[0])
+        if self.TabWidget.currentIndex() == 0:
+            self.Btn_Online_Chose_Clicked()
+        else :
+
+            open = QtWidgets.QFileDialog()
+            open.setWindowModality(QtCore.Qt.WindowModal)
+            files=open.getOpenFileNames(self, 'Open data files ', os.getcwd())
+            self.LineEdit_Offline_CurrentData.setText(self.ComboBox_Data.currentText())
+            #print(files)
+            self.ComboBox_Data.addItems(files[0])
         
         
     def Action_Save_Clicked(self):

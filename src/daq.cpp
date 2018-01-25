@@ -311,7 +311,7 @@ void DataTakingThread::threadMain()
 					std::cout << "Event Number = " << m_eventNumber << std::endl;
 				}
 
-				if (m_eventNumber % 2000 == 0)
+				if (m_eventNumber = 10)
 				{
 					//DAQ_DEBUG("Read " << m_eventNumber << " events");
 					memcpy(m_recentEvent, used, 1928); // Send the entire frame

@@ -10,25 +10,23 @@ class DLLEXPORT JadeDataFrame{
  public:
   JadeDataFrame(const std::string &data);
   JadeDataFrame(std::string &&data);
+  JadeDataFrame(size_t nraw);
   JadeDataFrame() = delete;
-  ~JadeDataFrame();
-
-  
-  
+  virtual ~JadeDataFrame();
+  virtual void Decode();
+  std::string& RawDataString();
+  uint16_t GetHitValue(size_t x, size_t y) const;
+  bool IsInMatrix(size_t x, size_t y) const;
  private:
   std::string m_data_raw;
-
-  struct  JadeDataHit{
-    uint8_t m_col;
-    uint8_t m_row;
-    uint16_t m_value;
-  };
-  uint8_t m_n_col;
-  uint8_t m_n_row;
-  std::vector<JadeDataHit> m_data_hit;
+  bool m_is_decoded;
+  uint16_t m_offset_x;
+  uint16_t m_offset_y;
+  uint16_t m_n_x;
+  uint16_t m_n_y;
+  std::vector<uint16_t> m_data;
 };
 
-using JadeDataFrameSP = std::shared_ptr<JadeDataFrame>;
 using JadeDataFrameUP = std::unique_ptr<JadeDataFrame>;
 
 #endif

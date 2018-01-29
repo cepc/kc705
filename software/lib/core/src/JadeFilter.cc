@@ -9,6 +9,7 @@ JadeFilter::~JadeFilter(){
 
 }
 
-bool JadeFilter::Filter(const JadeDataFrame &) const {
-  return true;
+JadeDataFrameUP JadeFilter::Filter(JadeDataFrameUP &&df) const {
+  return std::move(df);
 }
+

@@ -8,7 +8,7 @@ class JadeDecode{
 public:
   JadeDecode(const std::string &options);
   virtual ~JadeDecode();
-  virtual JadeDataFrame Decode(JadeDataFrame &&) const;
+  virtual JadeDataFrameUP Decode(JadeDataFrameUP &&) const;
   
 private:
   std::string m_options;

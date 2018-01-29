@@ -10,6 +10,6 @@ JadeDecode::~JadeDecode(){
 
 }
 
-JadeDataFrame JadeDecode::Decode(JadeDataFrame &&df) const{
-  return df;
+JadeDataFrameUP JadeDecode::Decode(JadeDataFrameUP &&df) const{
+  return std::move(df);
 }

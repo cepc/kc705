@@ -2,9 +2,10 @@
 #define JADE_JADEMANAGER_HH
 
 #include "JadeSystem.hh"
-#include "JadeDecode.hh"
-#include "JadeFilter.hh"
 #include "JadeDataFrame.hh"
+#include "JadeRead.hh"
+#include "JadeFilter.hh"
+#include "JadeWrite.hh"
 
 #include <string>
 #include <queue>
@@ -17,18 +18,21 @@ class DLLEXPORT JadeManager{
   JadeManager(const std::string &dev_path);
   ~JadeManager();
 
-  void Start(const std::string &addr);
 
+  void Start(const std::string &file_in,
+	     const std::string &file_out);
  private:
   uint64_t AsyncReading();
   uint64_t AsyncDecoding();
   uint64_t AsyncFiltering();
   uint64_t AsyncWriting();
-
   
  private:
+  std::unique_ptr<JadeRead> m_rd;
+  std::unique_ptr<JadeFilter> m_flt;
+  std::unique_ptr<JadeWrite> m_wrt;
+  
   std::string m_dev_path;
-  bool m_is_destructing;
   bool m_is_running;
   std::future<uint64_t> m_fut_async_rd;
   std::future<uint64_t> m_fut_async_dcd;
@@ -43,7 +47,6 @@ class DLLEXPORT JadeManager{
   std::condition_variable m_cv_valid_ev_to_dcd;
   std::condition_variable m_cv_valid_ev_to_flt;
   std::condition_variable m_cv_valid_ev_to_wrt;
-
 };
 
 #endif

@@ -8,7 +8,7 @@ class JadeFilter{
 public:
   JadeFilter(const std::string &options);
   virtual ~JadeFilter();
-  virtual bool Filter(const JadeDataFrame &) const;
+  virtual JadeDataFrameUP Filter(JadeDataFrameUP &&df) const;
   
 private:
   std::string m_options;

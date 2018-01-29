@@ -12,9 +12,9 @@
 
 #define FRAME_SIZE 1024
 
-JadeRead::JadeRead(const std::string& dev_path,
-		   const std::string options){
-  
+JadeRead::JadeRead(const std::string& path,
+		   const std::string options)
+  :m_dev_path(), m_options(options){
 #ifdef _WIN32
   m_fd = _open(m_dev_path.c_str(), O_RDONLY | _O_BINARY);
 #else
@@ -33,10 +33,14 @@ JadeRead::~JadeRead(){
 #endif
 }
 
-void JadeRead::Read(std::queue<JadeDataFrameUP> &qu, std::mutex &mx,
-		    size_t nframe, std::chrono::milliseconds timeout){
+std::vector<JadeDataFrameUP>
+JadeRead::Read(size_t nframe,
+	       const std::chrono::milliseconds &timeout){
   size_t size_buf = FRAME_SIZE * nframe;
   m_buf.resize(size_buf);
+  std::vector<JadeDataFrameUP> v_df;
+  v_df.reserve(nframe);
+  
   size_t size_filled = 0;
   std::chrono::system_clock::time_point tp_first_pause;
   std::chrono::system_clock::time_point tp_timeout;
@@ -48,7 +52,7 @@ void JadeRead::Read(std::queue<JadeDataFrameUP> &qu, std::mutex &mx,
 #endif
     if(read_r <= 0)
       std::cerr<<"JadeRead: error";
-    return;
+    return v_df;
 
     if(read_r < size_buf-size_filled){
       if(size_filled == 0){
@@ -68,11 +72,9 @@ void JadeRead::Read(std::queue<JadeDataFrameUP> &qu, std::mutex &mx,
     }
   }
 
-  size_t substr_beg = 0;
-  while(substr_beg + FRAME_SIZE <  size_filled){
-    auto df = JadeDataFrameUP(new JadeDataFrame(m_buf.substr(0, FRAME_SIZE)));
-    substr_beg += FRAME_SIZE;
-    std::lock_guard<std::mutex> lk(mx);
-      qu.push(std::move(df));
+  size_t sub_beg = 0;
+  while(sub_beg + FRAME_SIZE <  size_filled){
+    v_df.emplace_back(new JadeDataFrame(m_buf.substr(sub_beg, FRAME_SIZE)));
+    sub_beg += FRAME_SIZE;
   }
 }

@@ -12,10 +12,8 @@ class DLLEXPORT JadeRead{
  public:
   JadeRead(const std::string& dev_path, const std::string options);
   ~JadeRead();
-  
-  void Read(std::queue<JadeDataFrameUP> &qu, std::mutex &mx,
-	    size_t nframe, std::chrono::milliseconds timeout);
-  
+  std::vector<JadeDataFrameUP> Read(size_t nframe,
+				    const std::chrono::milliseconds &timeout);
  private:
   int m_fd;
   std::string m_dev_path;

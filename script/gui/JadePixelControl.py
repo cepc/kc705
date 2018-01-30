@@ -19,14 +19,19 @@ import threading
 import time
 from cgi import escape
 import daq
-import win32con
-import win32file
+
 from qtthreadutils import invoke_in_main_thread
 signal.signal(signal.SIGINT, signal.SIG_DFL)
-win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
+
+import platform
+sysstr = platform.system()
+if(sysstr == "Windows"):
+    import win32con
+    import win32file
+    win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
+
 
 form_class = uic.loadUiType("JadePixel.ui")[0]
-
 
 class MainWindow(QtWidgets.QMainWindow, form_class):
     def __init__(self, parent=None):

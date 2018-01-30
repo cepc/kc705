@@ -23,7 +23,7 @@ JadeDump::~JadeDump(){
 size_t JadeDump::Dump(const std::chrono::milliseconds &timeout){
   std::chrono::system_clock::time_point tp_timeout;
 #ifdef _WIN32
-  int fd = _open(m_dev_path.c_str(), O_RDONLY | _O_BINARY);
+  int fd = _open(m_dev_path.c_str(), _O_RDONLY | _O_BINARY);
 #else
   int fd = open(m_dev_path.c_str(), O_RDONLY);
 #endif

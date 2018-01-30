@@ -14,14 +14,14 @@
 
 JadeRead::JadeRead(const std::string& path,
 		   const std::string options)
-  :m_dev_path(), m_options(options){
+  :m_dev_path(path), m_options(options){
 #ifdef _WIN32
-  m_fd = _open(m_dev_path.c_str(), O_RDONLY | _O_BINARY);
+  m_fd = _open(m_dev_path.c_str(), _O_RDONLY | _O_BINARY);
 #else
   m_fd = open(m_dev_path.c_str(), O_RDONLY);
 #endif
   if(m_fd < 0){
-    perror("Failed to open devfile");
+    std::cerr<<"JadeRead: Failed to open devfile: "<<m_dev_path<<"\n";
   }
 }
 
@@ -51,7 +51,8 @@ JadeRead::Read(size_t nframe,
     int read_r = read(m_fd, &m_buf[size_filled], size_buf-size_filled);
 #endif
     if(read_r <= 0){
-      std::cerr<<"JadeRead: error";
+      std::cerr<<"JadeRead: reading error\n";
+      std::cout<<m_fd<< read_r<<std::endl;
       return v_df;
     }
 
@@ -63,7 +64,7 @@ JadeRead::Read(size_t nframe,
       size_filled += read_r;
       auto tp_now = std::chrono::system_clock::now();
       if(tp_now > tp_timeout){
-	std::cerr<<"JadeRead: timeout";
+	std::cerr<<"JadeRead: reading timeout\n";
 	break;
       }
     }

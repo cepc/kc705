@@ -12,14 +12,15 @@
 
 JadeWrite::JadeWrite(const std::string& path,
 		    const std::string options)
-  :m_path(), m_options(options){
+  :m_path(path), m_options(options){
 #ifdef _WIN32
-  m_fd = _open(m_path.c_str(), O_WRONLY | _O_BINARY);
+  m_fd = _open(m_path.c_str(), _O_WRONLY | O_CREAT | O_TRUNC |
+	       _O_BINARY);
 #else
-  m_fd = open(m_path.c_str(), O_WRONLY);
+  m_fd = open(m_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
 #endif
   if(m_fd < 0){
-    std::cerr<<"Failed to open devfile";
+    std::cerr<<"JadeWrite: Failed to open devfile: "<<m_path<<"\n";
   }
 }
 

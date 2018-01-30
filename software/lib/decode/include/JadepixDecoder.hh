@@ -16,11 +16,8 @@
 
 class JadepixDecoder{
   public:
-    JadepixDecoder():jadepix_rawFile(NULL),m_frameId(0){
-      if(jadepix_decoder){ std::cout<<"Warning::IO is constructed twice."<< std::endl;}
-      jadepix_decoder=this;
-    };
-    ~JadepixDecoder(){if(jadepix_rawFile) delete jadepix_rawFile;};
+    JadepixDecoder();
+    ~JadepixDecoder();
 
     int OpenRawFile(std::string);
     
@@ -44,14 +41,14 @@ class JadepixDecoder{
     
     int CompareTwoFrame();       
 
-    int FillFrame();
+    int FillFrame(long);
 
     void ReSet();
 
     long NoOfFrame() { return m_frameVec.size(); };
     JadepixFrame *GetFrame(long frameId) const { return m_frameVec[frameId]; };
 
-    int Decode(std::string datafile, int data_structure, int max_decode_frame);
+    int Decode(std::string datafile, int data_structure, long max_decode_frame);
 
     static JadepixDecoder* Instance();
 

@@ -2,9 +2,11 @@
 
 using namespace std::chrono_literals;
 
-JadeManager::JadeManager(const std::string &dev_path)
-  :m_dev_path(dev_path), m_is_running(false){
+JadeManager::JadeManager()
+  : m_is_running(false){
 }
+
+
 
 JadeManager::~JadeManager(){
   m_is_running = false;

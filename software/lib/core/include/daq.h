@@ -39,8 +39,13 @@ class DataTaker {
   RunState get_state();
   int get_event_number();
   int get_run_number();
-  size_t get_bytes_read();  
-  void getRecentEvent(char *data);
+  void set_max_event_number(int enumber) {m_max_event_number=enumber;};
+  int get_max_event_number() {return m_max_event_number;};
+  void set_simulate_state(int sim) { m_simulate = sim; };
+	int get_simulate_state() { return m_simulate; };
+  size_t get_bytes_read(); 
+  void re_set(); 
+  void get_recent_event(char *data);
   const std::string& get_filename();
   void set_filename( const std::string &fname );
 
@@ -52,6 +57,9 @@ class DataTaker {
   std::atomic<RunState> m_state;
   std::unique_ptr<DataTakingThread> m_threadObj;
   std::string m_filename;
+  int m_simulate;
+  int m_max_event_number;
+
 };
 
 #endif

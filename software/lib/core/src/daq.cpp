@@ -80,7 +80,7 @@ size_t DataTaker::get_bytes_read() {
   return 0;
 }
 
-void DataTaker::getRecentEvent(char * data) {
+void DataTaker::get_recent_event(char * data) {
   if (m_threadObj) {
     std::lock_guard<std::mutex> guard(m_threadObj->eventDataMutex);
     memcpy(data, m_threadObj->m_recentEvent, 1928);
@@ -88,6 +88,14 @@ void DataTaker::getRecentEvent(char * data) {
     memset(data, 0xAA, 1928);
   }
 
+}
+
+void DataTaker::re_set()
+{
+	// Send Reset Command to FPGA
+	char *reset_init = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15";
+
+	system(reset_init);
 }
 
 // This is called from DataTakingThread, on the thread.

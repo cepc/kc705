@@ -28,7 +28,6 @@ while True:
             i += 1
             if i % 100 == 0:
                 print('sending event', i)
-            time.sleep(1)
             os.write(p, b'\xAA\xAA\xAA\xAA')
             for i in range(1,49):
                 os.write(p, b'\x57\x53\xFC\xFE')

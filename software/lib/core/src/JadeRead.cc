@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define FRAME_SIZE 1024
+#define FRAME_SIZE (4+48*(4+16*2+4)+4)
 
 JadeRead::JadeRead(const std::string& path,
 		   const std::string options)
@@ -50,9 +50,10 @@ JadeRead::Read(size_t nframe,
 #else
     int read_r = read(m_fd, &m_buf[size_filled], size_buf-size_filled);
 #endif
-    if(read_r <= 0)
+    if(read_r <= 0){
       std::cerr<<"JadeRead: error";
-    return v_df;
+      return v_df;
+    }
 
     if(read_r < size_buf-size_filled){
       if(size_filled == 0){

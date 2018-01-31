@@ -34,7 +34,7 @@ size_t JadeDump::Dump(const std::chrono::milliseconds &timeout){
   bool is_timer_started = false;
   while(1){
 #ifdef _WIN32
-    int read_r = _read(fd, &m_dummy_buf[0], m_dummy_buf.size());
+    int read_r = _read(fd, &m_dummy_buf[0], (unsigned int)m_dummy_buf.size());
 #else
     int read_r = read(fd, &m_dummy_buf[0], m_dummy_buf.size());
 #endif

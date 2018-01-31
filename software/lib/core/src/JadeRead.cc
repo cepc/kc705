@@ -46,7 +46,7 @@ JadeRead::Read(size_t nframe,
   std::chrono::system_clock::time_point tp_timeout;
   while(size_filled < size_buf){
 #ifdef _WIN32
-    int read_r = _read(m_fd, &m_buf[size_filled], size_buf-size_filled);
+    int read_r = _read(m_fd, &m_buf[size_filled], (unsigned int)(size_buf-size_filled));
 #else
     int read_r = read(m_fd, &m_buf[size_filled], size_buf-size_filled);
 #endif

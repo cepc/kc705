@@ -8,13 +8,17 @@
 #include <mutex>
 #include <queue>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
+
 class DLLEXPORT JadeWrite{
  public:
   JadeWrite(const std::string& path, const std::string options);
   ~JadeWrite();
   void Write(JadeDataFrameUP &&df);
  private:
-  int m_fd;
+  FILE* m_fd;
   std::string m_path;
   std::string m_options;
 };

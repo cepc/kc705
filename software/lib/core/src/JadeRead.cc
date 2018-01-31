@@ -14,14 +14,15 @@
 
 JadeRead::JadeRead(const std::string& path,
 		   const std::string options)
-  :m_dev_path(), m_options(options){
+  :m_dev_path(path), m_options(options){
 #ifdef _WIN32
-  m_fd = _open(m_dev_path.c_str(), O_RDONLY | _O_BINARY);
+  m_fd = _open(m_dev_path.c_str(), _O_RDONLY | _O_BINARY);
 #else
   m_fd = open(m_dev_path.c_str(), O_RDONLY);
 #endif
   if(m_fd < 0){
-    perror("Failed to open devfile");
+    std::cerr<<"JadeRead: Failed to open devfile: "<<m_dev_path<<"\n";
+    throw;
   }
 }
 
@@ -42,7 +43,6 @@ JadeRead::Read(size_t nframe,
   v_df.reserve(nframe);
   
   size_t size_filled = 0;
-  std::chrono::system_clock::time_point tp_first_pause;
   std::chrono::system_clock::time_point tp_timeout;
   while(size_filled < size_buf){
 #ifdef _WIN32
@@ -50,20 +50,23 @@ JadeRead::Read(size_t nframe,
 #else
     int read_r = read(m_fd, &m_buf[size_filled], size_buf-size_filled);
 #endif
-    if(read_r <= 0){
-      std::cerr<<"JadeRead: error";
-      return v_df;
+    std::cout<<m_fd<<" : "<< size_filled<< " : "
+	     <<size_buf-size_filled <<" : " <<read_r<<std::endl;
+
+    if(read_r < 0){
+      std::cerr<<"JadeRead: reading error\n";
+      std::cout<<m_fd<<" : "<< size_filled<< " : "
+	       <<size_buf-size_filled <<" : " <<read_r<<std::endl;
+      throw;
     }
 
     if(read_r < size_buf-size_filled){
       if(size_filled == 0){
-	tp_first_pause = std::chrono::system_clock::now();
-	tp_timeout = tp_first_pause + timeout;
+	tp_timeout = std::chrono::system_clock::now() + timeout;
       }
       size_filled += read_r;
-      auto tp_now = std::chrono::system_clock::now();
-      if(tp_now > tp_timeout){
-	std::cerr<<"JadeRead: timeout";
+      if(std::chrono::system_clock::now() > tp_timeout){
+	std::cerr<<"JadeRead: reading timeout\n";
 	break;
       }
     }
@@ -74,8 +77,9 @@ JadeRead::Read(size_t nframe,
   }
 
   size_t sub_beg = 0;
-  while(sub_beg + FRAME_SIZE <  size_filled){
+  while(sub_beg + FRAME_SIZE <=  size_filled){
     v_df.emplace_back(new JadeDataFrame(m_buf.substr(sub_beg, FRAME_SIZE)));
     sub_beg += FRAME_SIZE;
   }
+  return v_df;
 }

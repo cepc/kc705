@@ -2,7 +2,7 @@ set(CMAKE_SWIG_FLAGS "")
 set_source_files_properties(../jadepix.i PROPERTIES CPLUSPLUS ON)
 
 # Add swig module
-swig_add_module(jadepix python ../jadepix.i)
+swig_add_library(jadepix LANGUAGE python SOURCES ../jadepix.i)
 swig_link_libraries(jadepix jadepix ${PYTHON_LIBRARIES})
 
 if(UNIX)

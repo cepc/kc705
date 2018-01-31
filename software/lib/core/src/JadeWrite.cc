@@ -1,43 +1,25 @@
 #include "JadeWrite.hh"
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
 JadeWrite::JadeWrite(const std::string& path,
 		    const std::string options)
-  :m_path(), m_options(options){
-#ifdef _WIN32
-  m_fd = _open(m_path.c_str(), O_WRONLY | _O_BINARY);
-#else
-  m_fd = open(m_path.c_str(), O_WRONLY);
-#endif
-  if(m_fd < 0){
-    std::cerr<<"Failed to open devfile";
+  :m_path(path), m_options(options){
+  m_fd = std::fopen(m_path.c_str(), "wb" );
+  if(m_fd == NULL){
+    std::cerr<<"JadeWrite: Failed to open devfile: "<<m_path<<"\n";
+    // throw;
   }
 }
 
 JadeWrite::~JadeWrite(){
-#ifdef _WIN32
-  _close(m_fd);
-#else
-  close(m_fd);
-#endif
+  std::fclose(m_fd);
 }
 
 void JadeWrite::Write(JadeDataFrameUP &&df){
+  if(!df)
+    throw;
   std::string &rawstring = df->RawDataString();
   if(rawstring.size()){
-#ifdef _WIN32
-    _write(m_fd, &(rawstring.at(0)), rawstring.size());
-#else
-    write(m_fd, &(rawstring.at(0)), rawstring.size());
-#endif
-  }   
+    std::fwrite(&(rawstring.at(0)), 1, rawstring.size(), m_fd);
+    std::cout<< "writing:"<< df->RawDataString().size()<<std::endl;
+  }
 }

@@ -28,7 +28,7 @@ using namespace std::chrono_literals;
 
 DataTaker::DataTaker(EventListener *listener)
   :m_listener(listener), m_state(STATE_STOPPED),
-   m_threadObj(nullptr){  
+   m_threadObj(nullptr), m_max_event_number(10000){  
   DAQ_INFO("In constructor");
 }
 

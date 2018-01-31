@@ -15,9 +15,8 @@
 
 class DLLEXPORT JadeManager{
  public:
-  JadeManager(const std::string &dev_path);
+  JadeManager();
   ~JadeManager();
-
 
   void Start(const std::string &file_in,
 	     const std::string &file_out);
@@ -32,7 +31,6 @@ class DLLEXPORT JadeManager{
   std::unique_ptr<JadeFilter> m_flt;
   std::unique_ptr<JadeWrite> m_wrt;
   
-  std::string m_dev_path;
   bool m_is_running;
   std::future<uint64_t> m_fut_async_rd;
   std::future<uint64_t> m_fut_async_dcd;

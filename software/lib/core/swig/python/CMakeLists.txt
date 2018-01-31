@@ -2,8 +2,8 @@ set(CMAKE_SWIG_FLAGS "")
 set_source_files_properties(../daq.i PROPERTIES CPLUSPLUS ON)
 
 # Add swig module
-swig_add_module(daq python ../daq.i)
-swig_link_libraries(daq daq ${PYTHON_LIBRARIES})
+swig_add_library(daq LANGUAGE python SOURCES ../daq.i)
+swig_link_libraries(daq ${JADE_LEGACY_CORE} ${PYTHON_LIBRARIES})
 
 if(UNIX)
   # Files to install with Python

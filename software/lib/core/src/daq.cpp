@@ -93,9 +93,8 @@ void DataTaker::get_recent_event(char * data) {
 void DataTaker::re_set()
 {
 	// Send Reset Command to FPGA
-	char *reset_init = "..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15";
-
-	system(reset_init);
+  std::string reset_init("..\\xillybus\\precompiled-demoapps\\memwrite.exe \\\\.\\xillybus_mem_8 1 15");
+  system(reset_init.c_str());
 }
 
 // This is called from DataTakingThread, on the thread.

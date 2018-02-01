@@ -1,14 +1,6 @@
 include_directories(include)
-aux_source_directory(src ARP_SRC)
+aux_source_directory(src JADE_LEGACY_DECODE_SRC)
 
-set(JADE_DECODE jadepix)
-
-add_library(${JADE_DECODE} ${ARP_SRC})
-
-install(TARGETS ${JADE_DECODE}
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib/static
-        PUBLIC_HEADER DESTINATION include)
-
+set(JADE_LEGACY_DECODE jadepix)
+add_library(${JADE_LEGACY_DECODE} ${JADE_LEGACY_DECODE_SRC})
 add_subdirectory(swig)

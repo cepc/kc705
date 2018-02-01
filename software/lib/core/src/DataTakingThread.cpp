@@ -53,9 +53,9 @@ void DataTakingThread::stopAndJoin()
 void DataTakingThread::threadMain()
 {
 
-#ifdef __Win32__
+#ifdef _WIN32
   FILE *fd = fopen("//./xillybus_read_32", "rb");
-#elif __linux__
+#else
   //FILE *fd = fopen("/dev/xillybus_read_32", "rb");
   FILE *fd = fopen("/tmp/test_pipe", "rb");
 #endif

@@ -24,8 +24,7 @@ class JadepixFrame
         unsigned int GetErrorFlag() {return m_error_flag;};
         unsigned int GetEventCounter() {return m_event_counter;};
         long GetFrameId() {return m_frameId;};
-
-        int NoOfDigi() { return m_digiVec.size(); };
+        size_t NoOfDigi() { return m_digiVec.size(); };
         JadepixDigi *GetDigi(int digiId) const { return m_digiVec[digiId]; };
 
         void AddDigi(JadepixDigi *digi) { m_digiVec.push_back(digi); };

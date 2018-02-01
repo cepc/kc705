@@ -7,7 +7,9 @@ set(CMAKE_CXX_STANDARD 14)
 set_property(GLOBAL PROPERTY CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR} CACHE INTERNAL "Prefix of install directories" FORCE)
+
+set(JADE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR} CACHE PATH "Prefix prepended to install directories")
+set(CMAKE_INSTALL_PREFIX ${JADE_INSTALL_PREFIX} CACHE INTERNAL "Prefix of install directories" FORCE)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
@@ -19,6 +21,9 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 if(WIN32)
+  add_definitions("/wd4251")
+  add_definitions("/wd4996")
+  add_definitions("/wd4251")
   if(NOT MSVC)
     message(FATAL_ERROR "only VC++ is support on Windows")
   endif()

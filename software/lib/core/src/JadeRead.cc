@@ -50,13 +50,12 @@ JadeRead::Read(size_t nframe,
 #else
     int read_r = read(m_fd, &m_buf[size_filled], size_buf-size_filled);
 #endif
-    std::cout<<m_fd<<" : "<< size_filled<< " : "
-	     <<size_buf-size_filled <<" : " <<read_r<<std::endl;
-
+    // std::cout<<m_fd<<" : "<< size_filled<< " : "
+    // 	     <<size_buf-size_filled <<" : " <<read_r<<std::endl;
     if(read_r < 0){
       std::cerr<<"JadeRead: reading error\n";
-      std::cout<<m_fd<<" : "<< size_filled<< " : "
-	       <<size_buf-size_filled <<" : " <<read_r<<std::endl;
+      // std::cout<<m_fd<<" : "<< size_filled<< " : "
+      // 	  <<size_buf-size_filled <<" : " <<read_r<<std::endl;
       throw;
     }
 

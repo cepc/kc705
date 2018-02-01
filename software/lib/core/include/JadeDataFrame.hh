@@ -15,11 +15,16 @@ class DLLEXPORT JadeDataFrame{
   virtual ~JadeDataFrame();
   virtual void Decode();
   std::string& RawDataString();
+  std::string& DescriptionString();
+  uint32_t GetFrameCount();
   uint16_t GetHitValue(size_t x, size_t y) const;
   bool IsInMatrix(size_t x, size_t y) const;
+  virtual void Print(std::ostream & os, size_t offset = 0) const;
  private:
-  std::string m_data_raw;
   bool m_is_decoded;
+  std::string m_data_raw;
+  std::string m_description;
+  uint32_t m_frame_n;
   uint16_t m_offset_x;
   uint16_t m_offset_y;
   uint16_t m_n_x;
@@ -28,5 +33,6 @@ class DLLEXPORT JadeDataFrame{
 };
 
 using JadeDataFrameUP = std::unique_ptr<JadeDataFrame>;
+using JadeDataFramePtr = std::shared_ptr<JadeDataFrame>;
 
 #endif

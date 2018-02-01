@@ -18,6 +18,11 @@ using std::uint64_t;
 
 #ifdef _WIN32
 #include <crtdefs.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+using be16toh = ntohs;
+using be32toh = ntohl;
+using be64toh = ntohll;
 #ifndef JADE_DLL_EXPORT
 #define DLLEXPORT __declspec(dllimport)
 #else
@@ -26,6 +31,7 @@ using std::uint64_t;
 
 #else
 using std::size_t;
+#include <endian.h>
 #define DLLEXPORT
 #endif
 

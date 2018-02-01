@@ -27,11 +27,13 @@ JadeRead::JadeRead(const std::string& path,
 }
 
 JadeRead::~JadeRead(){
+  if(m_fd>0){
 #ifdef _WIN32
-  _close(m_fd);
+    _close(m_fd);
 #else
-  close(m_fd);
+    close(m_fd);
 #endif
+  }
 }
 
 std::vector<JadeDataFrameUP>

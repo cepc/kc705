@@ -16,7 +16,7 @@
 class DLLEXPORT JadeManager{
  public:
   JadeManager();
-  ~JadeManager();
+  virtual ~JadeManager();
 
   void Start(const std::string &file_in,
 	     const std::string &file_out);

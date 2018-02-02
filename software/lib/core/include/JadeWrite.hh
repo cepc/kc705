@@ -15,7 +15,7 @@
 class DLLEXPORT JadeWrite{
  public:
   JadeWrite(const std::string& path, const std::string options);
-  ~JadeWrite();
+  virtual ~JadeWrite();
   void Write(JadeDataFrameUP &&df);
  private:
   FILE* m_fd;

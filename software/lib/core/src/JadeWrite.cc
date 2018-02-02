@@ -11,7 +11,8 @@ JadeWrite::JadeWrite(const std::string& path,
 }
 
 JadeWrite::~JadeWrite(){
-  std::fclose(m_fd);
+  if(m_fd)
+    std::fclose(m_fd);
 }
 
 void JadeWrite::Write(JadeDataFrameUP &&df){

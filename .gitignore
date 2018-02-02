@@ -1,20 +1,15 @@
-.vscode/
-attic/
+.*
+\#*#
+*~
+Thumbs.db
 
-# Python
+
+bin/*
+build/*
+building/*
+install/*
+lib/*
+data/*
+tmp/*
+
 *.pyc
-*.pyd
-
-# Swig generated
-swig/build
-swig/daq.py
-swig/daq2.py
-swig/*_wrap.cxx
-swig/*_wrap.h
-
-swig/msvc/x64
-swig/msvc/DAQModule/x64
-
-# MSVC
-*.pdb
-.vs/

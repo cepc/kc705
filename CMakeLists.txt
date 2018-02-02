@@ -1,35 +1,42 @@
-cmake_minimum_required(VERSION 3.6)
+project(jadepixdaq)
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+include(CMakeDependentOption)
+find_package(Threads REQUIRED)
 
-# Make a name for the project
-project(daq)
+set(CMAKE_CXX_STANDARD 14)
+set_property(GLOBAL PROPERTY CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Include all the header files in the directory of the CMakeLists.txt 
-include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 
-# Set all the source files to ARP_SRC 
-# aux_source_directory only include the dir not sub dir
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src ARP_SRC)
+set(JADE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR} CACHE PATH "Prefix prepended to install directories")
+set(CMAKE_INSTALL_PREFIX ${JADE_INSTALL_PREFIX} CACHE INTERNAL "Prefix of install directories" FORCE)
 
-# Set the CXX compile option
-# similar to gmake: g++ -std=c++1y ...
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
+else()
+  set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib")
+endif()
+set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 if(WIN32)
-    set(CMAKE_CXX_FLGAS "-D_hypot=hypot -std=c++1y -Wall -Wextra -Wno-unused-parameter -fPIC ${CMAKE_CXX_FLAGS}")
-elseif(UNIX)
-    set(CMAKE_CXX_FLAGS "-std=c++1y -Wall -Wextra -Wno-unused-parameter -fPIC ${CMAKE_CXX_FLAGS}")
+  add_definitions("/wd4251")
+  add_definitions("/wd4996")
+  add_definitions("/wd4251")
+  if(NOT MSVC)
+    message(FATAL_ERROR "only VC++ is support on Windows")
+  endif()
+elseif(APPLE)
+  if(NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+    message(FATEL ERROR "only Clang is support on MacOS")
+  endif()
+  list(APPEND CMAKE_SHARED_LINKER_FLAGS " -Wl,-undefined,error")
+else()
+  if(NOT(CMAKE_COMPILER_IS_GNUCC))
+    message(FATEL ERROR "only GCC is support On Linux")
+  endif()
+  list(APPEND CMAKE_SHARED_LINKER_FLAGS " -Wl,--no-undefined")
 endif()
 
-# Create main and link 
-add_library(${PROJECT_NAME} ${ARP_SRC})
-
-# Set up public headers for daq
-#set_target_properties(daq PROPERTIES PUBLIC_HEADER "daq.h" "daq_private.h")
-
-# Add install target
-install(TARGETS ${PROJECT_NAME} 
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib/static
-        PUBLIC_HEADER DESTINATION include)
-
-# Add swig subdirectory
-add_subdirectory(swig)
+add_subdirectory(software)

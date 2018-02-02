@@ -20,7 +20,7 @@ class DLLEXPORT JadeDataFrame{
   uint32_t GetFrameCount() const;
   std::chrono::system_clock::time_point& TimeStamp();
   bool IsInMatrix(size_t x, size_t y) const;
-  uint16_t GetHitValue(size_t x, size_t y) const;
+  int16_t GetHitValue(size_t x, size_t y) const;
   uint32_t GetMatrixLowX() const;
   uint32_t GetMatrixLowY() const;
   uint32_t GetMatrixHighX() const;
@@ -38,7 +38,7 @@ class DLLEXPORT JadeDataFrame{
   uint16_t m_offset_y;
   uint16_t m_n_x;
   uint16_t m_n_y;
-  std::vector<uint16_t> m_data;
+  std::vector<int16_t> m_data;
 };
 
 using JadeDataFrameUP = std::unique_ptr<JadeDataFrame>;

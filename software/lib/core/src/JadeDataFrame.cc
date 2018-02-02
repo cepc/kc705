@@ -81,24 +81,19 @@ void JadeDataFrame::Decode(){
   const char *p_raw = m_data_raw.data();
   std::cout<<"data_raw size_t "<< m_data_raw.size()<<std::endl;  
   m_description = m_data_raw.substr(0, 4);
-  m_frame_n = BE16TOH(*reinterpret_cast<const uint16_t*>(p_raw+2));
-  // std::cout<< ">>1"<<std::endl;
+  m_frame_n = LE16TOH(*reinterpret_cast<const uint16_t*>(p_raw+2));
   size_t p_offset = 4;
   for(size_t yn=0; yn<m_n_y; yn++){
     //Y head 4 bytes
-    // std::cout<< ">>>>1"<<std::endl;
     p_offset += 4;
     for(size_t xn=0; xn<m_n_x; xn++){
-      // std::cout<< ">>>>>>1"<<std::endl;
-      uint16_t val=BE16TOH(*reinterpret_cast<const uint16_t*>
-			   (p_raw+p_offset));
+      int16_t val=LE16TOH(*reinterpret_cast<const uint16_t*>
+			  (p_raw+p_offset));
       m_data.push_back(val);
       p_offset +=2;
-      // std::cout<< ">>>>>>2"<<std::endl;
     }
     //Y tail 4 bytes
     p_offset += 4;
-    // std::cout<< ">>>2"<<std::endl;
   }
   return;
 }
@@ -111,9 +106,9 @@ bool JadeDataFrame::IsInMatrix(size_t x, size_t y) const{
     return false;
 }
 
-uint16_t JadeDataFrame::GetHitValue(size_t x, size_t y) const{
+int16_t JadeDataFrame::GetHitValue(size_t x, size_t y) const{
   size_t pos = (x-m_offset_x) + m_n_x*(y-m_offset_y);
-  uint16_t val = m_data.at(pos);
+  int16_t val = m_data.at(pos);
   return val;
 }
 

@@ -3,7 +3,7 @@ if(NOT JADE_BUILD_CORE_PYBIND)
   return()
 endif()
 
-find_package(PythonInterp 2.7 EXACT REQUIRED)
+find_package(PythonInterp 3 EXACT REQUIRED)
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 

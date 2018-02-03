@@ -14,9 +14,13 @@
 #endif
 
 JadeRegCtrl::JadeRegCtrl(const std::string& dev_path,
-			 std::map<std::string, std::pair\
-			 <uint16_t, uint8_t>> cmd_map)
-  :m_dev_path(dev_path), m_cmd_map(cmd_map){
+			 const std::map<std::string, std::pair\
+			 <uint16_t, uint8_t>> &cmd_map)
+  :m_dev_path(dev_path), m_cmd_map(cmd_map){  
+}
+
+JadeRegCtrl::JadeRegCtrl(const std::string& dev_path)
+  :m_dev_path(dev_path){
   
 }
 
@@ -26,7 +30,7 @@ JadeRegCtrl::~JadeRegCtrl(){
 
 void JadeRegCtrl::WriteByte(uint16_t addr, uint8_t val){
 #ifdef _WIN32
-  int fd = _open(m_dev_path.c_str(), O_WRONLY | _O_BINARY);
+  int fd = _open(m_dev_path.c_str(), _O_WRONLY | _O_BINARY);
 #else
   int fd = open(m_dev_path.c_str(), O_WRONLY);
 #endif
@@ -58,7 +62,7 @@ uint8_t JadeRegCtrl::ReadByte(uint16_t addr){
   uint8_t val;
 
 #ifdef _WIN32
-  int fd = _open(m_dev_path.c_str(), O_RDONLY | _O_BINARY);
+  int fd = _open(m_dev_path.c_str(), _O_RDONLY | _O_BINARY);
 #else
   int fd = open(m_dev_path.c_str(), O_RDONLY);
 #endif

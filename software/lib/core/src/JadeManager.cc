@@ -53,6 +53,8 @@ uint64_t JadeManager::AsyncDecoding(){
     m_qu_ev_to_dcd.pop();
     lk_in.unlock();
     df->Decode();
+	if(n_df%10000 == 0)
+		df->Print(std::cout);
     std::unique_lock<std::mutex> lk_out(m_mx_ev_to_dcd);
     m_qu_ev_to_flt.push(std::move(df));
     n_df ++;

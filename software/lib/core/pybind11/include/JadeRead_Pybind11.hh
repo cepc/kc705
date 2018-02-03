@@ -6,6 +6,7 @@
 
 class PyJadeRead: public JadeRead{
 public:
+  using JadeRead::JadeRead;
   static void InitPybind11(pybind11::module &m);  
 };
 

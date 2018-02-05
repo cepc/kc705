@@ -6,7 +6,9 @@
 
 class PyJadeRegCtrl: public JadeRegCtrl{
 public:
-  static void InitPybind11(pybind11::module &m);  
+  using JadeRegCtrl::JadeRegCtrl;
+  static void InitPybind11(pybind11::module &m);
+  
 };
 
 #endif

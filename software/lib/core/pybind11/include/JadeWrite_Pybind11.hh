@@ -6,6 +6,7 @@
 
 class PyJadeWrite: public JadeWrite{
 public:
+  using JadeWrite::JadeWrite;
   static void InitPybind11(pybind11::module &m);  
 };
 

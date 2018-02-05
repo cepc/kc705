@@ -6,12 +6,13 @@
 #include <string>
 #include <map>
 
+
 class DLLEXPORT JadeRegCtrl{
  public:
   JadeRegCtrl(const std::string&,
-	      std::map<std::string, std::pair<uint16_t, uint8_t>>);
+	      const std::map<std::string, std::pair<uint16_t, uint8_t>>&);
+  JadeRegCtrl(const std::string&);
   virtual ~JadeRegCtrl();
-  
   void WriteByte(uint16_t addr, uint8_t val);
   uint8_t ReadByte(uint16_t addr);
   void Command(const std::string &cmd);

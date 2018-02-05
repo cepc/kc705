@@ -21,6 +21,6 @@ void JadeWrite::Write(JadeDataFrameUP &&df){
   std::string &rawstring = df->RawDataString();
   if(rawstring.size()){
     std::fwrite(&(rawstring.at(0)), 1, rawstring.size(), m_fd);
-    std::cout<< "writing:"<< df->RawDataString().size()<<std::endl;
+    //std::cout<< "writing:"<< df->RawDataString().size()<<std::endl;
   }
 }

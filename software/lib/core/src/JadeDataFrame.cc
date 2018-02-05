@@ -79,7 +79,7 @@ void JadeDataFrame::Decode(){
   m_data.clear();
   m_data.reserve(m_n_x*m_n_y);
   const char *p_raw = m_data_raw.data();
-  std::cout<<"data_raw size_t "<< m_data_raw.size()<<std::endl;  
+  //std::cout<<"data_raw size_t "<< m_data_raw.size()<<std::endl;  
   m_description = m_data_raw.substr(0, 4);
   m_frame_n = LE16TOH(*reinterpret_cast<const uint16_t*>(p_raw+2));
   size_t p_offset = 4;

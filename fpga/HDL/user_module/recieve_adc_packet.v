@@ -6,6 +6,11 @@ module recieve_adc_packet (
     input          SR_OUT,
     input          RST,  
     input          RST2M,
+    input          SET_PARAM,
+    input   [5:0]  ROW_START,
+    input   [5:0]  ROW_END,
+    input   [3:0]  COL_START,
+    input   [3:0]  COL_END,
     input  [15:0]  DATA01,
     input  [15:0]  DATA02,
     input  [15:0]  DATA03,
@@ -23,6 +28,7 @@ module recieve_adc_packet (
     input  [15:0]  DATA15,
     input  [15:0]  DATA16,
     output [31:0]  DATA_OUT,
+    output         FRAME_END_FLAG,
     output         WR_EN 
 );
 
@@ -295,39 +301,52 @@ coregen_buffer_mem16 buffer_mem16_inst16 (
     .clka( CLK2M ), .addra( a16 ), .dina( d16 ), .wea( wren16 ), .doutb( d16_out), .clkb( CLK ), .addrb( mem_addr16 ), .dinb( dinb16 ), .web( web16 )  );
     
     
-    
+   
+
 // Control System 
 wire [31:0] sel_data_out;
 wire        sel_fifo_wren;
+wire SET = 1'b1;
+wire        frame_end;
+//data_selector #( .ROW_START(6'd0), .ROW_END(6'd47), .COLUMN_START(4'd0), .COLUMN_END(4'd15) )
 data_selector data_selector_inst ( 
-    .CLK           (  CLK           ), 
-    .RST           (  RST           ), 
-    .DATA_H        (  d_header_out  ),  
-    .DATA_F        (  d_footer_out  ),  
-    .DATA01        (  d01_out       ), 
-    .DATA02        (  d02_out       ), 
-    .DATA03        (  d03_out       ), 
-    .DATA04        (  d04_out       ),    
-    .DATA05        (  d05_out       ), 
-    .DATA06        (  d06_out       ), 
-    .DATA07        (  d07_out       ), 
-    .DATA08        (  d08_out       ),
-    .DATA09        (  d09_out       ), 
-    .DATA10        (  d10_out       ), 
-    .DATA11        (  d11_out       ), 
-    .DATA12        (  d12_out       ),
-    .DATA13        (  d13_out       ), 
-    .DATA14        (  d14_out       ), 
-    .DATA15        (  d15_out       ), 
-    .DATA16        (  d16_out       ),
-    .MEM_RD_FLAG   (  flag01        ),
-    .MEM_ADDR_OUT  (  mem_addr_read ), 
-    .DATA_OUT      (  sel_data_out  ),
-    .FIFO_WR_EN    (  sel_fifo_wren )
+    .CLK            (  CLK           ), 
+    .RST            (  RST           ), 
+    .ROW_START      (  ROW_START     ),
+    .ROW_END        (  ROW_END       ),
+    .COL_START      (  COL_START     ),
+    .COL_END        (  COL_END       ),
+//    .SET_PARAM     (  SET           ),
+    .SET_PARAM      (  SET_PARAM     ),
+    .DATA_H         (  d_header_out  ),  
+    .DATA_F         (  d_footer_out  ),  
+    .DATA01         (  d01_out       ), 
+    .DATA02         (  d02_out       ), 
+    .DATA03         (  d03_out       ), 
+    .DATA04         (  d04_out       ),    
+    .DATA05         (  d05_out       ), 
+    .DATA06         (  d06_out       ), 
+    .DATA07         (  d07_out       ), 
+    .DATA08         (  d08_out       ),
+    .DATA09         (  d09_out       ), 
+    .DATA10         (  d10_out       ), 
+    .DATA11         (  d11_out       ), 
+    .DATA12         (  d12_out       ),
+    .DATA13         (  d13_out       ), 
+    .DATA14         (  d14_out       ), 
+    .DATA15         (  d15_out       ), 
+    .DATA16         (  d16_out       ),
+    .MEM_RD_FLAG    (  flag01        ),
+//    .MEM_RD_FLAG    (  flag09        ),
+    .MEM_ADDR_OUT   (  mem_addr_read ), 
+    .DATA_OUT       (  sel_data_out  ),
+    .FRAME_END_FLAG (  frame_end     ),
+    .FIFO_WR_EN     (  sel_fifo_wren )
 );
     
-assign DATA_OUT = sel_data_out;
-assign WR_EN    = sel_fifo_wren;
+assign DATA_OUT  = sel_data_out;
+assign WR_EN     = sel_fifo_wren;
+assign FRAME_END_FLAG = frame_end;
 
 
 endmodule

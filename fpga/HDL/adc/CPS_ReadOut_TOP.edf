@@ -1,10 +1,10 @@
-(edif ADC_REC_LVDS
+(edif CPS_ReadOut_TOP
   (edifversion 2 0 0)
   (edifLevel 0)
   (keywordmap (keywordlevel 0))
 (status
  (written
-  (timeStamp 2017 12 06 20 21 25)
+  (timeStamp 2018 01 23 16 19 03)
   (program "Vivado" (version "2017.2"))
   (comment "Built on 'Thu Jun 15 18:39:09 MDT 2017'")
   (comment "Built by 'xbuild'")
@@ -31334,14 +31334,13 @@
            (property msb_bit_index (string "4'b1111"))
      )
    )
-   (cell ADC_REC_LVDS (celltype GENERIC)
-     (view ADC_REC_LVDS (viewtype NETLIST)
+   (cell CPS_ReadOut_TOP (celltype GENERIC)
+     (view CPS_ReadOut_TOP (viewtype NETLIST)
        (interface 
         (port CLKOUTN_n (direction INPUT))
         (port CLKOUTN_p (direction INPUT))
-        (port CNV (direction OUTPUT)
-           (property mark_debug (string "true"))
-        )
+        (port CNV_n (direction OUTPUT))
+        (port CNV_p (direction OUTPUT))
         (port SCK_n (direction OUTPUT))
         (port SCK_p (direction OUTPUT))
         (port SDO10_n (direction INPUT))
@@ -31384,9 +31383,7 @@
         (port clk_div (direction OUTPUT)
            (property mark_debug (string "true"))
         )
-        (port cnvclk (direction OUTPUT)
-           (property mark_debug (string "true"))
-        )
+        (port cnvclk (direction OUTPUT))
         (port oe (direction OUTPUT)
            (property mark_debug (string "true"))
         )
@@ -31396,9 +31393,7 @@
         (port start (direction INPUT)
            (property mark_debug (string "true"))
         )
-        (port sync (direction OUTPUT)
-           (property mark_debug (string "true"))
-        )
+        (port sync (direction OUTPUT))
         (port sysclk_n (direction INPUT))
         (port sysclk_p (direction INPUT))
         (port (array (rename DATA1 "DATA1[15:0]") 16) (direction OUTPUT))
@@ -31417,6 +31412,7 @@
         (port (array (rename DATA7 "DATA7[15:0]") 16) (direction OUTPUT))
         (port (array (rename DATA8 "DATA8[15:0]") 16) (direction OUTPUT))
         (port (array (rename DATA9 "DATA9[15:0]") 16) (direction OUTPUT))
+        (port (array (rename addr_sel "addr_sel[3:0]") 4) (direction INPUT))
         (port (array (rename d_A "d_A[6:0]") 7) (direction OUTPUT))
        )
        (contents
@@ -32590,6 +32586,12 @@
            (property IOSTANDARD (string "DEFAULT"))
          )
          (instance OBUFDS_inst1 (viewref netlist (cellref OBUFDS (libraryref hdi_primitives)))
+           (property BOX_TYPE (string "PRIMITIVE"))
+           (property CAPACITANCE (string "DONT_CARE"))
+           (property XILINX_LEGACY_PRIM (string "OBUFDS"))
+           (property IOSTANDARD (string "DEFAULT"))
+         )
+         (instance OBUFDS_inst2 (viewref netlist (cellref OBUFDS (libraryref hdi_primitives)))
            (property IOSTANDARD (string "DEFAULT"))
            (property XILINX_LEGACY_PRIM (string "OBUFDS"))
            (property BOX_TYPE (string "PRIMITIVE"))
@@ -32646,10 +32648,12 @@
          (instance cnvclk_i_1 (viewref netlist (cellref LUT5 (libraryref hdi_primitives)))
            (property INIT (string "32'hAABAA8AA"))
          )
+         (instance cnvclk_i_2 (viewref netlist (cellref LUT5 (libraryref hdi_primitives)))
+           (property INIT (string "32'hFFFFEFFF"))
+           (property SOFT_HLUTNM (string "soft_lutpair0"))
+         )
          (instance cnvclk_reg (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
            (property INIT (string "1'b1"))
-           (property KEEP (string "yes"))
-           (property mark_debug (string "true"))
          )
          (instance (rename count_clkdiv_0__i_1 "count_clkdiv[0]_i_1") (viewref netlist (cellref LUT1 (libraryref hdi_primitives)))
            (property INIT (string "2'h1"))
@@ -32744,10 +32748,6 @@
          (instance (rename count_cnv_6__i_1 "count_cnv[6]_i_1") (viewref netlist (cellref LUT5 (libraryref hdi_primitives)))
            (property INIT (string "32'h5A5AF0D0"))
            (property SOFT_HLUTNM (string "soft_lutpair1"))
-         )
-         (instance (rename count_cnv_6__i_2 "count_cnv[6]_i_2") (viewref netlist (cellref LUT5 (libraryref hdi_primitives)))
-           (property INIT (string "32'hFFFFEFFF"))
-           (property SOFT_HLUTNM (string "soft_lutpair0"))
          )
          (instance (rename count_cnv_7__i_1 "count_cnv[7]_i_1") (viewref netlist (cellref LUT4 (libraryref hdi_primitives)))
            (property INIT (string "16'h6AAA"))
@@ -33170,6 +33170,46 @@
          (instance (rename counter_ss_reg_9_ "counter_ss_reg[9]") (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
            (property INIT (string "1'b0"))
          )
+         (instance (rename d_A_r_0__i_1 "d_A_r[0]_i_1") (viewref netlist (cellref LUT4 (libraryref hdi_primitives)))
+           (property INIT (string "16'h1F00"))
+         )
+         (instance (rename d_A_r_1__i_1 "d_A_r[1]_i_1") (viewref netlist (cellref LUT2 (libraryref hdi_primitives)))
+           (property INIT (string "4'h2"))
+         )
+         (instance (rename d_A_r_2__i_1 "d_A_r[2]_i_1") (viewref netlist (cellref LUT2 (libraryref hdi_primitives)))
+           (property INIT (string "4'h2"))
+         )
+         (instance (rename d_A_r_3__i_1 "d_A_r[3]_i_1") (viewref netlist (cellref LUT3 (libraryref hdi_primitives)))
+           (property INIT (string "8'h02"))
+         )
+         (instance (rename d_A_r_reg_0_ "d_A_r_reg[0]") (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
+           (property INIT (string "1'b0"))
+           (property KEEP (string "yes"))
+         )
+         (instance (rename d_A_r_reg_1_ "d_A_r_reg[1]") (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
+           (property INIT (string "1'b0"))
+           (property KEEP (string "yes"))
+         )
+         (instance (rename d_A_r_reg_2_ "d_A_r_reg[2]") (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
+           (property INIT (string "1'b0"))
+           (property KEEP (string "yes"))
+         )
+         (instance (rename d_A_r_reg_3_ "d_A_r_reg[3]") (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
+           (property INIT (string "1'b0"))
+           (property KEEP (string "yes"))
+         )
+         (instance (rename d_A_r_reg_4_ "d_A_r_reg[4]") (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
+           (property INIT (string "1'b0"))
+           (property KEEP (string "yes"))
+         )
+         (instance (rename d_A_r_reg_5_ "d_A_r_reg[5]") (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
+           (property INIT (string "1'b0"))
+           (property KEEP (string "yes"))
+         )
+         (instance (rename d_A_r_reg_6_ "d_A_r_reg[6]") (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
+           (property INIT (string "1'b1"))
+           (property KEEP (string "yes"))
+         )
          (instance deserializer1 (viewref deserializer__1 (cellref deserializer__1 (libraryref work)))
            (property msb_bit_index (string "4'b1111"))
          )
@@ -33498,6 +33538,8 @@
          )
          (instance sck_or_reg (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
            (property INIT (string "1'b0"))
+           (property KEEP (string "yes"))
+           (property mark_debug (string "true"))
          )
          (instance sign_00_reg (viewref netlist (cellref FDRE (libraryref hdi_primitives)))
            (property INIT (string "1'b0"))
@@ -33532,6 +33574,8 @@
           (portref CYINIT (instanceref k_reg_28__i_1))
           (portref CYINIT (instanceref k_reg_4__i_1))
           (portref CYINIT (instanceref k_reg_8__i_1))
+          (portref D (instanceref d_A_r_reg_4_))
+          (portref D (instanceref d_A_r_reg_5_))
           (portref (member DI 3) (instanceref counter_ss_reg_12__i_2))
           (portref (member DI 3) (instanceref counter_ss_reg_16__i_2))
           (portref (member DI 3) (instanceref counter_ss_reg_20__i_2))
@@ -33596,12 +33640,6 @@
           (portref (member DI 0) (instanceref k_reg_4__i_1))
           (portref (member DI 0) (instanceref k_reg_8__i_1))
           (portref G (instanceref GND))
-          (portref I0 (instanceref i_1))
-          (portref I0 (instanceref i_2))
-          (portref I0 (instanceref i_3))
-          (portref I0 (instanceref i_4))
-          (portref I0 (instanceref i_5))
-          (portref I0 (instanceref i_6))
           (portref I0 (instanceref i_7))
           (portref R (instanceref DATA10_reg_0_))
           (portref R (instanceref DATA10_reg_10_))
@@ -33886,6 +33924,13 @@
           (portref R (instanceref count_sck_reg_5_))
           (portref R (instanceref count_sck_reg_6_))
           (portref R (instanceref count_sck_reg_7_))
+          (portref R (instanceref d_A_r_reg_0_))
+          (portref R (instanceref d_A_r_reg_1_))
+          (portref R (instanceref d_A_r_reg_2_))
+          (portref R (instanceref d_A_r_reg_3_))
+          (portref R (instanceref d_A_r_reg_4_))
+          (portref R (instanceref d_A_r_reg_5_))
+          (portref R (instanceref d_A_r_reg_6_))
           (portref R (instanceref sck_or_reg))
           (portref R (instanceref sign_00_reg))
           (portref R (instanceref sign_11_reg))
@@ -34210,6 +34255,13 @@
           (portref CE (instanceref counter_ss_reg_7_))
           (portref CE (instanceref counter_ss_reg_8_))
           (portref CE (instanceref counter_ss_reg_9_))
+          (portref CE (instanceref d_A_r_reg_0_))
+          (portref CE (instanceref d_A_r_reg_1_))
+          (portref CE (instanceref d_A_r_reg_2_))
+          (portref CE (instanceref d_A_r_reg_3_))
+          (portref CE (instanceref d_A_r_reg_4_))
+          (portref CE (instanceref d_A_r_reg_5_))
+          (portref CE (instanceref d_A_r_reg_6_))
           (portref CE (instanceref k_reg_0_))
           (portref CE (instanceref k_reg_10_))
           (portref CE (instanceref k_reg_11_))
@@ -34247,8 +34299,8 @@
           (portref CE (instanceref sign_11_reg))
           (portref CE (instanceref state_reg_0_))
           (portref CE (instanceref sync_r_reg))
+          (portref D (instanceref d_A_r_reg_6_))
           (portref (member DI 3) (instanceref k_reg_0__i_1))
-          (portref I0 (instanceref i_0))
           (portref P (instanceref VCC))
           )
          )
@@ -34537,6 +34589,7 @@
           (portref C (instanceref DATA9_reg_7_))
           (portref C (instanceref DATA9_reg_8_))
           (portref C (instanceref DATA9_reg_9_))
+          (portref I (instanceref OBUFDS_inst2))
           (portref I0 (instanceref cnvclk_i_1))
           (portref Q (instanceref cnvclk_reg))
           (portref rx_reset (instanceref deserializer1))
@@ -34555,11 +34608,25 @@
           (portref rx_reset (instanceref deserializer7))
           (portref rx_reset (instanceref deserializer8))
           (portref rx_reset (instanceref deserializer9))
-          (portref CNV)
           (portref cnvclk)
           )
 
            (property MARK_DEBUG (boolean (true)))
+           (property SLEW (string "SLOW"))
+         )
+         (net CNV_n (joined
+          (portref OB (instanceref OBUFDS_inst2))
+          (portref CNV_n)
+          )
+
+           (property SLEW (string "SLOW"))
+         )
+         (net CNV_p (joined
+          (portref O (instanceref OBUFDS_inst2))
+          (portref CNV_p)
+          )
+
+           (property SLEW (string "SLOW"))
          )
          (net (rename DATA10_0_ "DATA10[0]") (joined
           (portref Q (instanceref DATA10_reg_0_))
@@ -36763,6 +36830,41 @@
           (portref S0 (instanceref BUFGCE_1_inst))
           )
          )
+         (net (rename addr_sel_0_ "addr_sel[0]") (joined
+          (portref I3 (instanceref d_A_r_0__i_1))
+          (portref (member addr_sel 3))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename addr_sel_1_ "addr_sel[1]") (joined
+          (portref I0 (instanceref d_A_r_1__i_1))
+          (portref I1 (instanceref d_A_r_0__i_1))
+          (portref I2 (instanceref d_A_r_3__i_1))
+          (portref (member addr_sel 2))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename addr_sel_2_ "addr_sel[2]") (joined
+          (portref I0 (instanceref d_A_r_0__i_1))
+          (portref I0 (instanceref d_A_r_2__i_1))
+          (portref I1 (instanceref d_A_r_3__i_1))
+          (portref (member addr_sel 1))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename addr_sel_3_ "addr_sel[3]") (joined
+          (portref I0 (instanceref d_A_r_3__i_1))
+          (portref I1 (instanceref d_A_r_1__i_1))
+          (portref I1 (instanceref d_A_r_2__i_1))
+          (portref I2 (instanceref d_A_r_0__i_1))
+          (portref (member addr_sel 0))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
          (net clear (joined
           (portref O (instanceref clk_div_r_50m_i_1))
           (portref R (instanceref clk_div_r_50m_reg))
@@ -36861,6 +36963,13 @@
           (portref C (instanceref counter_ss_reg_7_))
           (portref C (instanceref counter_ss_reg_8_))
           (portref C (instanceref counter_ss_reg_9_))
+          (portref C (instanceref d_A_r_reg_0_))
+          (portref C (instanceref d_A_r_reg_1_))
+          (portref C (instanceref d_A_r_reg_2_))
+          (portref C (instanceref d_A_r_reg_3_))
+          (portref C (instanceref d_A_r_reg_4_))
+          (portref C (instanceref d_A_r_reg_5_))
+          (portref C (instanceref d_A_r_reg_6_))
           (portref C (instanceref k_reg_0_))
           (portref C (instanceref k_reg_10_))
           (portref C (instanceref k_reg_11_))
@@ -36976,6 +37085,14 @@
          (net cnvclk_i_1_n_0 (joined
           (portref D (instanceref cnvclk_reg))
           (portref O (instanceref cnvclk_i_1))
+          )
+         )
+         (net cnvclk_i_2_n_0 (joined
+          (portref I0 (instanceref count_cnv_5__i_1))
+          (portref I1 (instanceref cnvclk_i_1))
+          (portref I2 (instanceref count_cnv_2__i_1))
+          (portref I3 (instanceref count_cnv_6__i_1))
+          (portref O (instanceref cnvclk_i_2))
           )
          )
          (net (rename count_clkdiv_0_ "count_clkdiv[0]") (joined
@@ -37125,7 +37242,7 @@
           (portref I0 (instanceref count_cnv_2__i_2))
           (portref I1 (instanceref count_cnv_3__i_1))
           (portref I2 (instanceref count_cnv_4__i_1))
-          (portref I3 (instanceref count_cnv_6__i_2))
+          (portref I3 (instanceref cnvclk_i_2))
           (portref I3 (instanceref count_cnv_7__i_2))
           (portref Q (instanceref count_cnv_reg_0_))
           )
@@ -37138,8 +37255,8 @@
          (net (rename count_cnv_1_ "count_cnv[1]") (joined
           (portref I1 (instanceref count_cnv_1__i_1))
           (portref I1 (instanceref count_cnv_2__i_2))
+          (portref I2 (instanceref cnvclk_i_2))
           (portref I2 (instanceref count_cnv_3__i_1))
-          (portref I2 (instanceref count_cnv_6__i_2))
           (portref I2 (instanceref count_cnv_7__i_2))
           (portref I3 (instanceref count_cnv_4__i_1))
           (portref Q (instanceref count_cnv_reg_1_))
@@ -37152,7 +37269,7 @@
          )
          (net (rename count_cnv_2_ "count_cnv[2]") (joined
           (portref I0 (instanceref count_cnv_2__i_1))
-          (portref I1 (instanceref count_cnv_6__i_2))
+          (portref I1 (instanceref cnvclk_i_2))
           (portref I1 (instanceref count_cnv_7__i_2))
           (portref I3 (instanceref count_cnv_3__i_1))
           (portref I4 (instanceref count_cnv_4__i_1))
@@ -37172,7 +37289,7 @@
          (net (rename count_cnv_3_ "count_cnv[3]") (joined
           (portref I0 (instanceref count_cnv_3__i_1))
           (portref I1 (instanceref count_cnv_4__i_1))
-          (portref I4 (instanceref count_cnv_6__i_2))
+          (portref I4 (instanceref cnvclk_i_2))
           (portref I4 (instanceref count_cnv_7__i_2))
           (portref Q (instanceref count_cnv_reg_3_))
           )
@@ -37225,16 +37342,8 @@
           (portref O (instanceref count_cnv_6__i_1))
           )
          )
-         (net (rename count_cnv_6__i_2_n_0 "count_cnv[6]_i_2_n_0") (joined
-          (portref I0 (instanceref count_cnv_5__i_1))
-          (portref I1 (instanceref cnvclk_i_1))
-          (portref I2 (instanceref count_cnv_2__i_1))
-          (portref I3 (instanceref count_cnv_6__i_1))
-          (portref O (instanceref count_cnv_6__i_2))
-          )
-         )
          (net (rename count_cnv_7_ "count_cnv[7]") (joined
-          (portref I0 (instanceref count_cnv_6__i_2))
+          (portref I0 (instanceref cnvclk_i_2))
           (portref I0 (instanceref count_cnv_7__i_1))
           (portref Q (instanceref count_cnv_reg_7_))
           )
@@ -38430,1285 +38539,1866 @@
 
            (property MARK_DEBUG (boolean (true)))
          )
+         (net (rename d_A_r_0_ "d_A_r[0]") (joined
+          (portref I0 (instanceref i_6))
+          (portref Q (instanceref d_A_r_reg_0_))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename d_A_r_1_ "d_A_r[1]") (joined
+          (portref I0 (instanceref i_5))
+          (portref Q (instanceref d_A_r_reg_1_))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename d_A_r_1__i_1_n_0 "d_A_r[1]_i_1_n_0") (joined
+          (portref D (instanceref d_A_r_reg_1_))
+          (portref O (instanceref d_A_r_1__i_1))
+          )
+         )
+         (net (rename d_A_r_2_ "d_A_r[2]") (joined
+          (portref I0 (instanceref i_4))
+          (portref Q (instanceref d_A_r_reg_2_))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename d_A_r_2__i_1_n_0 "d_A_r[2]_i_1_n_0") (joined
+          (portref D (instanceref d_A_r_reg_2_))
+          (portref O (instanceref d_A_r_2__i_1))
+          )
+         )
+         (net (rename d_A_r_3_ "d_A_r[3]") (joined
+          (portref I0 (instanceref i_3))
+          (portref Q (instanceref d_A_r_reg_3_))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename d_A_r_3__i_1_n_0 "d_A_r[3]_i_1_n_0") (joined
+          (portref D (instanceref d_A_r_reg_3_))
+          (portref O (instanceref d_A_r_3__i_1))
+          )
+         )
+         (net (rename d_A_r_4_ "d_A_r[4]") (joined
+          (portref I0 (instanceref i_2))
+          (portref Q (instanceref d_A_r_reg_4_))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename d_A_r_5_ "d_A_r[5]") (joined
+          (portref I0 (instanceref i_1))
+          (portref Q (instanceref d_A_r_reg_5_))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename d_A_r_6_ "d_A_r[6]") (joined
+          (portref I0 (instanceref i_0))
+          (portref Q (instanceref d_A_r_reg_6_))
+          )
+
+           (property MARK_DEBUG (boolean (true)))
+         )
+         (net (rename d_A_r__0_0_ "d_A_r__0[0]") (joined
+          (portref D (instanceref d_A_r_reg_0_))
+          (portref O (instanceref d_A_r_0__i_1))
+          )
+         )
          (net (rename data_in_10_0_ "data_in_10[0]") (joined
           (portref D (instanceref DATA10_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_10_ "data_in_10[10]") (joined
           (portref D (instanceref DATA10_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_11_ "data_in_10[11]") (joined
           (portref D (instanceref DATA10_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_12_ "data_in_10[12]") (joined
           (portref D (instanceref DATA10_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_13_ "data_in_10[13]") (joined
           (portref D (instanceref DATA10_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_14_ "data_in_10[14]") (joined
           (portref D (instanceref DATA10_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_15_ "data_in_10[15]") (joined
           (portref D (instanceref DATA10_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_1_ "data_in_10[1]") (joined
           (portref D (instanceref DATA10_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_2_ "data_in_10[2]") (joined
           (portref D (instanceref DATA10_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_3_ "data_in_10[3]") (joined
           (portref D (instanceref DATA10_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_4_ "data_in_10[4]") (joined
           (portref D (instanceref DATA10_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_5_ "data_in_10[5]") (joined
           (portref D (instanceref DATA10_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_6_ "data_in_10[6]") (joined
           (portref D (instanceref DATA10_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_7_ "data_in_10[7]") (joined
           (portref D (instanceref DATA10_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_8_ "data_in_10[8]") (joined
           (portref D (instanceref DATA10_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_10_9_ "data_in_10[9]") (joined
           (portref D (instanceref DATA10_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer10))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_0_ "data_in_11[0]") (joined
           (portref D (instanceref DATA11_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_10_ "data_in_11[10]") (joined
           (portref D (instanceref DATA11_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_11_ "data_in_11[11]") (joined
           (portref D (instanceref DATA11_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_12_ "data_in_11[12]") (joined
           (portref D (instanceref DATA11_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_13_ "data_in_11[13]") (joined
           (portref D (instanceref DATA11_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_14_ "data_in_11[14]") (joined
           (portref D (instanceref DATA11_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_15_ "data_in_11[15]") (joined
           (portref D (instanceref DATA11_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_1_ "data_in_11[1]") (joined
           (portref D (instanceref DATA11_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_2_ "data_in_11[2]") (joined
           (portref D (instanceref DATA11_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_3_ "data_in_11[3]") (joined
           (portref D (instanceref DATA11_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_4_ "data_in_11[4]") (joined
           (portref D (instanceref DATA11_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_5_ "data_in_11[5]") (joined
           (portref D (instanceref DATA11_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_6_ "data_in_11[6]") (joined
           (portref D (instanceref DATA11_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_7_ "data_in_11[7]") (joined
           (portref D (instanceref DATA11_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_8_ "data_in_11[8]") (joined
           (portref D (instanceref DATA11_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_11_9_ "data_in_11[9]") (joined
           (portref D (instanceref DATA11_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer11))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_0_ "data_in_12[0]") (joined
           (portref D (instanceref DATA12_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_10_ "data_in_12[10]") (joined
           (portref D (instanceref DATA12_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_11_ "data_in_12[11]") (joined
           (portref D (instanceref DATA12_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_12_ "data_in_12[12]") (joined
           (portref D (instanceref DATA12_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_13_ "data_in_12[13]") (joined
           (portref D (instanceref DATA12_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_14_ "data_in_12[14]") (joined
           (portref D (instanceref DATA12_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_15_ "data_in_12[15]") (joined
           (portref D (instanceref DATA12_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_1_ "data_in_12[1]") (joined
           (portref D (instanceref DATA12_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_2_ "data_in_12[2]") (joined
           (portref D (instanceref DATA12_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_3_ "data_in_12[3]") (joined
           (portref D (instanceref DATA12_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_4_ "data_in_12[4]") (joined
           (portref D (instanceref DATA12_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_5_ "data_in_12[5]") (joined
           (portref D (instanceref DATA12_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_6_ "data_in_12[6]") (joined
           (portref D (instanceref DATA12_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_7_ "data_in_12[7]") (joined
           (portref D (instanceref DATA12_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_8_ "data_in_12[8]") (joined
           (portref D (instanceref DATA12_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_12_9_ "data_in_12[9]") (joined
           (portref D (instanceref DATA12_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer12))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_0_ "data_in_13[0]") (joined
           (portref D (instanceref DATA13_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_10_ "data_in_13[10]") (joined
           (portref D (instanceref DATA13_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_11_ "data_in_13[11]") (joined
           (portref D (instanceref DATA13_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_12_ "data_in_13[12]") (joined
           (portref D (instanceref DATA13_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_13_ "data_in_13[13]") (joined
           (portref D (instanceref DATA13_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_14_ "data_in_13[14]") (joined
           (portref D (instanceref DATA13_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_15_ "data_in_13[15]") (joined
           (portref D (instanceref DATA13_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_1_ "data_in_13[1]") (joined
           (portref D (instanceref DATA13_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_2_ "data_in_13[2]") (joined
           (portref D (instanceref DATA13_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_3_ "data_in_13[3]") (joined
           (portref D (instanceref DATA13_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_4_ "data_in_13[4]") (joined
           (portref D (instanceref DATA13_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_5_ "data_in_13[5]") (joined
           (portref D (instanceref DATA13_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_6_ "data_in_13[6]") (joined
           (portref D (instanceref DATA13_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_7_ "data_in_13[7]") (joined
           (portref D (instanceref DATA13_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_8_ "data_in_13[8]") (joined
           (portref D (instanceref DATA13_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_13_9_ "data_in_13[9]") (joined
           (portref D (instanceref DATA13_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer13))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_0_ "data_in_14[0]") (joined
           (portref D (instanceref DATA14_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_10_ "data_in_14[10]") (joined
           (portref D (instanceref DATA14_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_11_ "data_in_14[11]") (joined
           (portref D (instanceref DATA14_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_12_ "data_in_14[12]") (joined
           (portref D (instanceref DATA14_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_13_ "data_in_14[13]") (joined
           (portref D (instanceref DATA14_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_14_ "data_in_14[14]") (joined
           (portref D (instanceref DATA14_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_15_ "data_in_14[15]") (joined
           (portref D (instanceref DATA14_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_1_ "data_in_14[1]") (joined
           (portref D (instanceref DATA14_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_2_ "data_in_14[2]") (joined
           (portref D (instanceref DATA14_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_3_ "data_in_14[3]") (joined
           (portref D (instanceref DATA14_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_4_ "data_in_14[4]") (joined
           (portref D (instanceref DATA14_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_5_ "data_in_14[5]") (joined
           (portref D (instanceref DATA14_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_6_ "data_in_14[6]") (joined
           (portref D (instanceref DATA14_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_7_ "data_in_14[7]") (joined
           (portref D (instanceref DATA14_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_8_ "data_in_14[8]") (joined
           (portref D (instanceref DATA14_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_14_9_ "data_in_14[9]") (joined
           (portref D (instanceref DATA14_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer14))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_0_ "data_in_15[0]") (joined
           (portref D (instanceref DATA15_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_10_ "data_in_15[10]") (joined
           (portref D (instanceref DATA15_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_11_ "data_in_15[11]") (joined
           (portref D (instanceref DATA15_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_12_ "data_in_15[12]") (joined
           (portref D (instanceref DATA15_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_13_ "data_in_15[13]") (joined
           (portref D (instanceref DATA15_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_14_ "data_in_15[14]") (joined
           (portref D (instanceref DATA15_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_15_ "data_in_15[15]") (joined
           (portref D (instanceref DATA15_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_1_ "data_in_15[1]") (joined
           (portref D (instanceref DATA15_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_2_ "data_in_15[2]") (joined
           (portref D (instanceref DATA15_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_3_ "data_in_15[3]") (joined
           (portref D (instanceref DATA15_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_4_ "data_in_15[4]") (joined
           (portref D (instanceref DATA15_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_5_ "data_in_15[5]") (joined
           (portref D (instanceref DATA15_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_6_ "data_in_15[6]") (joined
           (portref D (instanceref DATA15_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_7_ "data_in_15[7]") (joined
           (portref D (instanceref DATA15_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_8_ "data_in_15[8]") (joined
           (portref D (instanceref DATA15_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_15_9_ "data_in_15[9]") (joined
           (portref D (instanceref DATA15_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer15))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_0_ "data_in_16[0]") (joined
           (portref D (instanceref DATA16_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_10_ "data_in_16[10]") (joined
           (portref D (instanceref DATA16_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_11_ "data_in_16[11]") (joined
           (portref D (instanceref DATA16_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_12_ "data_in_16[12]") (joined
           (portref D (instanceref DATA16_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_13_ "data_in_16[13]") (joined
           (portref D (instanceref DATA16_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_14_ "data_in_16[14]") (joined
           (portref D (instanceref DATA16_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_15_ "data_in_16[15]") (joined
           (portref D (instanceref DATA16_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_1_ "data_in_16[1]") (joined
           (portref D (instanceref DATA16_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_2_ "data_in_16[2]") (joined
           (portref D (instanceref DATA16_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_3_ "data_in_16[3]") (joined
           (portref D (instanceref DATA16_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_4_ "data_in_16[4]") (joined
           (portref D (instanceref DATA16_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_5_ "data_in_16[5]") (joined
           (portref D (instanceref DATA16_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_6_ "data_in_16[6]") (joined
           (portref D (instanceref DATA16_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_7_ "data_in_16[7]") (joined
           (portref D (instanceref DATA16_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_8_ "data_in_16[8]") (joined
           (portref D (instanceref DATA16_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_16_9_ "data_in_16[9]") (joined
           (portref D (instanceref DATA16_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer16))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_0_ "data_in_1[0]") (joined
           (portref D (instanceref DATA1_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_10_ "data_in_1[10]") (joined
           (portref D (instanceref DATA1_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_11_ "data_in_1[11]") (joined
           (portref D (instanceref DATA1_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_12_ "data_in_1[12]") (joined
           (portref D (instanceref DATA1_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_13_ "data_in_1[13]") (joined
           (portref D (instanceref DATA1_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_14_ "data_in_1[14]") (joined
           (portref D (instanceref DATA1_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_15_ "data_in_1[15]") (joined
           (portref D (instanceref DATA1_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_1_ "data_in_1[1]") (joined
           (portref D (instanceref DATA1_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_2_ "data_in_1[2]") (joined
           (portref D (instanceref DATA1_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_3_ "data_in_1[3]") (joined
           (portref D (instanceref DATA1_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_4_ "data_in_1[4]") (joined
           (portref D (instanceref DATA1_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_5_ "data_in_1[5]") (joined
           (portref D (instanceref DATA1_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_6_ "data_in_1[6]") (joined
           (portref D (instanceref DATA1_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_7_ "data_in_1[7]") (joined
           (portref D (instanceref DATA1_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_8_ "data_in_1[8]") (joined
           (portref D (instanceref DATA1_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_1_9_ "data_in_1[9]") (joined
           (portref D (instanceref DATA1_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer1))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_0_ "data_in_2[0]") (joined
           (portref D (instanceref DATA2_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_10_ "data_in_2[10]") (joined
           (portref D (instanceref DATA2_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_11_ "data_in_2[11]") (joined
           (portref D (instanceref DATA2_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_12_ "data_in_2[12]") (joined
           (portref D (instanceref DATA2_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_13_ "data_in_2[13]") (joined
           (portref D (instanceref DATA2_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_14_ "data_in_2[14]") (joined
           (portref D (instanceref DATA2_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_15_ "data_in_2[15]") (joined
           (portref D (instanceref DATA2_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_1_ "data_in_2[1]") (joined
           (portref D (instanceref DATA2_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_2_ "data_in_2[2]") (joined
           (portref D (instanceref DATA2_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_3_ "data_in_2[3]") (joined
           (portref D (instanceref DATA2_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_4_ "data_in_2[4]") (joined
           (portref D (instanceref DATA2_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_5_ "data_in_2[5]") (joined
           (portref D (instanceref DATA2_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_6_ "data_in_2[6]") (joined
           (portref D (instanceref DATA2_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_7_ "data_in_2[7]") (joined
           (portref D (instanceref DATA2_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_8_ "data_in_2[8]") (joined
           (portref D (instanceref DATA2_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_2_9_ "data_in_2[9]") (joined
           (portref D (instanceref DATA2_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer2))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_0_ "data_in_3[0]") (joined
           (portref D (instanceref DATA3_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_10_ "data_in_3[10]") (joined
           (portref D (instanceref DATA3_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_11_ "data_in_3[11]") (joined
           (portref D (instanceref DATA3_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_12_ "data_in_3[12]") (joined
           (portref D (instanceref DATA3_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_13_ "data_in_3[13]") (joined
           (portref D (instanceref DATA3_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_14_ "data_in_3[14]") (joined
           (portref D (instanceref DATA3_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_15_ "data_in_3[15]") (joined
           (portref D (instanceref DATA3_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_1_ "data_in_3[1]") (joined
           (portref D (instanceref DATA3_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_2_ "data_in_3[2]") (joined
           (portref D (instanceref DATA3_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_3_ "data_in_3[3]") (joined
           (portref D (instanceref DATA3_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_4_ "data_in_3[4]") (joined
           (portref D (instanceref DATA3_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_5_ "data_in_3[5]") (joined
           (portref D (instanceref DATA3_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_6_ "data_in_3[6]") (joined
           (portref D (instanceref DATA3_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_7_ "data_in_3[7]") (joined
           (portref D (instanceref DATA3_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_8_ "data_in_3[8]") (joined
           (portref D (instanceref DATA3_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_3_9_ "data_in_3[9]") (joined
           (portref D (instanceref DATA3_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer3))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_0_ "data_in_4[0]") (joined
           (portref D (instanceref DATA4_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_10_ "data_in_4[10]") (joined
           (portref D (instanceref DATA4_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_11_ "data_in_4[11]") (joined
           (portref D (instanceref DATA4_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_12_ "data_in_4[12]") (joined
           (portref D (instanceref DATA4_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_13_ "data_in_4[13]") (joined
           (portref D (instanceref DATA4_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_14_ "data_in_4[14]") (joined
           (portref D (instanceref DATA4_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_15_ "data_in_4[15]") (joined
           (portref D (instanceref DATA4_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_1_ "data_in_4[1]") (joined
           (portref D (instanceref DATA4_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_2_ "data_in_4[2]") (joined
           (portref D (instanceref DATA4_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_3_ "data_in_4[3]") (joined
           (portref D (instanceref DATA4_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_4_ "data_in_4[4]") (joined
           (portref D (instanceref DATA4_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_5_ "data_in_4[5]") (joined
           (portref D (instanceref DATA4_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_6_ "data_in_4[6]") (joined
           (portref D (instanceref DATA4_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_7_ "data_in_4[7]") (joined
           (portref D (instanceref DATA4_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_8_ "data_in_4[8]") (joined
           (portref D (instanceref DATA4_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_4_9_ "data_in_4[9]") (joined
           (portref D (instanceref DATA4_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer4))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_0_ "data_in_5[0]") (joined
           (portref D (instanceref DATA5_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_10_ "data_in_5[10]") (joined
           (portref D (instanceref DATA5_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_11_ "data_in_5[11]") (joined
           (portref D (instanceref DATA5_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_12_ "data_in_5[12]") (joined
           (portref D (instanceref DATA5_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_13_ "data_in_5[13]") (joined
           (portref D (instanceref DATA5_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_14_ "data_in_5[14]") (joined
           (portref D (instanceref DATA5_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_15_ "data_in_5[15]") (joined
           (portref D (instanceref DATA5_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_1_ "data_in_5[1]") (joined
           (portref D (instanceref DATA5_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_2_ "data_in_5[2]") (joined
           (portref D (instanceref DATA5_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_3_ "data_in_5[3]") (joined
           (portref D (instanceref DATA5_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_4_ "data_in_5[4]") (joined
           (portref D (instanceref DATA5_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_5_ "data_in_5[5]") (joined
           (portref D (instanceref DATA5_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_6_ "data_in_5[6]") (joined
           (portref D (instanceref DATA5_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_7_ "data_in_5[7]") (joined
           (portref D (instanceref DATA5_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_8_ "data_in_5[8]") (joined
           (portref D (instanceref DATA5_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_5_9_ "data_in_5[9]") (joined
           (portref D (instanceref DATA5_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer5))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_0_ "data_in_6[0]") (joined
           (portref D (instanceref DATA6_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_10_ "data_in_6[10]") (joined
           (portref D (instanceref DATA6_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_11_ "data_in_6[11]") (joined
           (portref D (instanceref DATA6_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_12_ "data_in_6[12]") (joined
           (portref D (instanceref DATA6_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_13_ "data_in_6[13]") (joined
           (portref D (instanceref DATA6_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_14_ "data_in_6[14]") (joined
           (portref D (instanceref DATA6_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_15_ "data_in_6[15]") (joined
           (portref D (instanceref DATA6_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_1_ "data_in_6[1]") (joined
           (portref D (instanceref DATA6_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_2_ "data_in_6[2]") (joined
           (portref D (instanceref DATA6_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_3_ "data_in_6[3]") (joined
           (portref D (instanceref DATA6_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_4_ "data_in_6[4]") (joined
           (portref D (instanceref DATA6_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_5_ "data_in_6[5]") (joined
           (portref D (instanceref DATA6_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_6_ "data_in_6[6]") (joined
           (portref D (instanceref DATA6_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_7_ "data_in_6[7]") (joined
           (portref D (instanceref DATA6_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_8_ "data_in_6[8]") (joined
           (portref D (instanceref DATA6_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_6_9_ "data_in_6[9]") (joined
           (portref D (instanceref DATA6_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer6))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_0_ "data_in_7[0]") (joined
           (portref D (instanceref DATA7_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_10_ "data_in_7[10]") (joined
           (portref D (instanceref DATA7_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_11_ "data_in_7[11]") (joined
           (portref D (instanceref DATA7_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_12_ "data_in_7[12]") (joined
           (portref D (instanceref DATA7_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_13_ "data_in_7[13]") (joined
           (portref D (instanceref DATA7_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_14_ "data_in_7[14]") (joined
           (portref D (instanceref DATA7_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_15_ "data_in_7[15]") (joined
           (portref D (instanceref DATA7_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_1_ "data_in_7[1]") (joined
           (portref D (instanceref DATA7_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_2_ "data_in_7[2]") (joined
           (portref D (instanceref DATA7_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_3_ "data_in_7[3]") (joined
           (portref D (instanceref DATA7_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_4_ "data_in_7[4]") (joined
           (portref D (instanceref DATA7_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_5_ "data_in_7[5]") (joined
           (portref D (instanceref DATA7_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_6_ "data_in_7[6]") (joined
           (portref D (instanceref DATA7_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_7_ "data_in_7[7]") (joined
           (portref D (instanceref DATA7_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_8_ "data_in_7[8]") (joined
           (portref D (instanceref DATA7_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_7_9_ "data_in_7[9]") (joined
           (portref D (instanceref DATA7_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer7))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_0_ "data_in_8[0]") (joined
           (portref D (instanceref DATA8_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_10_ "data_in_8[10]") (joined
           (portref D (instanceref DATA8_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_11_ "data_in_8[11]") (joined
           (portref D (instanceref DATA8_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_12_ "data_in_8[12]") (joined
           (portref D (instanceref DATA8_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_13_ "data_in_8[13]") (joined
           (portref D (instanceref DATA8_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_14_ "data_in_8[14]") (joined
           (portref D (instanceref DATA8_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_15_ "data_in_8[15]") (joined
           (portref D (instanceref DATA8_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_1_ "data_in_8[1]") (joined
           (portref D (instanceref DATA8_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_2_ "data_in_8[2]") (joined
           (portref D (instanceref DATA8_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_3_ "data_in_8[3]") (joined
           (portref D (instanceref DATA8_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_4_ "data_in_8[4]") (joined
           (portref D (instanceref DATA8_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_5_ "data_in_8[5]") (joined
           (portref D (instanceref DATA8_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_6_ "data_in_8[6]") (joined
           (portref D (instanceref DATA8_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_7_ "data_in_8[7]") (joined
           (portref D (instanceref DATA8_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_8_ "data_in_8[8]") (joined
           (portref D (instanceref DATA8_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_8_9_ "data_in_8[9]") (joined
           (portref D (instanceref DATA8_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer8))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_0_ "data_in_9[0]") (joined
           (portref D (instanceref DATA9_reg_0_))
           (portref (member parallel_data 15) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_10_ "data_in_9[10]") (joined
           (portref D (instanceref DATA9_reg_10_))
           (portref (member parallel_data 5) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_11_ "data_in_9[11]") (joined
           (portref D (instanceref DATA9_reg_11_))
           (portref (member parallel_data 4) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_12_ "data_in_9[12]") (joined
           (portref D (instanceref DATA9_reg_12_))
           (portref (member parallel_data 3) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_13_ "data_in_9[13]") (joined
           (portref D (instanceref DATA9_reg_13_))
           (portref (member parallel_data 2) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_14_ "data_in_9[14]") (joined
           (portref D (instanceref DATA9_reg_14_))
           (portref (member parallel_data 1) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_15_ "data_in_9[15]") (joined
           (portref D (instanceref DATA9_reg_15_))
           (portref (member parallel_data 0) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_1_ "data_in_9[1]") (joined
           (portref D (instanceref DATA9_reg_1_))
           (portref (member parallel_data 14) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_2_ "data_in_9[2]") (joined
           (portref D (instanceref DATA9_reg_2_))
           (portref (member parallel_data 13) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_3_ "data_in_9[3]") (joined
           (portref D (instanceref DATA9_reg_3_))
           (portref (member parallel_data 12) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_4_ "data_in_9[4]") (joined
           (portref D (instanceref DATA9_reg_4_))
           (portref (member parallel_data 11) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_5_ "data_in_9[5]") (joined
           (portref D (instanceref DATA9_reg_5_))
           (portref (member parallel_data 10) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_6_ "data_in_9[6]") (joined
           (portref D (instanceref DATA9_reg_6_))
           (portref (member parallel_data 9) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_7_ "data_in_9[7]") (joined
           (portref D (instanceref DATA9_reg_7_))
           (portref (member parallel_data 8) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_8_ "data_in_9[8]") (joined
           (portref D (instanceref DATA9_reg_8_))
           (portref (member parallel_data 7) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net (rename data_in_9_9_ "data_in_9[9]") (joined
           (portref D (instanceref DATA9_reg_9_))
           (portref (member parallel_data 6) (instanceref deserializer9))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net deserializer10_i_1_n_0 (joined
           (portref O (instanceref deserializer10_i_1))
@@ -40484,6 +41174,8 @@
           (portref I0 (instanceref sck_or_i_1))
           (portref Q (instanceref sck_or_reg))
           )
+
+           (property MARK_DEBUG (boolean (true)))
          )
          (net sck_or_i_1_n_0 (joined
           (portref D (instanceref sck_or_reg))
@@ -40521,8 +41213,6 @@
           (portref Q (instanceref sync_r_reg))
           (portref sync)
           )
-
-           (property MARK_DEBUG (boolean (true)))
          )
          (net sysclk_in (joined
           (portref I (instanceref BUFG_inst1))
@@ -40554,14 +41244,24 @@
            (property tclkdivclkh (string "8'b00110010"))
            (property clk_div_r_length (string "8'b00110010"))
            (property F_DIV (string "10'b0000000100"))
+           (property A1 (string "4'b0000"))
+           (property A2 (string "4'b0001"))
+           (property A3 (string "4'b0010"))
+           (property A4 (string "4'b0011"))
+           (property A5 (string "4'b0100"))
+           (property A6 (string "4'b0101"))
+           (property A7 (string "4'b0110"))
+           (property A8 (string "4'b0111"))
+           (property A9 (string "4'b1000"))
+           (property A10 (string "4'b1001"))
      )
    )
   )
 (comment "Reference To The Cell Of Highest Level")
 
-  (design ADC_REC_LVDS
-    (cellref ADC_REC_LVDS (libraryref work))
-    (property XLNX_PROJ_DIR (string "F:/VIVADO_project/project_ADC_LVDS_V2017.2_refined"))
+  (design CPS_ReadOut_TOP
+    (cellref CPS_ReadOut_TOP (libraryref work))
+    (property XLNX_PROJ_DIR (string "F:/VIVADO_project/CPS_ReadOut_1.0_IPpackage"))
     (property (rename PHYSOPT_VERSION "PHYSOPT.VERSION") (string "2017.2_7"))
     (property part (string "xc7k325tffg900-2"))
   )

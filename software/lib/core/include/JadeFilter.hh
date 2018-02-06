@@ -12,7 +12,10 @@ public:
   
 private:
   std::string m_options;
-
+  size_t m_ev_print;
+  size_t m_ev_n;
+  
+  
 };
 
 

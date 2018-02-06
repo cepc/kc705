@@ -18,6 +18,21 @@ JadeManager::~JadeManager(){
     m_fut_async_wrt.get();
 }
 
+void JadeManager::SetReader(std::unique_ptr<JadeRead> &&rd){
+  m_rd.reset();
+  m_rd = std::move(rd);
+}
+
+void JadeManager::SetWriter(std::unique_ptr<JadeWrite> &&wrt){
+  m_wrt.reset();
+  m_wrt = std::move(wrt);
+}
+
+void JadeManager::SetFilter(std::unique_ptr<JadeFilter> &&flt){
+  m_flt.reset();
+  m_flt = std::move(flt);
+}
+
 uint64_t JadeManager::AsyncReading(){
   uint64_t n_df = 0;
   while (m_is_running){
@@ -145,4 +160,8 @@ void JadeManager::Stop(){
   m_qu_ev_to_dcd=decltype(m_qu_ev_to_dcd)();
   m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
   m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
+
+  m_rd.reset();
+  m_flt.reset();
+  m_wrt.reset();
 }

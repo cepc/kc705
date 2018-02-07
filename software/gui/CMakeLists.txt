@@ -1,9 +1,7 @@
-project(jadedaqgui)
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
-
-include(CMakeDependentOption)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+option(JADE_BUILD_GUI "JADE_GUI_BUILD" ON)
+if(NOT JADE_BUILD_GUI)
+    return()
+endif()
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
@@ -21,9 +19,13 @@ qt5_wrap_cpp(GUI_HEADERS_MOC ${GUI_MOCS})
 file(GLOB GUI_RES qrc/*.qrc)
 qt5_add_resources(GUI_RES_RCC ${GUI_RES})
 
-
 set(GUI_APP app/main_gui.cpp)
 
+set(JADE_GUI JadeGUI)
+
 # Executable
-add_executable(JadeDAQGUI ${GUI_APP} ${GUI_SRC} ${GUI_HEADERS_MOC} ${GUI_FORMS_UIC} ${GUI_RES_RCC})
-qt5_use_modules(JadeDAQGUI Widgets)
+add_executable(${JADE_GUI} ${GUI_APP} ${GUI_SRC} ${GUI_HEADERS_MOC} ${GUI_FORMS_UIC} ${GUI_RES_RCC})
+qt5_use_modules(${JADE_GUI} Widgets)
+
+install(TARGETS ${JADE_GUI}
+    DESTINATION bin)

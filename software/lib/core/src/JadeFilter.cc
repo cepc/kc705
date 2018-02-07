@@ -1,5 +1,7 @@
 #include  "JadeFilter.hh"
 
+using namespace std::chrono_literals;
+
 JadeFilter::JadeFilter(const std::string &options)
   :m_options(options){
   m_ev_n = 0;

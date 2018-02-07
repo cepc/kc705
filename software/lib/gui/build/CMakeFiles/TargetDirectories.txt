@@ -1,0 +1,3 @@
+/home/chenlj/Documents/Code/kc705/software/lib/gui/build/CMakeFiles/rebuild_cache.dir
+/home/chenlj/Documents/Code/kc705/software/lib/gui/build/CMakeFiles/edit_cache.dir
+/home/chenlj/Documents/Code/kc705/software/lib/gui/build/CMakeFiles/JadeDAQGUI.dir

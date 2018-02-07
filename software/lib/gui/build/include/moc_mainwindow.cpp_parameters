@@ -1,0 +1,7 @@
+-I/home/chenlj/Documents/Code/kc705/software/lib/gui/include
+-I/home/chenlj/Documents/Code/kc705/software/lib/gui/build
+-I/home/chenlj/Documents/Code/kc705/software/lib/gui
+-I/home/chenlj/Documents/Code/kc705/software/lib/gui/build
+-o
+/home/chenlj/Documents/Code/kc705/software/lib/gui/build/include/moc_mainwindow.cpp
+/home/chenlj/Documents/Code/kc705/software/lib/gui/include/mainwindow.h

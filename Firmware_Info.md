@@ -17,13 +17,13 @@ Kintex\-7 FPGA KC705
 \[  **Register Table**  \]
   
 | Address | Value | Description |
-|--:|:--:|:--:|
+|--:|:--:|:--|
 | 1       |  15   |  Reset      |
 | 2       |  10   |  Set        |
 | 3       |  15   |  Start      |
 | 4       |  15   |  Stop       |
 | 5       |       | (reserved)  |
-| 6       |       | (reserved   |
+| 6       |       | (reserved)  |
 | 7     || FIFO Full Flag (value = 1, when FIFO is full, otherwise 0 ) |
 | 8       |       |  Sensor Chip address (default = 0 is set in the firmware) |
 | 9       |       | (reserved) |

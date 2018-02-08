@@ -3,7 +3,7 @@ import time
 
 def run(infile, outfile, regfile, run_time):
     
-    command1 = "./bin/ManagerTest "
+    command1 = "ManagerTest "
     command2 = "-r " + regfile + "  "
     command3 = "-i " + infile  + "  "
     command4 = "-o " + outfile + "  "
@@ -14,23 +14,23 @@ def run(infile, outfile, regfile, run_time):
     os.system(command)
 
 
-def sim_take():
-    infile = "/tmp/test_pipe" 
+def sim_take(run_time, sleep_time, n):
+    infile = "../../data/2017-12-23-1.dat" 
     outfile = "/tmp/test_out" 
     regfile = "/tmp/test_reg"
-    run_time = 10000 
-    for i in range(0,10):
+    run_time = run_time * 1000 #s
+    for i in range(0, n):
         run(infile, outfile, regfile, run_time)
-        time.sleep(1)
+        time.sleep(sleep_time)
 
 def win_take(run_time, n):
     infile = "//./xillybus_read_32" 
     outfile = "output" 
     regfile = "//./xillybus_mem_8"
     run_time = run_time * 1000 #s
-    for i in range(0,n):
+    for i in range(0, n):
         run(infile, outfile, regfile, run_time)
         time.sleep(1)
 
 if __name__ == "__main__":
-    win_take(100,10)
+    sim_take(10, 1, 10)

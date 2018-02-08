@@ -16,6 +16,8 @@ Read register:
 > memread.exe  \\\\.\\xillybus_mem_8  [address]
 
 | Address | Value | Description |
+|:--|--:|:--:|
+|align left | align center | align center |
 | 1       |  15   |  Reset      |
 | 2       |  10   |  Set        |
 | 3       |  15   |  Start      |

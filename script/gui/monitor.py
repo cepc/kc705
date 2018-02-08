@@ -15,7 +15,7 @@ def display(command, path, end_time):
         elif (run_time-start_time) > 10000:
             print("Monitor overtime!!")
             break
-        time.sleep(2)
+        time.sleep(5)
 
 def monitor(path, end_time):
     sysstr = platform.system()
@@ -26,6 +26,6 @@ def monitor(path, end_time):
     display(command, path, end_time)
 
 if __name__ == "__main__":
-    monitor("/tmp", 1000)
+    monitor("/home/chenlj/Documents/Code/kc705/data/sim", 1000)
 
 

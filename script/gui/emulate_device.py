@@ -6,7 +6,6 @@ import numpy as np
 import signal
 import platform
 import os
-import time
 
 def main():
     sysstr = platform.system()
@@ -50,7 +49,6 @@ def emulate_device_windows():
                     win32file.WriteFile(p, b'\x97\x98\xFB\xFD')
                 #win32file.WriteFile(p, bits.tobytes())
                 win32file.WriteFile(p, b'\xF0\xF0\xF0\xF0')
-                time.sleep(0.1)
         except win32file.error as exc:
             if exc.winerror == 232:
                 # pipe has been closed
@@ -92,7 +90,6 @@ def emulate_device_linux():
                     os.write(p, b'\x00\x00\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07\x00\x08\x00\x09\x00\x0A\x00\x0B\x00\x0C\x00\x0D\x00\x0E\x00\x0F')
                     os.write(p, b'\x97\x98\xFB\xFD')
                 os.write(p, b'\xF0\xF0\xF0\xF0')
-                time.sleep(0.5)
         except IOError as e:
             print("Connection closed, restarting")
             continue

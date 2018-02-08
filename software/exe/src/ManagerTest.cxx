@@ -68,16 +68,21 @@ int main(int argc, char **argv){
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
   
   auto preg = new JadeRegCtrl(opt_reg);
-  preg->WriteByte(4, 15);
+  preg->WriteByte(4, 15); // make sure previous run is stopped
   std::this_thread::sleep_for(100ms);
-  preg->WriteByte(3, 15);
   auto pman = new JadeManager();
   pman->SetReader(std::make_unique<JadeRead>(opt_data_input, ""));
   pman->SetFilter(std::make_unique<JadeFilter>(std::to_string(ev_print)));
   pman->SetWriter(std::make_unique<JadeWrite>(data_output_path, ""));
-  pman->Start();
-  preg->WriteByte(4, 15);
+
+  preg->WriteByte(3, 15); // start fifo push (adc -> fifo)
+  
+  pman->Start(); // start fifo pop (fifo->pc) multiple threads start
   std::this_thread::sleep_for(std::chrono::milliseconds(time_run));
+
+
+  preg->WriteByte(4, 15);
+
   pman->Stop();
   delete pman;
   return 0;

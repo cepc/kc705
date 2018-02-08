@@ -23,14 +23,14 @@ def sim_take():
         run(infile, outfile, regfile, run_time)
         time.sleep(1)
 
-def win_take():
+def win_take(run_time, n):
     infile = "//./xillybus_read_32" 
     outfile = "output" 
     regfile = "//./xillybus_mem_8"
-    run_time = 1000000  # ms
-    for i in range(0,10):
+    run_time = run_time * 1000 #s
+    for i in range(0,n):
         run(infile, outfile, regfile, run_time)
         time.sleep(1)
 
 if __name__ == "__main__":
-    win_take()
+    win_take(100,10)

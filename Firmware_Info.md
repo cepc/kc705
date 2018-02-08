@@ -1,4 +1,4 @@
-# KC705@Firmware Information
+# KC705 Firmware Information
 Kintex\-7 FPGA KC705
 
 #### Version 1.1: Last update ( 02/05/2018 )
@@ -14,7 +14,7 @@ Kintex\-7 FPGA KC705
 > memread.exe  \\\\.\\xillybus_mem_8  [address]
 
   
-\[  ## Register Table \]
+\[  **Register Table**  \]
   
 | Address | Value | Description |
 |--:|:--:|:--:|

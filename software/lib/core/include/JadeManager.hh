@@ -17,8 +17,12 @@ class DLLEXPORT JadeManager{
  public:
   JadeManager();
   virtual ~JadeManager();
-  void Start(const std::string &file_in,
-	     const std::string &file_out);
+
+  void SetReader(std::unique_ptr<JadeRead> &&rd);
+  void SetWriter(std::unique_ptr<JadeWrite> &&wrt);
+  void SetFilter(std::unique_ptr<JadeFilter> &&flt);
+  
+  void Start();
   void Stop();
  private:
   uint64_t AsyncReading();

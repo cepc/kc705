@@ -18,6 +18,21 @@ JadeManager::~JadeManager(){
     m_fut_async_wrt.get();
 }
 
+void JadeManager::SetReader(std::unique_ptr<JadeRead> &&rd){
+  m_rd.reset();
+  m_rd = std::move(rd);
+}
+
+void JadeManager::SetWriter(std::unique_ptr<JadeWrite> &&wrt){
+  m_wrt.reset();
+  m_wrt = std::move(wrt);
+}
+
+void JadeManager::SetFilter(std::unique_ptr<JadeFilter> &&flt){
+  m_flt.reset();
+  m_flt = std::move(flt);
+}
+
 uint64_t JadeManager::AsyncReading(){
   uint64_t n_df = 0;
   while (m_is_running){
@@ -53,8 +68,6 @@ uint64_t JadeManager::AsyncDecoding(){
     m_qu_ev_to_dcd.pop();
     lk_in.unlock();
     df->Decode();
-	if(n_df%10000 == 0)
-		df->Print(std::cout);
     std::unique_lock<std::mutex> lk_out(m_mx_ev_to_dcd);
     m_qu_ev_to_flt.push(std::move(df));
     n_df ++;
@@ -112,18 +125,18 @@ uint64_t JadeManager::AsyncWriting(){
   return n_df;
 }
 
-void JadeManager::Start(const std::string &file_in,
-			const std::string &file_out){
+void JadeManager::Start(){
+  if(!m_rd || !m_flt || !m_wrt){
+    std::cerr<<"JadeManager: m_rd or m_flt or m_wrt is not set"<<std::endl;
+    throw;
+  }
+  
   m_is_running = true;
-  m_rd.reset(new JadeRead(file_in, ""));
-  m_flt.reset(new JadeFilter(""));
-  m_wrt.reset(new JadeWrite(file_out, ""));
-
   m_fut_async_rd = std::async(std::launch::async,
   			      &JadeManager::AsyncReading, this);
 
   m_fut_async_dcd = std::async(std::launch::async,
-  			      &JadeManager::AsyncDecoding, this);
+			       &JadeManager::AsyncDecoding, this);
   
   m_fut_async_flt = std::async(std::launch::async,
   			       &JadeManager::AsyncFiltering, this);
@@ -145,4 +158,8 @@ void JadeManager::Stop(){
   m_qu_ev_to_dcd=decltype(m_qu_ev_to_dcd)();
   m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
   m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
+
+  m_rd.reset();
+  m_flt.reset();
+  m_wrt.reset();
 }

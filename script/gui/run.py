@@ -19,16 +19,24 @@ def set_logger(logfile):
     return logger
 
 def subrun(infile, outfile, regfile, run_time):
-    listcmd = ["/home/chenlj/Documents/Code/kc705/bin/ManagerTest","-r", regfile, "-i", infile,"-o",outfile,"-s",str(run_time)]
+    if(platform.system() == "Windows"):
+        exefile = "D:/code/JadePixDAQ/kc705/bin/ManagerTest.exe"
+    else:
+        exefile = "/home/chenlj/Documents/Code/kc705/bin/ManagerTest"
+    
+    listcmd = [exefile,"-r", regfile, "-i", infile,"-o",outfile,"-s",str(run_time)]
     byte_return = subprocess.run(listcmd)
     return byte_return
 
 def sim_take(run_time, n):
     logger =  set_logger("test.log")
     if(platform.system() == "Windows"):
-        infile = "D:/code/JadePixDAQ/kc705/data/2017-12-23-1.dat" 
-        outfile = "D:/code/JadePixDAQ/kc705/data/tmp/output/test" 
-        regfile = "D:/code/JadePixDAQ/kc705/data/tmp/test_reg"
+        import win32con
+        import win32file
+        win32file.DefineDosDevice(win32con.DDD_RAW_TARGET_PATH, r'xillybus_read_32', r'\??\GLOBAL\pipe\test_pipe')
+        infile = "//./xillybus_read_32" 
+        outfile = "E:/data/tmp/output/test" 
+        regfile = "E:/data/tmp/test_reg"
     else:
         infile = "/tmp/test_pipe" 
         outfile = "/home/chenlj/Documents/Code/kc705/data/sim/test" 

@@ -76,14 +76,11 @@ int main(int argc, char **argv){
   pman->SetWriter(std::make_unique<JadeWrite>(data_output_path, ""));
 
   preg->WriteByte(3, 15); // start fifo push (adc -> fifo)
-  
   pman->Start(); // start fifo pop (fifo->pc) multiple threads start
   std::this_thread::sleep_for(std::chrono::milliseconds(time_run));
-
-
-  preg->WriteByte(4, 15);
-
   pman->Stop();
+  preg->WriteByte(4, 15);
+  
   delete pman;
   return 0;
 }

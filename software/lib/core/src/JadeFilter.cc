@@ -14,9 +14,9 @@ JadeFilter::~JadeFilter(){
 }
 
 JadeDataFrameUP JadeFilter::Filter(JadeDataFrameUP &&df) const {
-  if(m_ev_n%m_ev_print == 0){
-    df->Print(std::cout);
-  }
+  //if(m_ev_n%m_ev_print == 0){
+  //  df->Print(std::cout);
+  //}
   return std::move(df);
 }
 

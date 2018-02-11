@@ -30,10 +30,10 @@ register but no effect)
 | 7     || FIFO Full Flag (value = 1, when FIFO is full, otherwise 0 ) |
 | 8       |       |  Sensor Chip address (default = 0 is set in the firmware) |
 | 9       |       | (reserved) |
-| 10      |       | <span style=hcolor: red; g>Disabled</span>  |
-| 11      |       | <font color=hDisabledh></font>  |
-| 12      |       | <font color=hDisabledh></font>  |
-| 13      |       | <font color=hDisabledh></font>  |
+| 10      |       | **Disabled**  |
+| 11      |       | **Disabled**  |
+| 12      |       | **Disabled**  |
+| 13      |       |  **Disabled** |
 | 14      |       | (reserved) |
 | 15      |       | (reserved) |
 | 16      |       | (reserved)|

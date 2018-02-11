@@ -43,6 +43,7 @@ set files [list \
  "[file normalize "$proj_dir/HDL/user_module/gen_user_command.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/rec_sample_data.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/recieve_adc_packet.v"]"\
+ "[file normalize "$proj_dir/HDL/user_module/regen_ctrl_sig.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/set_chip_addr.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/set_data.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/state_control.v"]"\

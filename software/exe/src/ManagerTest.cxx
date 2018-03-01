@@ -1,6 +1,7 @@
 #include "JadeManager.hh"
 #include "JadeRegCtrl.hh"
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 #include <thread>
 #include <ctime>
@@ -8,7 +9,7 @@
 using namespace std::chrono_literals;
 
 int main(int argc, char **argv){
-  std::cout<<"options: -i <input_data_path> -o <output_data_path> -r <register_path> -s <run_time_milliseconds>"<<std::endl;
+  std::cout<<"options: -i <input_data_path> -o <output_data_path> -r <register_path> -s <run_time_milliseconds> -p <print_per_N_events>"<<std::endl;
   
   std::string opt_data_input = "//./xillybus_read_32";
   std::string opt_reg = "//./xillybus_mem_8";
@@ -67,6 +68,7 @@ int main(int argc, char **argv){
   std::cout<< "{time_run:"<<time_run<<"}"<<std::endl;
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
   
+
   auto preg = new JadeRegCtrl(opt_reg);
   preg->WriteByte(4, 15); // make sure previous run is stopped
   std::this_thread::sleep_for(100ms);
@@ -77,6 +79,14 @@ int main(int argc, char **argv){
 
   preg->WriteByte(3, 15); // start fifo push (adc -> fifo)
   std::cout << "After starting fifo push (adc->fifo)" << std::endl; 
+
+  {
+    auto now = std::chrono::system_clock::now();
+    auto now_c = std::chrono::system_clock::to_time_t(now);
+    auto now_str = std::put_time(std::localtime(&now_c), "%c");
+    std::cout << "=================start at "<< now_str <<"================="<< std::endl;
+  }
+
   pman->Start(); // start fifo pop (fifo->pc) multiple threads start
   std::cout << "After starting fifo pop (fifo->pc)" << std::endl; 
   std::this_thread::sleep_for(std::chrono::milliseconds(time_run));
@@ -85,7 +95,12 @@ int main(int argc, char **argv){
   std::cout << "After stopping fifo pop (fifo->pc)" << std::endl; 
   preg->WriteByte(4, 15);
   std::cout << "After stoping fifo push (adc->fifo)" << std::endl; 
-  
   delete pman;
+  {
+    auto now = std::chrono::system_clock::now();
+    auto now_c = std::chrono::system_clock::to_time_t(now);
+    auto now_str = std::put_time(std::localtime(&now_c), "%c");
+    std::cout << "=================eixt at "<< now_str<<"================="<< std::endl; 
+  }
   return 0;
 }

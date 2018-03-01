@@ -52,27 +52,7 @@ uint64_t JadeManager::AsyncReading(){
   }
   return n_df;
 }
-/*
-uint64_t JadeManager::AsyncReading(){
-  uint64_t n_df = 0;
-  while (m_is_running){
-    size_t nframe_per_read = 10;
-    auto v_df = m_rd->Read(nframe_per_read, 10ms);
-    size_t nframe_per_read_r = v_df.size();
 
-    std::unique_lock<std::mutex> lk_out(m_mx_ev_to_wrt);
-    for(auto &&df: v_df){
-      m_qu_ev_to_wrt.push(std::move(df));
-      n_df ++;
-    }
-    lk_out.unlock();
-    m_cv_valid_ev_to_wrt.notify_all();
-    if(nframe_per_read_r < nframe_per_read)
-      break;
-  }
-  return n_df;
-}
-*/
 uint64_t JadeManager::AsyncDecoding(){
   uint64_t n_df = 0;
   while(m_is_running){
@@ -146,11 +126,10 @@ uint64_t JadeManager::AsyncWriting(){
 }
 
 void JadeManager::Start(){
-  //if(!m_rd || !m_flt || !m_wrt){
-  //  std::cerr<<"JadeManager: m_rd or m_flt or m_wrt is not set"<<std::endl;
-  //  throw;
-  //}
-
+  if(!m_rd || !m_flt || !m_wrt){
+    std::cerr<<"JadeManager: m_rd or m_flt or m_wrt is not set"<<std::endl;
+    throw;
+  }
 
   m_is_running = true;
   m_fut_async_rd = std::async(std::launch::async,

@@ -72,5 +72,5 @@ def win_take(run_time, n):
         time.sleep(sleep_time)
 
 if __name__ == "__main__":
-    win_take(5, 1)
+    win_take(120, 1)
 

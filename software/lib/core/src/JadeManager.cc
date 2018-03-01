@@ -57,7 +57,7 @@ uint64_t JadeManager::AsyncDecoding(){
   uint64_t n_df = 0;
   while(m_is_running){
     std::unique_lock<std::mutex> lk_in(m_mx_ev_to_dcd);
-    if(m_qu_ev_to_dcd.empty()){
+    while(m_qu_ev_to_dcd.empty()){
       while(m_cv_valid_ev_to_dcd.wait_for(lk_in, 10ms) ==
           std::cv_status::timeout){
         if(!m_is_running)
@@ -81,7 +81,7 @@ uint64_t JadeManager::AsyncFiltering(){
   uint64_t n_df = 0;
   while(m_is_running){
     std::unique_lock<std::mutex> lk_in(m_mx_ev_to_flt);
-    if(m_qu_ev_to_flt.empty()){
+    while(m_qu_ev_to_flt.empty()){
       while(m_cv_valid_ev_to_flt.wait_for(lk_in, 10ms) ==
           std::cv_status::timeout){
         if(!m_is_running){
@@ -89,6 +89,7 @@ uint64_t JadeManager::AsyncFiltering(){
         }
       }
     }
+
     auto df = std::move(m_qu_ev_to_flt.front());
     m_qu_ev_to_flt.pop();
     lk_in.unlock();
@@ -108,7 +109,7 @@ uint64_t JadeManager::AsyncWriting(){
   uint64_t n_df = 0;
   while(m_is_running){
     std::unique_lock<std::mutex> lk_in(m_mx_ev_to_wrt);
-    if(m_qu_ev_to_wrt.empty()){
+    while(m_qu_ev_to_wrt.empty()){
       while(m_cv_valid_ev_to_wrt.wait_for(lk_in, 10ms)
           ==std::cv_status::timeout){
         if(!m_is_running){

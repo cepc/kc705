@@ -36,12 +36,12 @@ JadeRead::~JadeRead(){
   }
 }
 
-std::vector<JadeDataFrameUP>
+std::vector<JadeDataFrameSP>
 JadeRead::Read(size_t nframe,
 	       const std::chrono::milliseconds &timeout){
   size_t size_buf = FRAME_SIZE * nframe;
   m_buf.resize(size_buf);
-  std::vector<JadeDataFrameUP> v_df;
+  std::vector<JadeDataFrameSP> v_df;
   v_df.reserve(nframe);
   
   size_t size_filled = 0;

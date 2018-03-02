@@ -13,11 +13,11 @@ JadeFilter::~JadeFilter(){
 
 }
 
-JadeDataFrameUP JadeFilter::Filter(JadeDataFrameUP &&df){
+JadeDataFrameSP JadeFilter::Filter(JadeDataFrameSP df){
   if(m_ev_n%m_ev_print == 0){
     df->Print(std::cout);
   }
   m_ev_n++;
-  return std::move(df);
+  return df;
 }
 

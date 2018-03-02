@@ -7,30 +7,22 @@ JadeManager::JadeManager()
   }
 
 JadeManager::~JadeManager(){
-  m_is_running = false;
-  if(m_fut_async_rd.valid())
-    m_fut_async_rd.get();
-  if(m_fut_async_dcd.valid())
-    m_fut_async_dcd.get();
-  if(m_fut_async_flt.valid())
-    m_fut_async_flt.get();
-  if(m_fut_async_wrt.valid())
-    m_fut_async_wrt.get();
+  Stop();
 }
 
-void JadeManager::SetReader(std::unique_ptr<JadeRead> &&rd){
+void JadeManager::SetReader(JadeReadSP rd){
   m_rd.reset();
-  m_rd = std::move(rd);
+  m_rd = rd;
 }
 
-void JadeManager::SetWriter(std::unique_ptr<JadeWrite> &&wrt){
+void JadeManager::SetWriter(JadeWriteSP wrt){
   m_wrt.reset();
-  m_wrt = std::move(wrt);
+  m_wrt = wrt;
 }
 
-void JadeManager::SetFilter(std::unique_ptr<JadeFilter> &&flt){
+void JadeManager::SetFilter(JadeFilterSP flt){
   m_flt.reset();
-  m_flt = std::move(flt);
+  m_flt = flt;
 }
 
 uint64_t JadeManager::AsyncReading(){
@@ -42,7 +34,7 @@ uint64_t JadeManager::AsyncReading(){
 
     std::unique_lock<std::mutex> lk_out(m_mx_ev_to_dcd);
     for(auto &&df: v_df){
-      m_qu_ev_to_dcd.push(std::move(df));
+      m_qu_ev_to_dcd.push(df);
       n_df ++;
     }
     lk_out.unlock();
@@ -64,12 +56,12 @@ uint64_t JadeManager::AsyncDecoding(){
           return n_df;
       }
     }
-    auto df = std::move(m_qu_ev_to_dcd.front());
+    auto df = m_qu_ev_to_dcd.front();
     m_qu_ev_to_dcd.pop();
     lk_in.unlock();
     df->Decode();
     std::unique_lock<std::mutex> lk_out(m_mx_ev_to_flt);
-    m_qu_ev_to_flt.push(std::move(df));
+    m_qu_ev_to_flt.push(df);
     n_df ++;
     lk_out.unlock();
     m_cv_valid_ev_to_flt.notify_all();   
@@ -89,14 +81,13 @@ uint64_t JadeManager::AsyncFiltering(){
         }
       }
     }
-
-    auto df = std::move(m_qu_ev_to_flt.front());
+    auto df = m_qu_ev_to_flt.front();
     m_qu_ev_to_flt.pop();
     lk_in.unlock();
-    auto df_r = m_flt->Filter(std::move(df));
+    auto df_r = m_flt->Filter(df);
     if(df_r){
       std::unique_lock<std::mutex> lk_out(m_mx_ev_to_wrt);
-      m_qu_ev_to_wrt.push(std::move(df_r));
+      m_qu_ev_to_wrt.push(df_r);
       n_df ++;
       lk_out.unlock();
       m_cv_valid_ev_to_wrt.notify_all();
@@ -117,10 +108,10 @@ uint64_t JadeManager::AsyncWriting(){
         }
       }
     }
-    auto df = std::move(m_qu_ev_to_wrt.front());
+    auto df = m_qu_ev_to_wrt.front();
     m_qu_ev_to_wrt.pop();
     lk_in.unlock();
-    m_wrt->Write(std::move(df));
+    m_wrt->Write(df);
     n_df ++;
   }
   return n_df;

@@ -13,14 +13,16 @@
 #include <future>
 #include <condition_variable>
 
+
+
 class DLLEXPORT JadeManager{
  public:
   JadeManager();
   virtual ~JadeManager();
 
-  void SetReader(std::unique_ptr<JadeRead> &&rd);
-  void SetWriter(std::unique_ptr<JadeWrite> &&wrt);
-  void SetFilter(std::unique_ptr<JadeFilter> &&flt);
+  void SetReader(JadeReadSP rd);
+  void SetWriter(JadeWriteSP wrt);
+  void SetFilter(JadeFilterSP flt);
   
   void Start();
   void Stop();
@@ -31,9 +33,9 @@ class DLLEXPORT JadeManager{
   uint64_t AsyncWriting();
   
  private:
-  std::unique_ptr<JadeRead> m_rd;
-  std::unique_ptr<JadeFilter> m_flt;
-  std::unique_ptr<JadeWrite> m_wrt;
+  JadeReadSP m_rd;
+  JadeFilterSP m_flt;
+  JadeWriteSP m_wrt;
   
   bool m_is_running;
   std::future<uint64_t> m_fut_async_rd;
@@ -43,9 +45,9 @@ class DLLEXPORT JadeManager{
   std::mutex m_mx_ev_to_dcd;
   std::mutex m_mx_ev_to_flt;
   std::mutex m_mx_ev_to_wrt;
-  std::queue<JadeDataFrameUP> m_qu_ev_to_dcd;
-  std::queue<JadeDataFrameUP> m_qu_ev_to_flt;
-  std::queue<JadeDataFrameUP> m_qu_ev_to_wrt;
+  std::queue<JadeDataFrameSP> m_qu_ev_to_dcd;
+  std::queue<JadeDataFrameSP> m_qu_ev_to_flt;
+  std::queue<JadeDataFrameSP> m_qu_ev_to_wrt;
   std::condition_variable m_cv_valid_ev_to_dcd;
   std::condition_variable m_cv_valid_ev_to_flt;
   std::condition_variable m_cv_valid_ev_to_wrt;

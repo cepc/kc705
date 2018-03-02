@@ -6,7 +6,7 @@ JadeWrite::JadeWrite(const std::string& path,
   m_fd = std::fopen(m_path.c_str(), "wb" );
   if(m_fd == NULL){
     std::cerr<<"JadeWrite: Failed to open devfile: "<<m_path<<"\n";
-    // throw;
+    throw;
   }
 }
 
@@ -15,12 +15,11 @@ JadeWrite::~JadeWrite(){
     std::fclose(m_fd);
 }
 
-void JadeWrite::Write(JadeDataFrameUP &&df){
+void JadeWrite::Write(JadeDataFrameSP df){
   if(!df)
     throw;
   std::string &rawstring = df->RawDataString();
   if(rawstring.size()){
     std::fwrite(&(rawstring.at(0)), 1, rawstring.size(), m_fd);
-    //std::cout<< "writing:"<< df->RawDataString().size()<<std::endl;
   }
 }

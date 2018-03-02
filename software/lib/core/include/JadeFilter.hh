@@ -13,16 +13,16 @@ class DLLEXPORT JadeFilter{
 public:
   JadeFilter(const std::string &options);
   virtual ~JadeFilter();
-  virtual JadeDataFrameUP Filter(JadeDataFrameUP &&df);
+  virtual JadeDataFrameSP Filter(JadeDataFrameSP df);
   
 private:
   std::string m_options;
   size_t m_ev_print;
   size_t m_ev_n;
   
-  
 };
 
+using JadeFilterSP = std::shared_ptr<JadeFilter>;
 
 
 #endif

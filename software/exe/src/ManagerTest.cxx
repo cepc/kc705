@@ -67,15 +67,14 @@ int main(int argc, char **argv){
   std::cout<< "{data_output_path:"<<data_output_path<<"}"<<std::endl;
   std::cout<< "{time_run:"<<time_run<<"}"<<std::endl;
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
-  
 
   auto preg = new JadeRegCtrl(opt_reg);
   preg->WriteByte(4, 15); // make sure previous run is stopped
   std::this_thread::sleep_for(100ms);
   auto pman = new JadeManager();
-  pman->SetReader(std::make_unique<JadeRead>(opt_data_input, ""));
-  pman->SetFilter(std::make_unique<JadeFilter>(std::to_string(ev_print)));
-  pman->SetWriter(std::make_unique<JadeWrite>(data_output_path, ""));
+  pman->SetReader(std::make_shared<JadeRead>(opt_data_input, ""));
+  pman->SetFilter(std::make_shared<JadeFilter>(std::to_string(ev_print)));
+  pman->SetWriter(std::make_shared<JadeWrite>(data_output_path, ""));
 
   preg->WriteByte(3, 15); // start fifo push (adc -> fifo)
   std::cout << "After starting fifo push (adc->fifo)" << std::endl; 

@@ -73,8 +73,9 @@ int main(int argc, char **argv){
   std::this_thread::sleep_for(100ms);
   auto pman = new JadeManager();
   pman->SetReader(std::make_shared<JadeRead>(opt_data_input, ""));
-  pman->SetFilter(std::make_shared<JadeFilter>(std::to_string(ev_print)));
+  pman->SetFilter(std::make_shared<JadeFilter>(""));
   pman->SetWriter(std::make_shared<JadeWrite>(data_output_path, ""));
+  pman->SetMonitor(std::make_shared<JadeMonitor>(std::to_string(ev_print)));
 
   preg->WriteByte(3, 15); // start fifo push (adc -> fifo)
   std::cout << "After starting fifo push (adc->fifo)" << std::endl; 

@@ -10,7 +10,7 @@
 
 class DLLEXPORT JadeRead{
  public:
-  JadeRead(const std::string& dev_path, const std::string options);
+  JadeRead(const std::string& dev_path, const std::string& options);
   virtual ~JadeRead();
   virtual std::vector<JadeDataFrameSP> Read(size_t nframe,
 					    const std::chrono::milliseconds &timeout);

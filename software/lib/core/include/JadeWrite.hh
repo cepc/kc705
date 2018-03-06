@@ -16,11 +16,13 @@ class DLLEXPORT JadeWrite{
  public:
   JadeWrite(const std::string& path, const std::string options);
   virtual ~JadeWrite();
-  void Write(JadeDataFrameUP &&df);
+  void Write(JadeDataFrameSP df);
  private:
   FILE* m_fd;
   std::string m_path;
   std::string m_options;
 };
+
+using JadeWriteSP = std::shared_ptr<JadeWrite>;
 
 #endif

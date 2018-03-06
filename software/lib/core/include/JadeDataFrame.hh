@@ -41,7 +41,6 @@ class DLLEXPORT JadeDataFrame{
   std::vector<int16_t> m_data;
 };
 
-using JadeDataFrameUP = std::unique_ptr<JadeDataFrame>;
-using JadeDataFramePtr = std::shared_ptr<JadeDataFrame>;
+using JadeDataFrameSP = std::shared_ptr<JadeDataFrame>;
 
 #endif

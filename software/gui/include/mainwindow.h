@@ -28,7 +28,8 @@ class MainWindow : public QMainWindow
       void Btn_Online_StopRun_Clicked();
       
       void Online_Update();
-  
+      void Draw_Online_Image();
+
   private:
     Ui::MainWindow *ui;
 

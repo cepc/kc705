@@ -1,5 +1,4 @@
 #include "JadeManager.hh"
-#include "JadeRegCtrl.hh"
 #include <iostream>
 #include <sstream>
 #include <iomanip>

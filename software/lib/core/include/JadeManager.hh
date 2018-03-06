@@ -7,6 +7,7 @@
 #include "JadeFilter.hh"
 #include "JadeWrite.hh"
 #include "JadeMonitor.hh"
+#include "JadeRegCtrl.hh"
 
 #include <string>
 #include <queue>
@@ -19,11 +20,13 @@ class DLLEXPORT JadeManager{
   JadeManager();
   virtual ~JadeManager();
 
+  void SetRegCtrl(JadeRegCtrlSP ctrl);
   void SetReader(JadeReadSP rd);
   void SetWriter(JadeWriteSP wrt);
   void SetFilter(JadeFilterSP flt);
   void SetMonitor(JadeMonitorSP mnt);
 
+  void SetRegCtrl(const std::string &arg){};
   void SetReader(const std::string &arg){};
   void SetWriter(const std::string &arg){};
   void SetFilter(const std::string &arg){};
@@ -31,6 +34,7 @@ class DLLEXPORT JadeManager{
   
   void Start();
   void Stop();
+  void Control(const std::string &arg);
  private:
   uint64_t AsyncReading();
   uint64_t AsyncDecoding();
@@ -39,6 +43,7 @@ class DLLEXPORT JadeManager{
   uint64_t AsyncMonitoring();
   
  private:
+  JadeRegCtrlSP m_ctrl;
   JadeReadSP m_rd;
   JadeFilterSP m_flt;
   JadeWriteSP m_wrt;

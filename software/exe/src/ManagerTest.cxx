@@ -84,7 +84,8 @@ int main(int argc, char **argv){
     auto now = std::chrono::system_clock::now();
     auto now_c = std::chrono::system_clock::to_time_t(now);
     auto now_str = std::put_time(std::localtime(&now_c), "%c");
-    std::cout << "=================start at "<< now_str <<"================="<< std::endl;
+    std::cout << "=================start at "<< now_str
+	      <<"================="<< std::endl;
   }
 
   pman->Start(); // start fifo pop (fifo->pc) multiple threads start
@@ -100,7 +101,8 @@ int main(int argc, char **argv){
     auto now = std::chrono::system_clock::now();
     auto now_c = std::chrono::system_clock::to_time_t(now);
     auto now_str = std::put_time(std::localtime(&now_c), "%c");
-    std::cout << "=================eixt at "<< now_str<<"================="<< std::endl; 
+    std::cout << "=================eixt at "<< now_str
+	      <<"================="<< std::endl; 
   }
   return 0;
 }

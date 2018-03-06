@@ -4,10 +4,15 @@ using namespace std::chrono_literals;
 
 JadeManager::JadeManager()
   : m_is_running(false){
-  }
+}
 
 JadeManager::~JadeManager(){
   Stop();
+}
+
+void JadeManager::SetRegCtrl(JadeRegCtrlSP ctrl){
+  m_ctrl.reset();
+  m_ctrl = ctrl;
 }
 
 void JadeManager::SetReader(JadeReadSP rd){
@@ -163,6 +168,11 @@ void JadeManager::Start(){
     throw;
   }
 
+  m_ctrl->SendCommand("STOP");
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  //m_ctrl->WaitStatus("STOPPED", std::chrono::milliseconds(1000))
+  m_ctrl->SendCommand("START"); 
+  
   m_is_running = true;
   m_fut_async_rd = std::async(std::launch::async,
       &JadeManager::AsyncReading, this);
@@ -178,9 +188,15 @@ void JadeManager::Start(){
 
   m_fut_async_mnt = std::async(std::launch::async,
       &JadeManager::AsyncMonitoring, this);
+  
+  //m_ctrl->WaitStatus("RUNNING", std::chrono::milliseconds(1000))  
 }
 
 void JadeManager::Stop(){
+  m_ctrl->SendCommand("STOP");
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  //m_ctrl->WaitStatus("STOPPED", std::chrono::milliseconds(1000))
+
   m_is_running = false;
   if(m_fut_async_rd.valid())
     m_fut_async_rd.get();
@@ -201,4 +217,10 @@ void JadeManager::Stop(){
   m_flt.reset();
   m_wrt.reset();
   m_mnt.reset();
+}
+
+void JadeManager::Control(const std::string &arg){
+  if(m_ctrl){
+    m_ctrl->SendCommand(arg);
+  }
 }

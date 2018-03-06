@@ -13,15 +13,19 @@
 #include <unistd.h>
 #endif
 
+
+#include <thread>
+#include <algorithm>
+
 JadeRegCtrl::JadeRegCtrl(const std::string& dev_path,
 			 const std::map<std::string, std::pair\
 			 <uint16_t, uint8_t>> &cmd_map)
-  :m_dev_path(dev_path), m_cmd_map(cmd_map){  
+  :m_dev_path(dev_path), m_cmd_map(cmd_map){
 }
 
 JadeRegCtrl::JadeRegCtrl(const std::string& dev_path)
   :m_dev_path(dev_path){
-  
+  m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}};  
 }
 
 JadeRegCtrl::~JadeRegCtrl(){
@@ -91,13 +95,43 @@ uint8_t JadeRegCtrl::ReadByte(uint16_t addr){
   return val;
 }
 
-void JadeRegCtrl::Command(const std::string &cmd){
-  auto addr = m_cmd_map.at(cmd).first;
-  auto val = m_cmd_map.at(cmd).second;
-  WriteByte(addr, val);
+void JadeRegCtrl::SendCommand(const std::string &cmd){
+  std::string str = cmd;
+  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+  auto addr_val = m_cmd_map.at(str);
+  WriteByte(addr_val.first, addr_val.second);
 }
 
-void JadeRegCtrl::Command(const std::string &cmd, uint8_t val){
-  auto addr = m_cmd_map.at(cmd).first;
-  WriteByte(addr, val);
+void JadeRegCtrl::SendCommand(const std::string &cmd, uint8_t val){
+  std::string str = cmd;
+  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+  auto addr_val = m_cmd_map.at(str);
+  WriteByte(addr_val.first, val);
+}
+
+uint8_t JadeRegCtrl::GetStatus(const std::string &cmd){
+  std::string str = cmd;
+  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+  auto addr_val = m_cmd_map.at(str);
+  return ReadByte(addr_val.first);
+}
+
+bool JadeRegCtrl::WaitStatus(const std::string &cmd, std::chrono::milliseconds timeout){
+  std::string str = cmd;
+  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+  auto addr_val = m_cmd_map.at(str);
+  uint16_t addr = addr_val.first;
+  uint8_t val_expected = addr_val.first;
+  auto tp_timeout =  std::chrono::system_clock::now() + timeout;
+  while(true){
+    uint8_t val_r = ReadByte(addr_val.first);
+    if(val_r == val_expected){
+      return true;
+    }
+    if(std::chrono::system_clock::now() > tp_timeout){
+      return false;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+  
 }

@@ -4,25 +4,30 @@
 #include <QMainWindow>
 
 namespace Ui {
-class MainWindow;
+  class MainWindow;
 }
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
+  public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
+  private slots:
 
-    void on_findButton_clicked();
+      void Action_Open_Triggered();
+      void Action_Save_Triggered();
+      void Action_Exit_Triggered();
 
-private:
+      void Btn_Online_StartRun_Clicked();
+      void Btn_Online_StopRun_Clicked();
+
+  private:
     Ui::MainWindow *ui;
 
-    void loadTextFile();
 };
 
 #endif // MAINWINDOW_H
+

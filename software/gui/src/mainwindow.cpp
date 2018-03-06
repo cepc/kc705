@@ -1,39 +1,58 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <Qt>
 #include <QFile>
-#include <QTextStream>
-
+#include <QFileDialog>
+#include <QDir>
+#include <QString>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+  QMainWindow(parent),
+  ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    loadTextFile();
+  ui->setupUi(this);
+  connect(ui->Action_Open, SIGNAL(triggered()), this, SLOT(Action_Open_Triggered()));
+  connect(ui->Action_Save, SIGNAL(triggered()), this, SLOT(Action_Save_Triggered()));
+  connect(ui->Action_Exit, SIGNAL(triggered()), this, SLOT(Action_Exit_Triggered()));
+
+  ui->LineEdit_Online_FilePath->setText(QDir::currentPath());
+
+  connect(ui->Btn_Online_StartRun, SIGNAL(clicked()), this, SLOT(Btn_Online_StartRun_Clicked()));
+  connect(ui->Btn_Online_StopRun, SIGNAL(clicked()), this, SLOT(Btn_Online_StopRun_Clicked()));
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+  delete ui;
 }
 
-void MainWindow::loadTextFile()
+void MainWindow::Action_Open_Triggered()
 {
-    QFile inputFile(":/input.txt");
-    inputFile.open(QIODevice::ReadOnly);
-
-    QTextStream in(&inputFile);
-    QString line = in.readAll();
-    inputFile.close();
-
-    ui->textEdit->setPlainText(line);
-    QTextCursor cursor = ui->textEdit->textCursor();
-    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
+  QString filter = "File Description (*.dat *.df *.bin)";
+  auto files = QFileDialog::getOpenFileNames(this, "Open data Files", QDir::currentPath(),filter);
+  qDebug() << "Action_Open_Triggered... ";
 }
 
-void MainWindow::on_findButton_clicked()
+void MainWindow::Action_Save_Triggered()
 {
-    QString searchString = ui->lineEdit->text();
-    ui->textEdit->find(searchString, QTextDocument::FindWholeWords);
+  QFileDialog dialog(this);
+  dialog.setWindowModality(Qt::WindowModal);
+  qDebug() << "Action_Save_Triggered... ";
 }
 
+void MainWindow::Action_Exit_Triggered()
+{
+  this->close();
+  qDebug() << "Action_Exit_Triggered... ";
+}
+
+void MainWindow::Btn_Online_StartRun_Clicked()
+{
+  qDebug() << "Btn_Online_StartRun_Clicked... ";
+}
+
+void MainWindow::Btn_Online_StopRun_Clicked()
+{
+  qDebug() << "Btn_Online_StopRun_Clicked... ";
+}

@@ -7,7 +7,8 @@ JadeManager::JadeManager()
 }
 
 JadeManager::~JadeManager(){
-  Stop();
+  if(m_is_running)
+    StopDataTaking();
 }
 
 void JadeManager::SetRegCtrl(JadeRegCtrlSP ctrl){
@@ -162,14 +163,13 @@ uint64_t JadeManager::AsyncMonitoring(){
   return n_df;
 }
 
-void JadeManager::Start(){
+void JadeManager::StartDataTaking(){
   if(!m_rd || !m_flt || !m_wrt | !m_mnt){
     std::cerr<<"JadeManager: m_rd or m_flt or m_wrt is not set"<<std::endl;
     throw;
   }
-
-  m_ctrl->SendCommand("STOP");
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  
+  //checck/wait for STOPPED status
   //m_ctrl->WaitStatus("STOPPED", std::chrono::milliseconds(1000))
   m_ctrl->SendCommand("START"); 
   
@@ -192,11 +192,13 @@ void JadeManager::Start(){
   //m_ctrl->WaitStatus("RUNNING", std::chrono::milliseconds(1000))  
 }
 
-void JadeManager::Stop(){
-  m_ctrl->SendCommand("STOP");
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  //m_ctrl->WaitStatus("STOPPED", std::chrono::milliseconds(1000))
-
+void JadeManager::StopDataTaking(){
+  if(m_ctrl){
+    m_ctrl->SendCommand("STOP");
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //m_ctrl->WaitStatus("STOPPED", std::chrono::milliseconds(1000))
+  }
+  
   m_is_running = false;
   if(m_fut_async_rd.valid())
     m_fut_async_rd.get();
@@ -212,15 +214,45 @@ void JadeManager::Stop(){
   m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
   m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
   m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
+}
 
+void JadeManager::Reset(){
+  // if(m_ctrl){
+  //   m_ctrl->SendCommand("RESET");
+  // }
+  m_is_running = false;
+  if(m_fut_async_rd.valid())
+    m_fut_async_rd.get();
+  if(m_fut_async_dcd.valid())
+    m_fut_async_dcd.get();
+  if(m_fut_async_flt.valid())
+    m_fut_async_flt.get();
+  if(m_fut_async_wrt.valid())
+    m_fut_async_wrt.get();
+  if(m_fut_async_mnt.valid())
+    m_fut_async_mnt.get();
+  m_qu_ev_to_dcd=decltype(m_qu_ev_to_dcd)();
+  m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
+  m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
+  m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
+  m_ctrl.reset();
   m_rd.reset();
   m_flt.reset();
   m_wrt.reset();
   m_mnt.reset();
 }
 
-void JadeManager::Control(const std::string &arg){
+void JadeManager::DeviceControl(const std::string &cmd){
   if(m_ctrl){
-    m_ctrl->SendCommand(arg);
+    m_ctrl->SendCommand(cmd);
   }
 }
+
+
+bool JadeManager::DeviceStatus(const std::string &status){
+  if(m_ctrl){
+    return m_ctrl->WaitStatus(status, 0ms);
+  }
+  return false;
+}
+

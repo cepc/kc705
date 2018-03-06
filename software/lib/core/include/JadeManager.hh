@@ -32,9 +32,11 @@ class DLLEXPORT JadeManager{
   void SetFilter(const std::string &arg){};
   void SetMonitor(const std::string &arg){};
   
-  void Start();
-  void Stop();
-  void Control(const std::string &arg);
+  void Reset();
+  void StartDataTaking();
+  void StopDataTaking();
+  void DeviceControl(const std::string &cmd);
+  bool DeviceStatus(const std::string &status);
  private:
   uint64_t AsyncReading();
   uint64_t AsyncDecoding();

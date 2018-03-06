@@ -13,7 +13,6 @@
 #include <unistd.h>
 #endif
 
-
 #include <thread>
 #include <algorithm>
 

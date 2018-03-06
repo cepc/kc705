@@ -28,7 +28,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Tab_Online">
      <attribute name="title">
@@ -65,15 +65,6 @@
            <property name="text">
             <string>File Name:</string>
            </property>
-          </widget>
-         </item>
-         <item row="3" column="2">
-          <widget class="QComboBox" name="ComboBox_Data_Type">
-           <item>
-            <property name="text">
-             <string>.dat</string>
-            </property>
-           </item>
           </widget>
          </item>
          <item row="0" column="1" colspan="2">
@@ -148,35 +139,22 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_13">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_22">
            <property name="text">
-            <string>Data Structure:</string>
+            <string>Events Print:</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="0" column="0">
           <widget class="QLabel" name="label_14">
            <property name="text">
-            <string>Max Events:</string>
+            <string>Time Run [ms]:</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1" colspan="2">
-          <widget class="QSpinBox" name="SpinBox_Online_DataStructure">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>2</number>
-           </property>
-           <property name="value">
-            <number>2</number>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" colspan="2">
-          <widget class="QSpinBox" name="SpinBox_Online_MaxEvents">
+          <widget class="QSpinBox" name="SpinBox_Online_TimeRun">
            <property name="minimum">
             <number>1</number>
            </property>
@@ -184,7 +162,33 @@
             <number>999999999</number>
            </property>
            <property name="value">
-            <number>100000</number>
+            <number>60</number>
+           </property>
+           <property name="displayIntegerBase">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QSpinBox" name="SpinBox_Online_evPrint">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>999999999</number>
+           </property>
+           <property name="value">
+            <number>10000</number>
+           </property>
+           <property name="displayIntegerBase">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="label_ev">
+           <property name="text">
+            <string>1/</string>
            </property>
           </widget>
          </item>
@@ -281,6 +285,13 @@
            </layout>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="Btn_Online_Config">
+         <property name="text">
+          <string>Config</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -381,13 +392,6 @@
                </size>
               </property>
              </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="Btn_Online_SimStart">
-              <property name="text">
-               <string>SimStart</string>
-              </property>
-             </widget>
             </item>
             <item>
              <widget class="QPushButton" name="Btn_Online_StartRun">

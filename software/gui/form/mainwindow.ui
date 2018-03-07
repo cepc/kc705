@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
+    <width>956</width>
     <height>886</height>
    </rect>
   </property>
@@ -23,7 +23,7 @@
      <rect>
       <x>10</x>
       <y>0</y>
-      <width>871</width>
+      <width>931</width>
       <height>831</height>
      </rect>
     </property>
@@ -139,10 +139,26 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_22">
+         <item row="2" column="1" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="label_ev">
            <property name="text">
-            <string>Events Print:</string>
+            <string>1/</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QSpinBox" name="SpinBox_Online_evPrint">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>999999999</number>
+           </property>
+           <property name="value">
+            <number>10000</number>
+           </property>
+           <property name="displayIntegerBase">
+            <number>10</number>
            </property>
           </widget>
          </item>
@@ -169,26 +185,33 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="2">
-          <widget class="QSpinBox" name="SpinBox_Online_evPrint">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_22">
+           <property name="text">
+            <string>Events Print:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_23">
+           <property name="text">
+            <string>Chip Address:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1" colspan="2">
+          <widget class="QSpinBox" name="SpinBox_Online_ChipAddress">
            <property name="minimum">
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>999999999</number>
+            <number>10</number>
            </property>
            <property name="value">
-            <number>10000</number>
+            <number>1</number>
            </property>
            <property name="displayIntegerBase">
             <number>10</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1" alignment="Qt::AlignRight">
-          <widget class="QLabel" name="label_ev">
-           <property name="text">
-            <string>1/</string>
            </property>
           </widget>
          </item>
@@ -446,23 +469,15 @@
        </item>
       </layout>
      </widget>
-     <widget class="QGroupBox" name="groupBox_8">
+     <widget class="QCustomPlot" name="customPlot" native="true">
       <property name="geometry">
        <rect>
         <x>420</x>
-        <y>0</y>
-        <width>421</width>
-        <height>791</height>
+        <y>20</y>
+        <width>481</width>
+        <height>201</height>
        </rect>
       </property>
-      <property name="title">
-       <string>Latest events</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_10">
-       <item>
-        <widget class="QCustomPlot" name="customPlot" native="true"/>
-       </item>
-      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="Tab_Offline">
@@ -869,7 +884,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
+     <width>956</width>
      <height>26</height>
     </rect>
    </property>

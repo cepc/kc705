@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 
+#include "qcustomplot.h"
 #include "monitor.hh"
+#include <vector>
 
 namespace Ui {
   class MainWindow;
@@ -27,12 +29,21 @@ class MainWindow : public QMainWindow
       void Btn_Online_StartRun_Clicked();
       void Btn_Online_StopRun_Clicked();
       
-      void Online_Update();
-      void Draw_Online_Image();
+      void Selection_Changed();    
+      void Mouse_Press();    
+      void Mouse_Wheel();    
 
   private:
     Ui::MainWindow *ui;
 
+    void Init_Online_Image();
+    void Online_Update();
+    void Draw_Online_Image();
+    QCPColorMapData* Matrix_To_Data(const std::vector<int16_t>&);
+    std::vector<int16_t> Generate_Fake_Data();
+
+    int m_nx;
+    int m_ny;
     Monitor* m_monitor;
 
 };

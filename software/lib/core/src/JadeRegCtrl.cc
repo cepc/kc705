@@ -24,7 +24,7 @@ JadeRegCtrl::JadeRegCtrl(const std::string& dev_path,
 
 JadeRegCtrl::JadeRegCtrl(const std::string& dev_path)
   :m_dev_path(dev_path){
-  m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}};  
+  m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}, {"SET",{2, 10}}, {"CHIPA1",{8, 0}}, {"CHIPA2",{8, 1}},{"CHIPA3",{8, 2}}, {"CHIPA4",{8, 3}}, {"CHIPA5",{8, 4}}, {"CHIPA6",{8, 5}}, {"CHIPA7",{8, 6}}, {"CHIPA8",{8, 7}}, {"CHIPA9",{8, 8}}, {"CHIPA10",{8, 9}}};  
 }
 
 JadeRegCtrl::~JadeRegCtrl(){

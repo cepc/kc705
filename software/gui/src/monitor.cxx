@@ -7,7 +7,7 @@
 
 using namespace std::chrono_literals;
 
-Monitor::Monitor():opt_data_input("//./xillybus_read_32"),opt_reg("//./xillybus_mem_8"),opt_time_run("60"),opt_ev_print("10000"){
+Monitor::Monitor():opt_data_input("//./xillybus_read_32"),opt_reg("//./xillybus_mem_8"),opt_time_run("60"),opt_ev_print("10000"),opt_chip_address(1){
   pman = new JadeManager();
 }
 
@@ -24,7 +24,24 @@ std::string Monitor::get_now_str(){
 }
 
 int Monitor::start_run(){
+  size_t time_run = get_run_time();
+  size_t ev_print = get_ev_print();
   
+  std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
+  pman->StartDataTaking(); 
+  std::this_thread::sleep_for(std::chrono::milliseconds(time_run));
+  pman->StopDataTaking();
+  std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
+  return 0;
+}
+
+int Monitor::stop_run(){
+  pman->StopDataTaking();
+  std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
+  return 0;
+}
+
+void Monitor::config(){
   size_t time_run = get_run_time();
   size_t ev_print = get_ev_print();
   
@@ -41,23 +58,17 @@ int Monitor::start_run(){
   std::cout<< "{data_output_path:"<<data_output_path<<"}"<<std::endl;
   std::cout<< "{time_run:"<<time_run<<"}"<<std::endl;
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
+  std::cout<< "{chip adress: CHIPA"<<opt_chip_address<<"}"<<std::endl;
 
   pman->SetRegCtrl(std::make_shared<JadeRegCtrl>(opt_reg));
   pman->SetReader(std::make_shared<JadeRead>(opt_data_input, ""));
   pman->SetFilter(std::make_shared<JadeFilter>(""));
   pman->SetWriter(std::make_shared<JadeWrite>(data_output_path, ""));
   pman->SetMonitor(std::make_shared<JadeMonitor>(std::to_string(ev_print)));
-  std::this_thread::sleep_for(200ms);
-  std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
-  pman->StartDataTaking(); 
-  std::this_thread::sleep_for(std::chrono::milliseconds(time_run));
-  pman->StopDataTaking();
-  std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
-  return 0;
-}
+  
+  std::string cmd = "CHIPA" + std::to_string(opt_chip_address);
+  pman->DeviceControl(cmd);
+  pman->DeviceControl("SET");
 
-int Monitor::stop_run(){
-  pman->StopDataTaking();
-  std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
-  return 0;
+  std::this_thread::sleep_for(200ms);
 }

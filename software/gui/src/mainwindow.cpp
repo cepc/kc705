@@ -13,9 +13,20 @@ MainWindow::MainWindow(QWidget *parent) :
   m_GUIManager(new GUIManager()),
   m_nx(48),
   m_ny(16),
-  m_state(false)
+  m_state("STOPPED")
 {
   ui->setupUi(this);
+  
+  m_object = new GUIObject();
+  m_thread = new QThread();
+  m_object->moveToThread(m_thread);
+  m_thread->start();
+  
+  connect(m_thread, SIGNAL(started()), m_object, SLOT(Thread1()), Qt::QueuedConnection);
+  connect(m_thread, SIGNAL(started()), m_object, SLOT(Thread2()), Qt::QueuedConnection);
+  connect(m_thread, SIGNAL(started()), m_object, SLOT(Thread3()), Qt::QueuedConnection);
+  
+
   connect(ui->Action_Open, SIGNAL(triggered()), this, SLOT(Action_Open_Triggered()));
   connect(ui->Action_Save, SIGNAL(triggered()), this, SLOT(Action_Save_Triggered()));
   connect(ui->Action_Exit, SIGNAL(triggered()), this, SLOT(Action_Exit_Triggered()));
@@ -28,9 +39,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
   Init_Online_Image();
 
-  m_timer = new QTimer(this);
-  connect(m_timer, SIGNAL(timeout()), this, SLOT(Online_Update()));
-  m_timer->start(1000);
+  //m_timer = new QTimer(this);
+  //connect(m_timer, SIGNAL(timeout()), this, SLOT(Online_Update()));
+  //m_timer->start(1000);
+
 }
 
 MainWindow::~MainWindow()
@@ -72,8 +84,9 @@ void MainWindow::Btn_Online_Config_Clicked()
 void MainWindow::Btn_Online_StartRun_Clicked()
 {  
   ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, false);
-  m_state = true;
+  m_state="RUNNING";
   Online_Update();
+  m_object->Thread1();
   m_GUIManager->config();
   m_GUIManager->start_run();
   qDebug() << "Btn_Online_StartRun_Clicked... ";
@@ -82,8 +95,9 @@ void MainWindow::Btn_Online_StartRun_Clicked()
 void MainWindow::Btn_Online_StopRun_Clicked()
 {
   ui->Btn_Online_StopRun->setAttribute(Qt::WA_UnderMouse, false);
-  m_state=false;
+  m_state="STOPPED";
   Online_Update();
+  m_object->Thread2();
   m_GUIManager->stop_run();
   qDebug() << "Btn_Online_StopRun_Clicked... ";
 }
@@ -92,11 +106,11 @@ void MainWindow::Online_Update()
 {
   Draw_Online_Image();
   
-  ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, m_state==false);
-  ui->Btn_Online_StartRun->setEnabled(m_state==false);
+  ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, (m_state=="STOPPED"));
+  ui->Btn_Online_StartRun->setEnabled((m_state=="STOPPED"));
 
-  ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, m_state==true);
-  ui->Btn_Online_StopRun->setEnabled(m_state==true);
+  ui->Btn_Online_StopRun->setAttribute(Qt::WA_UnderMouse, (m_state=="RUNNING"));
+  ui->Btn_Online_StopRun->setEnabled((m_state=="RUNNING"));
 
   qDebug() << "Online_Update...";
 }

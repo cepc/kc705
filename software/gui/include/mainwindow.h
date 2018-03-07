@@ -5,6 +5,7 @@
 
 #include "qcustomplot.h"
 #include "GUIManager.hh"
+#include "GUIObject.hh"
 #include <vector>
 
 namespace Ui {
@@ -48,7 +49,11 @@ class MainWindow : public QMainWindow
     GUIManager* m_GUIManager;
     QTimer* m_timer;
     
-    bool m_state;
+    std::string m_state;
+
+  public:
+    GUIObject *m_object;
+    QThread *m_thread;
 };
 
 #endif // MAINWINDOW_H

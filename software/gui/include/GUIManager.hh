@@ -1,16 +1,17 @@
-#ifndef MONITOR_HH
-#define MONITOR_HH
+#ifndef GUIManager_HH
+#define GUIManager_HH
 
 #include "JadeManager.hh"
+#include "GUIMonitor.hh"
 #include <string>
 #include <sstream>
 #include <iostream>
 
-class Monitor
+class GUIManager
 {
   public:
-    Monitor();
-    ~Monitor();
+    GUIManager();
+    ~GUIManager();
     std::string get_now_str();
 
     void set_input_data_path(std::string input_path){opt_data_input = input_path;}; 
@@ -26,11 +27,11 @@ class Monitor
     int get_chip_address(){return opt_chip_address;};
     size_t get_run_time(){return std::stoul(opt_time_run);}; 
     size_t get_ev_print(){return std::stoul(opt_ev_print);}; 
-
+    std::string get_state();
     int start_run();
     int stop_run();
     void config();
-
+  
   private:
     std::string opt_data_input;
     std::string opt_reg;
@@ -39,6 +40,8 @@ class Monitor
     std::string opt_ev_print;
     int opt_chip_address;
     JadeManager* pman;
+
 };
 
-#endif //MONITOR_HH
+
+#endif //GUIManager_HH

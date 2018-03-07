@@ -10,9 +10,10 @@
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow),
-  m_monitor(new Monitor()),
+  m_GUIManager(new GUIManager()),
   m_nx(48),
-  m_ny(16)
+  m_ny(16),
+  m_state(false)
 {
   ui->setupUi(this);
   connect(ui->Action_Open, SIGNAL(triggered()), this, SLOT(Action_Open_Triggered()));
@@ -26,12 +27,16 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->Btn_Online_StopRun, SIGNAL(clicked()), this, SLOT(Btn_Online_StopRun_Clicked()));
 
   Init_Online_Image();
+
+  m_timer = new QTimer(this);
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(Online_Update()));
+  m_timer->start(1000);
 }
 
 MainWindow::~MainWindow()
 {
   delete ui;
-  delete m_monitor;
+  delete m_GUIManager;
 }
 
 void MainWindow::Action_Open_Triggered()
@@ -56,34 +61,43 @@ void MainWindow::Action_Exit_Triggered()
 
 void MainWindow::Btn_Online_Config_Clicked()
 {
-  m_monitor->set_input_data_path("/tmp/test_pipe");
-  m_monitor->set_output_data_path("/home/chenlj/Documents/Code/kc705/data/sim/test");
-  m_monitor->set_register_data_path("/tmp/test_reg");
-  m_monitor->set_run_time(std::to_string(ui->SpinBox_Online_TimeRun->value()));
-  m_monitor->set_ev_print(std::to_string(ui->SpinBox_Online_evPrint->value()));
-  m_monitor->set_chip_address(ui->SpinBox_Online_ChipAddress->value());
-  m_monitor->config();
+  m_GUIManager->set_input_data_path("/tmp/test_pipe");
+  m_GUIManager->set_output_data_path("/home/chenlj/Documents/Code/kc705/data/sim/test");
+  m_GUIManager->set_register_data_path("/tmp/test_reg");
+  m_GUIManager->set_run_time(std::to_string(ui->SpinBox_Online_TimeRun->value()));
+  m_GUIManager->set_ev_print(std::to_string(ui->SpinBox_Online_evPrint->value()));
+  m_GUIManager->set_chip_address(ui->SpinBox_Online_ChipAddress->value());
 }
 
 void MainWindow::Btn_Online_StartRun_Clicked()
 {  
-  m_monitor->start_run();
-  Online_Update();
   ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, false);
+  m_state = true;
+  Online_Update();
+  m_GUIManager->config();
+  m_GUIManager->start_run();
   qDebug() << "Btn_Online_StartRun_Clicked... ";
 }
 
 void MainWindow::Btn_Online_StopRun_Clicked()
 {
-  m_monitor->stop_run();
-  Online_Update();
   ui->Btn_Online_StopRun->setAttribute(Qt::WA_UnderMouse, false);
+  m_state=false;
+  Online_Update();
+  m_GUIManager->stop_run();
   qDebug() << "Btn_Online_StopRun_Clicked... ";
 }
 
 void MainWindow::Online_Update()
 {
   Draw_Online_Image();
+  
+  ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, m_state==false);
+  ui->Btn_Online_StartRun->setEnabled(m_state==false);
+
+  ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, m_state==true);
+  ui->Btn_Online_StopRun->setEnabled(m_state==true);
+
   qDebug() << "Online_Update...";
 }
 

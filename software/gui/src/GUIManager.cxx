@@ -1,5 +1,5 @@
 #include "JadeRegCtrl.hh"
-#include "monitor.hh"
+#include "GUIManager.hh"
 #include <iomanip>
 #include <chrono>
 #include <thread>
@@ -7,15 +7,15 @@
 
 using namespace std::chrono_literals;
 
-Monitor::Monitor():opt_data_input("//./xillybus_read_32"),opt_reg("//./xillybus_mem_8"),opt_time_run("60"),opt_ev_print("10000"),opt_chip_address(1){
+GUIManager::GUIManager():opt_data_input("//./xillybus_read_32"),opt_reg("//./xillybus_mem_8"),opt_time_run("60"),opt_ev_print("10000"),opt_chip_address(1){
   pman = new JadeManager();
 }
 
-Monitor::~Monitor(){
+GUIManager::~GUIManager(){
   delete pman;
 }
 
-std::string Monitor::get_now_str(){
+std::string GUIManager::get_now_str(){
     auto now = std::chrono::system_clock::now();
     auto now_c = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
@@ -23,7 +23,7 @@ std::string Monitor::get_now_str(){
     return ss.str();
 }
 
-int Monitor::start_run(){
+int GUIManager::start_run(){
   size_t time_run = get_run_time();
   size_t ev_print = get_ev_print();
   
@@ -35,13 +35,13 @@ int Monitor::start_run(){
   return 0;
 }
 
-int Monitor::stop_run(){
+int GUIManager::stop_run(){
   pman->StopDataTaking();
   std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
   return 0;
 }
 
-void Monitor::config(){
+void GUIManager::config(){
   size_t time_run = get_run_time();
   size_t ev_print = get_ev_print();
   
@@ -64,11 +64,21 @@ void Monitor::config(){
   pman->SetReader(std::make_shared<JadeRead>(opt_data_input, ""));
   pman->SetFilter(std::make_shared<JadeFilter>(""));
   pman->SetWriter(std::make_shared<JadeWrite>(data_output_path, ""));
-  pman->SetMonitor(std::make_shared<JadeMonitor>(std::to_string(ev_print)));
-  
+  auto pmonitor = std::make_shared<GUIMonitor>(std::to_string(ev_print));
+  pman->SetMonitor(std::static_pointer_cast<JadeMonitor>(pmonitor));
+
   std::string cmd = "CHIPA" + std::to_string(opt_chip_address);
   pman->DeviceControl(cmd);
   pman->DeviceControl("SET");
-
   std::this_thread::sleep_for(200ms);
+}
+
+std::string GUIManager::get_state(){
+  if(!pman->DeviceStatus("START")){ 
+    return "START";
+  }else if(!pman->DeviceStatus("STOP")){ 
+    return "STOP";
+  }else{
+    return "ERROR";
+  }
 }

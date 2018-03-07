@@ -2,6 +2,7 @@
 #define JADE_JADEMANAGER_HH
 
 #include "JadeSystem.hh"
+#include "JadeOption.hh"
 #include "JadeDataFrame.hh"
 #include "JadeRead.hh"
 #include "JadeFilter.hh"
@@ -18,6 +19,7 @@
 class DLLEXPORT JadeManager{
  public:
   JadeManager();
+  JadeManager(const JadeOption &opt);
   virtual ~JadeManager();
 
   void SetRegCtrl(JadeRegCtrlSP ctrl);
@@ -25,12 +27,6 @@ class DLLEXPORT JadeManager{
   void SetWriter(JadeWriteSP wrt);
   void SetFilter(JadeFilterSP flt);
   void SetMonitor(JadeMonitorSP mnt);
-
-  void SetRegCtrl(const std::string &arg){};
-  void SetReader(const std::string &arg){};
-  void SetWriter(const std::string &arg){};
-  void SetFilter(const std::string &arg){};
-  void SetMonitor(const std::string &arg){};
   
   void Reset();
   void StartDataTaking();
@@ -45,6 +41,8 @@ class DLLEXPORT JadeManager{
   uint64_t AsyncMonitoring();
   
  private:
+  JadeOption m_opt;
+  
   JadeRegCtrlSP m_ctrl;
   JadeReadSP m_rd;
   JadeFilterSP m_flt;
@@ -68,7 +66,7 @@ class DLLEXPORT JadeManager{
   std::condition_variable m_cv_valid_ev_to_dcd;
   std::condition_variable m_cv_valid_ev_to_flt;
   std::condition_variable m_cv_valid_ev_to_wrt;
-  std::condition_variable m_cv_valid_ev_to_mnt;
+  std::condition_variable m_cv_valid_ev_to_mnt;    
 };
 
 #endif

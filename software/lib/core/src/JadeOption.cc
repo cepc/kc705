@@ -2,6 +2,12 @@
 
 #include "json11.hpp"
 
+JadeOption::JadeOption()
+  :m_json_ptr(new json11::Json("")){
+  
+
+}
+
 JadeOption::JadeOption(const std::string& str){
   std::string err_str;
   m_json_ptr = std::make_shared<json11::Json>(json11::Json::parse(str, err_str));
@@ -12,15 +18,16 @@ JadeOption::JadeOption(const std::string& str){
   }
 }
 
-JadeOption::JadeOption(const json11::Json& js){
-  m_json_ptr.reset(new json11::Json(js));
+JadeOption::JadeOption(const json11::Json& js)
+  :m_json_ptr(new json11::Json(js)){
+  
 }
 
-JadeOptionSP JadeOption::GetSubOption(const std::string& opt){
-  return std::make_shared<JadeOption>((*m_json_ptr)[opt]);  
+JadeOption JadeOption::GetSubOption(const std::string& opt) const{
+  return (*m_json_ptr)[opt];
 }
 
-std::string JadeOption::GetStringValue(const std::string& opt){
+std::string JadeOption::GetStringValue(const std::string& opt) const{
   if(opt.empty())
     return m_json_ptr->string_value();
   else{
@@ -29,7 +36,7 @@ std::string JadeOption::GetStringValue(const std::string& opt){
 }
 
 
-int32_t JadeOption::GetIntValue(const std::string& opt){
+int32_t JadeOption::GetIntValue(const std::string& opt) const{
   if(opt.empty())
     return m_json_ptr->int_value();
   else{
@@ -38,7 +45,7 @@ int32_t JadeOption::GetIntValue(const std::string& opt){
 }
 
 
-bool JadeOption::GetBoolValue(const std::string& opt){
+bool JadeOption::GetBoolValue(const std::string& opt) const{
   if(opt.empty())
     return m_json_ptr->bool_value();
   else{
@@ -46,7 +53,7 @@ bool JadeOption::GetBoolValue(const std::string& opt){
   }
 }
 
-double JadeOption::GetFloatValue(const std::string& opt){
+double JadeOption::GetFloatValue(const std::string& opt) const{
   if(opt.empty())
     return m_json_ptr->number_value();
   else{
@@ -54,6 +61,6 @@ double JadeOption::GetFloatValue(const std::string& opt){
   }
 }
 
-std::string JadeOption::DumpString(){
+std::string JadeOption::DumpString() const{
   return m_json_ptr->dump();
 }

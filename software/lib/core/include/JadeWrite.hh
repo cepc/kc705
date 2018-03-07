@@ -3,6 +3,8 @@
 
 #include "JadeSystem.hh"
 #include "JadeDataFrame.hh"
+#include "JadeOption.hh"
+
 #include <string>
 #include <chrono>
 #include <mutex>
@@ -14,13 +16,14 @@
 
 class DLLEXPORT JadeWrite{
  public:
-  JadeWrite(const std::string& path, const std::string options);
+  JadeWrite(const JadeOption &opt);
   virtual ~JadeWrite();
+  virtual void Open(){};
+  virtual void Reset(){};
   void Write(JadeDataFrameSP df);
  private:
   FILE* m_fd;
-  std::string m_path;
-  std::string m_options;
+  JadeOption m_opt;
 };
 
 using JadeWriteSP = std::shared_ptr<JadeWrite>;

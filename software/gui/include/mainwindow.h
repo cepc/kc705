@@ -26,6 +26,7 @@ class MainWindow : public QMainWindow
       void Action_Save_Triggered();
       void Action_Exit_Triggered();
 
+      void Btn_Online_Choose_Clicked();
       void Btn_Online_Config_Clicked();
       void Btn_Online_StartRun_Clicked();
       void Btn_Online_StopRun_Clicked();
@@ -40,9 +41,9 @@ class MainWindow : public QMainWindow
     Ui::MainWindow *ui;
 
     void Init_Online_Image();
-    void Draw_Online_Image();
     QCPColorMapData* Matrix_To_Data(const std::vector<int16_t>&);
     std::vector<int16_t> Generate_Fake_Data();
+    void Delay(int millisecondsToWait);
 
     int m_nx;
     int m_ny;
@@ -52,8 +53,9 @@ class MainWindow : public QMainWindow
     std::string m_state;
 
   public:
-    GUIObject *m_object;
-    QThread *m_thread;
+    void Draw_Online_Image();
+    //GUIObject *m_object;
+    //QThread *m_thread;
 };
 
 #endif // MAINWINDOW_H

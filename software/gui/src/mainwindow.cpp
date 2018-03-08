@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QString>
 #include <QDebug>
+#include <QTime>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -16,16 +17,6 @@ MainWindow::MainWindow(QWidget *parent) :
   m_state("STOPPED")
 {
   ui->setupUi(this);
-  
-  m_object = new GUIObject();
-  m_thread = new QThread();
-  m_object->moveToThread(m_thread);
-  m_thread->start();
-  
-  connect(m_thread, SIGNAL(started()), m_object, SLOT(Thread1()), Qt::QueuedConnection);
-  connect(m_thread, SIGNAL(started()), m_object, SLOT(Thread2()), Qt::QueuedConnection);
-  connect(m_thread, SIGNAL(started()), m_object, SLOT(Thread3()), Qt::QueuedConnection);
-  
 
   connect(ui->Action_Open, SIGNAL(triggered()), this, SLOT(Action_Open_Triggered()));
   connect(ui->Action_Save, SIGNAL(triggered()), this, SLOT(Action_Save_Triggered()));
@@ -33,15 +24,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
   ui->LineEdit_Online_FilePath->setText(QDir::currentPath());
 
+  connect(ui->Btn_Online_Choose, SIGNAL(clicked()), this, SLOT(Btn_Online_Choose_Clicked()));
   connect(ui->Btn_Online_Config, SIGNAL(clicked()), this, SLOT(Btn_Online_Config_Clicked()));
   connect(ui->Btn_Online_StartRun, SIGNAL(clicked()), this, SLOT(Btn_Online_StartRun_Clicked()));
   connect(ui->Btn_Online_StopRun, SIGNAL(clicked()), this, SLOT(Btn_Online_StopRun_Clicked()));
 
   Init_Online_Image();
-
-  //m_timer = new QTimer(this);
-  //connect(m_timer, SIGNAL(timeout()), this, SLOT(Online_Update()));
-  //m_timer->start(1000);
 
 }
 
@@ -71,14 +59,28 @@ void MainWindow::Action_Exit_Triggered()
   qDebug() << "Action_Exit_Triggered... ";
 }
 
+void MainWindow::Btn_Online_Choose_Clicked()
+{
+  auto file_path = QFileDialog::getExistingDirectory(this, "Chose the directory to save data", QDir::currentPath());
+  ui->LineEdit_Online_FilePath->setText(file_path);
+  qDebug() << "Btn_Online_Choose_Clicked... ";
+}
+
 void MainWindow::Btn_Online_Config_Clicked()
 {
-  m_GUIManager->set_input_data_path("/tmp/test_pipe");
-  m_GUIManager->set_output_data_path("/home/chenlj/Documents/Code/kc705/data/sim/test");
-  m_GUIManager->set_register_data_path("/tmp/test_reg");
+  QString qinfile = ui->LineEdit_Online_InName->text();
+  m_GUIManager->set_input_data_path(qinfile.toStdString());
+  
+  QString qoutfile = ui->LineEdit_Online_FilePath->text()+ "/" +ui->LineEdit_Online_FileName->text();
+  m_GUIManager->set_output_data_path(qoutfile.toStdString());
+  
+  QString qregfile = ui->LineEdit_Online_RegName->text();
+  m_GUIManager->set_register_data_path(qregfile.toStdString());
+
   m_GUIManager->set_run_time(std::to_string(ui->SpinBox_Online_TimeRun->value()));
   m_GUIManager->set_ev_print(std::to_string(ui->SpinBox_Online_evPrint->value()));
   m_GUIManager->set_chip_address(ui->SpinBox_Online_ChipAddress->value());
+  m_GUIManager->set_nfiles(ui->SpinBox_Online_NFiles->value());
 }
 
 void MainWindow::Btn_Online_StartRun_Clicked()
@@ -86,9 +88,12 @@ void MainWindow::Btn_Online_StartRun_Clicked()
   ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, false);
   m_state="RUNNING";
   Online_Update();
-  m_object->Thread1();
-  m_GUIManager->config();
-  m_GUIManager->start_run();
+  for(int i=0; i<m_GUIManager->get_nfiles();i++){
+    std::cout << "Start Run: " << i << std::endl;
+    m_GUIManager->config();
+    m_GUIManager->start_run();
+    Delay(1000);
+  }
   qDebug() << "Btn_Online_StartRun_Clicked... ";
 }
 
@@ -97,14 +102,13 @@ void MainWindow::Btn_Online_StopRun_Clicked()
   ui->Btn_Online_StopRun->setAttribute(Qt::WA_UnderMouse, false);
   m_state="STOPPED";
   Online_Update();
-  m_object->Thread2();
   m_GUIManager->stop_run();
   qDebug() << "Btn_Online_StopRun_Clicked... ";
 }
 
 void MainWindow::Online_Update()
 {
-  Draw_Online_Image();
+  //Draw_Online_Image();
   
   ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, (m_state=="STOPPED"));
   ui->Btn_Online_StartRun->setEnabled((m_state=="STOPPED"));
@@ -245,4 +249,13 @@ std::vector<int16_t> MainWindow::Generate_Fake_Data()
     }
   }
   return m_data;
+}
+
+void MainWindow::Delay(int millisecondsToWait)
+{
+  QTime dieTime = QTime::currentTime().addMSecs( millisecondsToWait );
+  while( QTime::currentTime() < dieTime )
+  {
+    QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+  }
 }

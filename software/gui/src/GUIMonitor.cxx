@@ -12,7 +12,7 @@ GUIMonitor::GUIMonitor(const std::string& options):JadeMonitor(options),m_opt(op
 void GUIMonitor::Monitor(JadeDataFrameSP df)
 {
   if(m_ev_get!=0 && m_ev_num%m_ev_get == 0){
-    GetData(df);
+    df->Print(std::cout);
   }
   m_ev_num++;
 }

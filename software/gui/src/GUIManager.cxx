@@ -7,7 +7,7 @@
 
 using namespace std::chrono_literals;
 
-GUIManager::GUIManager():opt_data_input("//./xillybus_read_32"),opt_reg("//./xillybus_mem_8"),opt_time_run("60"),opt_ev_print("10000"),opt_chip_address(1){
+GUIManager::GUIManager():opt_data_input("//./xillybus_read_32"),opt_reg("//./xillybus_mem_8"),opt_time_run("60"),opt_ev_print("10000"),opt_chip_address(1),opt_nfiles(1){
   pman = new JadeManager();
 }
 
@@ -25,7 +25,6 @@ std::string GUIManager::get_now_str(){
 
 int GUIManager::start_run(){
   size_t time_run = get_run_time();
-  size_t ev_print = get_ev_print();
   
   std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
   pman->StartDataTaking(); 

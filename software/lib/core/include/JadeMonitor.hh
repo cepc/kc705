@@ -3,13 +3,16 @@
 
 #include "JadeSystem.hh"
 #include "JadeDataFrame.hh"
+#include "JadeOption.hh"
 
 class DLLEXPORT JadeMonitor{
  public:
-  JadeMonitor(const std::string& options);
+  JadeMonitor(const JadeOption& opt);
+  virtual ~JadeMonitor();
+  virtual void Reset(){};
   virtual void Monitor(JadeDataFrameSP df);
  private:
-  std::string m_options;
+  JadeOption m_opt;
   size_t m_ev_print;
   size_t m_ev_n;
 };

@@ -6,6 +6,11 @@ JadeManager::JadeManager()
   : m_is_running(false){
 }
 
+JadeManager::JadeManager(const JadeOption &opt)
+  : m_is_running(false), m_opt(opt){
+}
+
+
 JadeManager::~JadeManager(){
   if(m_is_running)
     StopDataTaking();
@@ -255,4 +260,3 @@ bool JadeManager::DeviceStatus(const std::string &status){
   }
   return false;
 }
-

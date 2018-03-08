@@ -16,15 +16,11 @@
 #include <thread>
 #include <algorithm>
 
-JadeRegCtrl::JadeRegCtrl(const std::string& dev_path,
-			 const std::map<std::string, std::pair\
-			 <uint16_t, uint8_t>> &cmd_map)
-  :m_dev_path(dev_path), m_cmd_map(cmd_map){
-}
 
-JadeRegCtrl::JadeRegCtrl(const std::string& dev_path)
-  :m_dev_path(dev_path){
-  m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}};  
+JadeRegCtrl::JadeRegCtrl(const JadeOption &opt)
+  :m_opt(opt){
+  m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}};
+  m_dev_path=m_opt.GetStringValue("PATH");
 }
 
 JadeRegCtrl::~JadeRegCtrl(){

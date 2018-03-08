@@ -14,7 +14,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src GUI_SRC)
 file(GLOB GUI_UIS form/mainwindow.ui)
 qt5_wrap_ui(GUI_FORMS_UIC ${GUI_UIS})
 
-file(GLOB GUI_MOCS include/mainwindow.h include/qcustomplot.h include/GUIObject.hh)
+file(GLOB GUI_MOCS include/mainwindow.h include/qcustomplot.h)
 qt5_wrap_cpp(GUI_HEADERS_MOC ${GUI_MOCS})
 
 file(GLOB GUI_RES qrc/*.qrc)

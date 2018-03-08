@@ -33,6 +33,7 @@ class GUIManager
     int start_run();
     int stop_run();
     void config();
+    std::shared_ptr<GUIMonitor>get_monitor();
   
   private:
     std::string opt_data_input;
@@ -43,7 +44,7 @@ class GUIManager
     int opt_chip_address;
     int opt_nfiles;
     JadeManager* pman;
-
+    std::shared_ptr<GUIMonitor> pmonitor;
 };
 
 

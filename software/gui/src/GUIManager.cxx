@@ -63,7 +63,7 @@ void GUIManager::config(){
   pman->SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\""+opt_data_input+"\"}")));
   pman->SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
   pman->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+data_output_path+"\"}")));
-  auto pmonitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+opt_ev_print+"}"));
+  pmonitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+opt_ev_print+"}"));
   pman->SetMonitor(std::static_pointer_cast<JadeMonitor>(pmonitor));
 
   std::string cmd = "CHIPA" + std::to_string(opt_chip_address);
@@ -80,4 +80,8 @@ std::string GUIManager::get_state(){
   }else{
     return "ERROR";
   }
+}
+
+std::shared_ptr<GUIMonitor>GUIManager::get_monitor(){
+  return pmonitor; 
 }

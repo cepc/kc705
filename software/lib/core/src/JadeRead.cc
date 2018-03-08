@@ -12,16 +12,16 @@
 
 #define FRAME_SIZE (4+48*(4+16*2+4)+4)
 
-JadeRead::JadeRead(const std::string& path,
-		   const std::string& options)
-  :m_dev_path(path), m_options(options){
+JadeRead::JadeRead(const JadeOption &opt)
+  :m_opt(opt){
+  std::string path = opt.GetStringValue("PATH");
 #ifdef _WIN32
-  m_fd = _open(m_dev_path.c_str(), _O_RDONLY | _O_BINARY);
+  m_fd = _open(path.c_str(), _O_RDONLY | _O_BINARY);
 #else
-  m_fd = open(m_dev_path.c_str(), O_RDONLY);
+  m_fd = open(path.c_str(), O_RDONLY);
 #endif
   if(m_fd < 0){
-    std::cerr<<"JadeRead: Failed to open devfile: "<<m_dev_path<<"\n";
+    std::cerr<<"JadeRead: Failed to open devfile: "<<path<<"\n";
     throw;
   }
 }

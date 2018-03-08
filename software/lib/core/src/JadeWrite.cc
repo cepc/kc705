@@ -1,11 +1,11 @@
 #include "JadeWrite.hh"
 
-JadeWrite::JadeWrite(const std::string& path,
-		    const std::string options)
-  :m_path(path), m_options(options){
-  m_fd = std::fopen(m_path.c_str(), "wb" );
+JadeWrite::JadeWrite(const JadeOption &opt)
+  :m_opt(opt){
+  std::string path = opt.GetStringValue("PATH");
+  m_fd = std::fopen(path.c_str(), "wb" );
   if(m_fd == NULL){
-    std::cerr<<"JadeWrite: Failed to open devfile: "<<m_path<<"\n";
+    std::cerr<<"JadeWrite: Failed to open devfile: "<<path<<"\n";
     throw;
   }
 }

@@ -1,9 +1,12 @@
 #include "JadeMonitor.hh"
 
-JadeMonitor::JadeMonitor(const std::string& options)
-  :m_options(options),m_ev_n(0),m_ev_print(0){
-  if(!options.empty())
-    m_ev_print = std::stoul(options);
+JadeMonitor::JadeMonitor(const JadeOption& opt)
+  :m_opt(opt),m_ev_n(0), m_ev_print(0){
+  m_ev_print = opt.GetIntValue("PRINT_EVENT_N");
+}
+
+JadeMonitor::~JadeMonitor(){
+
 }
 
 void JadeMonitor::Monitor(JadeDataFrameSP df){

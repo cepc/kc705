@@ -81,7 +81,7 @@ assign RST2M_OUT = rst_2M;
 reg cnvclk_dff1;
 reg cnvclk_dff2;
 reg cnvclk_dff3;
-always @( posedge CLK_IN )
+always @( posedge CLK_IN )      // 100 MHz clock 
 begin
     cnvclk_dff1 <= CNVCLK_IN;
     cnvclk_dff2 <= cnvclk_dff1;
@@ -90,7 +90,7 @@ end
 
 reg       cnvclk_add = 1'b0;
 reg [7:0] cnt_cnv = 8'hff;
-always @( posedge CLK_IN )
+always @( posedge CLK_IN )      // 100 MHz clock 
 begin
     if ( cnvclk_dff1 == 1'b0 && cnvclk_dff2 == 1'b1 ) begin
         cnt_cnv <= 8'h0;

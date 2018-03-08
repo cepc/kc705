@@ -2,8 +2,8 @@
 
 using namespace std::chrono_literals;
 
-JadeFilter::JadeFilter(const std::string &options)
-  :m_options(options){
+JadeFilter::JadeFilter(const JadeOption &opt)
+  :m_opt(opt){
 }
 
 JadeFilter::~JadeFilter(){

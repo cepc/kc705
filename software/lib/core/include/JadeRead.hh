@@ -2,7 +2,9 @@
 #define JADE_JADEREAD_HH
 
 #include "JadeSystem.hh"
+#include "JadeOption.hh"
 #include "JadeDataFrame.hh"
+
 #include <string>
 #include <chrono>
 #include <mutex>
@@ -10,14 +12,15 @@
 
 class DLLEXPORT JadeRead{
  public:
-  JadeRead(const std::string& dev_path, const std::string& options);
+  JadeRead(const JadeOption &opt);
   virtual ~JadeRead();
+  virtual void Open(){};
+  virtual void Reset(){};
   virtual std::vector<JadeDataFrameSP> Read(size_t nframe,
 					    const std::chrono::milliseconds &timeout);
  private:
+  JadeOption m_opt;
   int m_fd;
-  std::string m_dev_path;
-  std::string m_options;
   std::string m_buf;
 };
 

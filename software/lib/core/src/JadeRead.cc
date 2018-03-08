@@ -14,7 +14,14 @@
 
 JadeRead::JadeRead(const JadeOption &opt)
   :m_opt(opt){
-  std::string path = opt.GetStringValue("PATH");
+}
+
+JadeRead::~JadeRead(){
+  Reset();
+}
+
+void JadeRead::Open(){
+  std::string path = m_opt.GetStringValue("PATH");
 #ifdef _WIN32
   m_fd = _open(path.c_str(), _O_RDONLY | _O_BINARY);
 #else
@@ -26,14 +33,20 @@ JadeRead::JadeRead(const JadeOption &opt)
   }
 }
 
-JadeRead::~JadeRead(){
+void JadeRead::Close(){
+  m_buf.clear();
   if(m_fd>0){
 #ifdef _WIN32
     _close(m_fd);
 #else
     close(m_fd);
 #endif
+    m_fd = 0;
   }
+}
+
+void JadeRead::Reset(){
+  Close();
 }
 
 std::vector<JadeDataFrameSP>

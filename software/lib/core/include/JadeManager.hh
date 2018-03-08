@@ -18,9 +18,9 @@
 
 class DLLEXPORT JadeManager{
  public:
-  JadeManager();
   JadeManager(const JadeOption &opt);
   virtual ~JadeManager();
+  void Reset();
 
   void SetRegCtrl(JadeRegCtrlSP ctrl);
   void SetReader(JadeReadSP rd);
@@ -28,11 +28,12 @@ class DLLEXPORT JadeManager{
   void SetFilter(JadeFilterSP flt);
   void SetMonitor(JadeMonitorSP mnt);
   
-  void Reset();
   void StartDataTaking();
   void StopDataTaking();
+  void DeviceConnect();
+  void DeviceDisconnect();
   void DeviceControl(const std::string &cmd);
-  bool DeviceStatus(const std::string &status);
+  const std::string& DeviceStatus(const std::string &type);
  private:
   uint64_t AsyncReading();
   uint64_t AsyncDecoding();

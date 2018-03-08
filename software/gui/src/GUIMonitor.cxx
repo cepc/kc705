@@ -9,49 +9,68 @@ GUIMonitor::GUIMonitor(const JadeOption& options):
   m_ev_get(0),
   m_ev_num(0)
 {
-    m_ev_get = m_opt.GetIntValue("PRINT_EVENT_N");
+  m_ev_get = m_opt.GetIntValue("PRINT_EVENT_N");
 };
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)
 {
   if(m_ev_get!=0 && m_ev_num%m_ev_get == 0){
-    df->Print(std::cout);
+    SetData(df);
   }
   m_ev_num++;
 }
 
-void GUIMonitor::GetData(JadeDataFrameSP df)
+void GUIMonitor::SetData(JadeDataFrameSP df)
 {
-  uint32_t offset_x = df->GetMatrixLowX();
-  uint32_t offset_y = df->GetMatrixLowY();
+  m_offset_x = df->GetMatrixLowX();
+  m_offset_y = df->GetMatrixLowY();
 
-  uint32_t n_x = df->GetMatrixSizeX();
-  uint32_t n_y = df->GetMatrixSizeY();
-  
+  m_nx = df->GetMatrixSizeX();
+  m_ny = df->GetMatrixSizeY();
+
   uint16_t value;
-  
-  std::unique_lock<std::mutex> lk_in(m_mx_get);
-  for(size_t iy=0; iy<n_y; iy++)
-    for(size_t ix=0; ix<n_x; ix++)
+  std::unique_lock<std::mutex> lk_in(m_mx_set);
+  m_data.clear();
+  for(size_t iy=0; iy<m_ny; iy++)
+    for(size_t ix=0; ix<m_nx; ix++)
     {
-      uint16_t value = df->GetHitValue(ix+offset_x, iy+offset_y);
-      m_qu_data.push(value);
+      uint16_t value = df->GetHitValue(ix+m_offset_x, iy+m_offset_y);
+      m_data.push_back(value);
     }
+  m_qu_data.push(m_data);
   lk_in.unlock();
   m_cv_data.notify_all();
 }
 
-void GUIMonitor::SendData()
+QCPColorMapData* GUIMonitor::GetData()
 {
-  std::unique_lock<std::mutex> lk_out(m_mx_send);
-  while(m_qu_data.empty()){
+  std::unique_lock<std::mutex> lk_out(m_mx_get);
+  while(m_data.empty()){
     while(m_cv_data.wait_for(lk_out, 10ms)==std::cv_status::timeout){
-      return;
+      //throw;
+      break;
     }
   }
-  for(int i=0; i<48*16; i++){
-    std::cout << m_qu_data.front() << std::endl;
-    m_qu_data.pop();
+
+  data = new QCPColorMapData(m_ny, m_nx, QCPRange(0,m_ny), QCPRange(0,m_nx));
+  std::vector<uint16_t> u_data = m_qu_data.front();
+  if(u_data.size() != 768){
+    std::cerr << " Unable to send full frame! " << std::endl;
+    std::cerr << " size: " << u_data.size() << std::endl;
   }
+
+  for (unsigned int i = 0; i < m_ny; ++i)
+    for (unsigned int j = 0; j < m_nx; ++j)
+    {
+      size_t pos = j + m_nx*i;
+      data->setCell(i, j, u_data.at(pos));
+      std::cout << u_data.at(pos) << " "; 
+    }
+  std::cout << "\nend send" << std::endl;
+  u_data.clear();
+  m_qu_data.pop();
   lk_out.unlock();
+
+  return data;
 }
+

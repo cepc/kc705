@@ -5,7 +5,6 @@
 
 #include "qcustomplot.h"
 #include "GUIManager.hh"
-#include "GUIObject.hh"
 #include <vector>
 
 namespace Ui {
@@ -36,26 +35,26 @@ class MainWindow : public QMainWindow
       void Mouse_Wheel();    
 
       void Online_Update();
+      void Update_Online_Image();
+      void Draw_Online_Image();
 
   private:
     Ui::MainWindow *ui;
 
     void Init_Online_Image();
-    QCPColorMapData* Matrix_To_Data(const std::vector<int16_t>&);
-    std::vector<int16_t> Generate_Fake_Data();
     void Delay(int millisecondsToWait);
 
     int m_nx;
     int m_ny;
     GUIManager* m_GUIManager;
-    QTimer* m_timer;
-    
+
     std::string m_state;
 
-  public:
-    void Draw_Online_Image();
-    //GUIObject *m_object;
-    //QThread *m_thread;
+    QCPColorMap* colorMap;
+    QCPColorScale* colorScale;
+
+    QThread* m_thread;
+    QTimer* m_timer;
 };
 
 #endif // MAINWINDOW_H

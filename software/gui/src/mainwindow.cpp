@@ -31,6 +31,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
   Init_Online_Image();
 
+  m_thread = new QThread(this);
+  m_thread->start();
+  m_timer = new QTimer(0);
+  m_timer->setInterval(1000);
+  m_timer->moveToThread(m_thread);
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(Update_Online_Image()), Qt::DirectConnection);
+  connect(m_thread, SIGNAL(started()), m_timer, SLOT(start()));
+
 }
 
 MainWindow::~MainWindow()
@@ -55,6 +63,10 @@ void MainWindow::Action_Save_Triggered()
 
 void MainWindow::Action_Exit_Triggered()
 {
+  if(m_thread){
+    m_thread->quit();
+    m_thread->wait();
+  }
   this->close();
   qDebug() << "Action_Exit_Triggered... ";
 }
@@ -103,13 +115,15 @@ void MainWindow::Btn_Online_StopRun_Clicked()
   m_state="STOPPED";
   Online_Update();
   m_GUIManager->stop_run();
+  if(m_thread){
+    m_thread->quit();
+    m_thread->wait();
+  }
   qDebug() << "Btn_Online_StopRun_Clicked... ";
 }
 
 void MainWindow::Online_Update()
 {
-  //Draw_Online_Image();
-  
   ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, (m_state=="STOPPED"));
   ui->Btn_Online_StartRun->setEnabled((m_state=="STOPPED"));
 
@@ -126,21 +140,21 @@ void MainWindow::Init_Online_Image()
   ui->customPlot->axisRect()->setupFullAxesBox(true);
   ui->customPlot->xAxis->setLabel("Col");
   ui->customPlot->yAxis->setLabel("Row");
- 
+
+  Draw_Online_Image();
+
   QSharedPointer<QCPAxisTickerFixed> fixedTicker(new QCPAxisTickerFixed);
   fixedTicker->setTickStep(4.0); 
   fixedTicker->setScaleStrategy(QCPAxisTickerFixed::ssNone);   
-  
+
   ui->customPlot->xAxis->setTicker(fixedTicker);
   ui->customPlot->yAxis->setTicker(fixedTicker);
   ui->customPlot->rescaleAxes();
 
-  Draw_Online_Image();
-  
   connect(ui->customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(Selection_Changed()));
   connect(ui->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(Mouse_Press()));
   connect(ui->customPlot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(Mouse_Wheel()));
-  
+
   // make bottom and left axes transfer their ranges to top and right axes:
   connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->xAxis2, SLOT(setRange(QCPRange)));
   connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->yAxis2, SLOT(setRange(QCPRange)));
@@ -162,7 +176,7 @@ void MainWindow::Selection_Changed()
     ui->customPlot->yAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
     ui->customPlot->yAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
   }
-  
+
   // synchronize selection of graphs with selection of corresponding legend items:
   for (int i=0; i<ui->customPlot->graphCount(); ++i)
   {
@@ -198,13 +212,16 @@ void MainWindow::Mouse_Wheel()
 
 void MainWindow::Draw_Online_Image()
 {
-// set up the QCPColorMap:
-  QCPColorMap *colorMap = new QCPColorMap(ui->customPlot->xAxis, ui->customPlot->yAxis);
-  std::vector<int16_t> m_data = Generate_Fake_Data();
-  colorMap->setData(Matrix_To_Data(m_data));
-  
+  // set up the QCPColorMap:
+  colorMap = new QCPColorMap(ui->customPlot->xAxis, ui->customPlot->yAxis);
+  for (unsigned int i = 0; i < m_nx; ++i)
+    for (unsigned int j = 0; j < m_ny; ++j)
+    {
+      colorMap->data()->setCell(i,j,0);
+    }  
+
   // add a color scale:
-  QCPColorScale *colorScale = new QCPColorScale(ui->customPlot);
+  colorScale = new QCPColorScale(ui->customPlot);
   ui->customPlot->plotLayout()->addElement(0, 1, colorScale);   
   colorScale->setType(QCPAxis::atRight); 
   colorMap->setColorScale(colorScale); 
@@ -212,43 +229,26 @@ void MainWindow::Draw_Online_Image()
 
   // set the color gradient of the color map to one of the presets:
   colorMap->setGradient(QCPColorGradient::gpPolar);
-  //colorMap->setInterpolate(false);
   colorMap->rescaleDataRange();
 
   // make sure the axis rect and color scale synchronize their bottom and top margins (so they line up):
   QCPMarginGroup *marginGroup = new QCPMarginGroup(ui->customPlot);
   ui->customPlot->axisRect()->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
   colorScale->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
-  
+
   ui->customPlot->rescaleAxes();
 }
 
-QCPColorMapData* MainWindow::Matrix_To_Data(const std::vector<int16_t> &matrix)
+void MainWindow::Update_Online_Image()
 {
-  QCPColorMapData* data = new QCPColorMapData(m_nx, m_ny, QCPRange(0,m_nx), QCPRange(0,m_ny));
-  for (unsigned int i = 0; i < m_nx; ++i)
-    for (unsigned int j = 0; j < m_ny; ++j)
-    {
-      size_t pos = i + m_nx*j;
-      data->setCell(i, j, matrix.at(pos));
-    }
-  return data;
-}
-
-std::vector<int16_t> MainWindow::Generate_Fake_Data()
-{
-  std::vector<int16_t> m_data;
-  // now we assign some data, by accessing the QCPColorMapData instance of the color map:
-  int16_t ADC;
-  for (int xIndex=0; xIndex<m_nx; ++xIndex)
-  {
-    for (int yIndex=0; yIndex<m_ny; ++yIndex)
-    {
-      ADC = xIndex*100; 
-      m_data.push_back(ADC);
-    }
+  if(m_state == "RUNNING"){
+    colorMap->setData(m_GUIManager->get_monitor()->GetData());
+    colorMap->rescaleDataRange();
+    colorMap->setColorScale(colorScale); 
   }
-  return m_data;
+  ui->customPlot->rescaleAxes();
+  ui->customPlot->replot();
+  qRegisterMetaType<QCPRange>("QCPRange");
 }
 
 void MainWindow::Delay(int millisecondsToWait)

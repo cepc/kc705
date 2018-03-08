@@ -10,9 +10,9 @@
 
 class DLLEXPORT JadeRead{
  public:
-  JadeRead(const std::string& dev_path, const std::string options);
+  JadeRead(const std::string& dev_path, const std::string& options);
   virtual ~JadeRead();
-  virtual std::vector<JadeDataFrameUP> Read(size_t nframe,
+  virtual std::vector<JadeDataFrameSP> Read(size_t nframe,
 					    const std::chrono::milliseconds &timeout);
  private:
   int m_fd;
@@ -20,5 +20,7 @@ class DLLEXPORT JadeRead{
   std::string m_options;
   std::string m_buf;
 };
+
+using JadeReadSP = std::shared_ptr<JadeRead>;
 
 #endif

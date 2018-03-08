@@ -1,6 +1,5 @@
-#include "JadeManager.hh"
-#include <iostream>
-#include <sstream>
+#include "JadeRegCtrl.hh"
+#include "monitor.hh"
 #include <iomanip>
 #include <chrono>
 #include <thread>
@@ -8,8 +7,15 @@
 
 using namespace std::chrono_literals;
 
+Monitor::Monitor():opt_data_input("//./xillybus_read_32"),opt_reg("//./xillybus_mem_8"),opt_time_run("60"),opt_ev_print("10000"){
+  pman = new JadeManager();
+}
 
-std::string get_now_str(){
+Monitor::~Monitor(){
+  delete pman;
+}
+
+std::string Monitor::get_now_str(){
     auto now = std::chrono::system_clock::now();
     auto now_c = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
@@ -17,51 +23,10 @@ std::string get_now_str(){
     return ss.str();
 }
 
-int main(int argc, char **argv){
-  std::cout<<"options: -i <input_data_path> -o <output_data_path> -r <register_path> -s <run_time_milliseconds> -p <print_per_N_events>"<<std::endl;
+int Monitor::start_run(){
   
-  std::string opt_data_input = "//./xillybus_read_32";
-  std::string opt_reg = "//./xillybus_mem_8";
-  std::string opt_data_output = "output";
-  std::string opt_time_run = "60";
-  std::string opt_ev_print = "10000";
-  
-  for(int i = 1; i < argc; i++){
-    std::string opt(argv[i]);
-    if(opt=="-i"){
-      if(i+1<argc){
-	i++;
-	opt_data_input = argv[i];
-      }
-    }
-    if(opt=="-o"){ 
-      if(i+1<argc){
-	i++;
-	opt_data_output = argv[i];
-      }
-    }
-    if(opt=="-r"){ 
-      if(i+1<argc){
-	i++;
-	opt_reg = argv[i];
-      }
-    }
-    if(opt=="-s"){ 
-      if(i+1<argc){
-	i++;
-	opt_time_run = argv[i];
-      }
-    }
-    if(opt=="-p"){ 
-      if(i+1<argc){
-	i++;
-	opt_ev_print = argv[i];
-      }
-    }
-  }
-  
-  size_t time_run = std::stoul(opt_time_run);
-  size_t ev_print = std::stoul(opt_ev_print);
+  size_t time_run = get_run_time();
+  size_t ev_print = get_ev_print();
   
   std::time_t time_now = std::time(nullptr);
   char time_buff[13];
@@ -77,7 +42,6 @@ int main(int argc, char **argv){
   std::cout<< "{time_run:"<<time_run<<"}"<<std::endl;
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
 
-  auto pman = new JadeManager();
   pman->SetRegCtrl(std::make_shared<JadeRegCtrl>(opt_reg));
   pman->SetReader(std::make_shared<JadeRead>(opt_data_input, ""));
   pman->SetFilter(std::make_shared<JadeFilter>(""));
@@ -88,7 +52,12 @@ int main(int argc, char **argv){
   pman->StartDataTaking(); 
   std::this_thread::sleep_for(std::chrono::milliseconds(time_run));
   pman->StopDataTaking();
-  delete pman;
-  std::cout<<"=========eixt at "<<get_now_str()<<"======="<< std::endl; 
+  std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
+  return 0;
+}
+
+int Monitor::stop_run(){
+  pman->StopDataTaking();
+  std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
   return 0;
 }

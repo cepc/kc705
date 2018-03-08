@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow
       void Btn_Online_Config_Clicked();
       void Btn_Online_StartRun_Clicked();
       void Btn_Online_StopRun_Clicked();
-      
+
       void Selection_Changed();    
       void Mouse_Press();    
       void Mouse_Wheel();    

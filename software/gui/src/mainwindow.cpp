@@ -38,7 +38,6 @@ MainWindow::MainWindow(QWidget *parent) :
   m_timer->moveToThread(m_thread);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(Update_Online_Image()), Qt::DirectConnection);
   connect(m_thread, SIGNAL(started()), m_timer, SLOT(start()));
-
 }
 
 MainWindow::~MainWindow()
@@ -115,10 +114,6 @@ void MainWindow::Btn_Online_StopRun_Clicked()
   m_state="STOPPED";
   Online_Update();
   m_GUIManager->stop_run();
-  if(m_thread){
-    m_thread->quit();
-    m_thread->wait();
-  }
   qDebug() << "Btn_Online_StopRun_Clicked... ";
 }
 
@@ -241,13 +236,14 @@ void MainWindow::Draw_Online_Image()
 
 void MainWindow::Update_Online_Image()
 {
-  if(m_state == "RUNNING"){
-    colorMap->setData(m_GUIManager->get_monitor()->GetData());
-    colorMap->rescaleDataRange();
-    colorMap->setColorScale(colorScale); 
-  }
-  ui->customPlot->rescaleAxes();
-  ui->customPlot->replot();
+  if(m_state == "RUNNING")
+    if(!m_GUIManager->get_monitor()->GetData()->isEmpty()){
+      colorMap->setData(m_GUIManager->get_monitor()->GetData());
+      colorMap->rescaleDataRange();
+      colorMap->setColorScale(colorScale); 
+      ui->customPlot->rescaleAxes();
+      ui->customPlot->replot();
+    }
   qRegisterMetaType<QCPRange>("QCPRange");
 }
 

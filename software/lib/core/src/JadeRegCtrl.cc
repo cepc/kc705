@@ -19,9 +19,9 @@
 
 JadeRegCtrl::JadeRegCtrl(const JadeOption &opt)
   :m_opt(opt){
-  m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}};
-  m_dev_path=m_opt.GetStringValue("PATH");
-}
+    m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}, {"SET",{2, 10}}, {"CHIPA1",{8, 0}}, {"CHIPA2",{8, 1}},{"CHIPA3",{8, 2}}, {"CHIPA4",{8, 3}}, {"CHIPA5",{8, 4}}, {"CHIPA6",{8, 5}}, {"CHIPA7",{8, 6}}, {"CHIPA8",{8, 7}}, {"CHIPA9",{8, 8}}, {"CHIPA10",{8, 9}}};  
+    m_dev_path=m_opt.GetStringValue("PATH");
+  }
 
 JadeRegCtrl::~JadeRegCtrl(){
 
@@ -33,7 +33,7 @@ void JadeRegCtrl::WriteByte(uint16_t addr, uint8_t val){
 #else
   int fd = open(m_dev_path.c_str(), O_WRONLY);
 #endif
-  
+
   if (fd < 0) {
     perror("Failed to open devfile");
   }
@@ -128,5 +128,5 @@ bool JadeRegCtrl::WaitStatus(const std::string &cmd, std::chrono::milliseconds t
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
   }
-  
+
 }

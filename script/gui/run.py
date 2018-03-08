@@ -18,17 +18,17 @@ def set_logger(logfile):
 
     return logger
 
-def subrun(infile, outfile, regfile, run_time):
+def subrun(infile, outfile, regfile, run_time, evPrints):
     if(platform.system() == "Windows"):
         exefile = "D:/daq_develop/kc705/bin/ManagerTest.exe"
     else:
         exefile = "/home/chenlj/Documents/Code/kc705/bin/ManagerTest"
     
-    listcmd = [exefile,"-r", regfile, "-i", infile,"-o",outfile,"-s",str(run_time)]
+    listcmd = [exefile,"-r", regfile, "-i", infile,"-o",outfile,"-s",str(run_time),"-p",str(evPrints)]
     byte_return = subprocess.run(listcmd)
     return byte_return
 
-def sim_take(run_time, n):
+def sim_take(run_time, n, evPrints):
     logger =  set_logger("test.log")
     if(platform.system() == "Windows"):
         import win32con
@@ -47,14 +47,14 @@ def sim_take(run_time, n):
         logger.info("----------\n")
         logger.info("Start run: " + str(i))
         time1 = time.time()
-        byte_return = subrun(infile, outfile, regfile, run_time)
+        byte_return = subrun(infile, outfile, regfile, run_time, evPrints)
         logger.info("ManagerTest return: " + str(byte_return))
         time2 = time.time()
-        sleep_time = time2-time1
+        sleep_time = (time2-time1)/10.0
         logger.info("time used: " + str(time2-time1))
         time.sleep(sleep_time)
 
-def win_take(run_time, n):
+def win_take(run_time, n, evPrints):
     logger =  set_logger("test.log")
     infile = "//./xillybus_read_32" 
     outfile = "F:\\Ryuta\\data\\test" 
@@ -64,13 +64,13 @@ def win_take(run_time, n):
         logger.info("----------\n")
         logger.info("Start run: " + str(i))
         time1 = time.time()
-        byte_return = subrun(infile, outfile, regfile, run_time)
+        byte_return = subrun(infile, outfile, regfile, run_time, evPrints)
         logger.info("ManagerTest return: " + str(byte_return))
         time2 = time.time()
-        sleep_time = time2-time1
+        sleep_time = (time2-time1)/10.0
         logger.info("time used: " + str(time2-time1))
         time.sleep(sleep_time)
 
 if __name__ == "__main__":
-    win_take(120, 1)
+    sim_take(120, 2, 100000)
 

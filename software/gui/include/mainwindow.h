@@ -3,7 +3,10 @@
 
 #include <QMainWindow>
 
-#include "monitor.hh"
+#include "qcustomplot.h"
+#include "GUIManager.hh"
+#include "GUIObject.hh"
+#include <vector>
 
 namespace Ui {
   class MainWindow;
@@ -23,18 +26,36 @@ class MainWindow : public QMainWindow
       void Action_Save_Triggered();
       void Action_Exit_Triggered();
 
+      void Btn_Online_Choose_Clicked();
       void Btn_Online_Config_Clicked();
       void Btn_Online_StartRun_Clicked();
       void Btn_Online_StopRun_Clicked();
       
+      void Selection_Changed();    
+      void Mouse_Press();    
+      void Mouse_Wheel();    
+
       void Online_Update();
-      void Draw_Online_Image();
 
   private:
     Ui::MainWindow *ui;
 
-    Monitor* m_monitor;
+    void Init_Online_Image();
+    QCPColorMapData* Matrix_To_Data(const std::vector<int16_t>&);
+    std::vector<int16_t> Generate_Fake_Data();
+    void Delay(int millisecondsToWait);
 
+    int m_nx;
+    int m_ny;
+    GUIManager* m_GUIManager;
+    QTimer* m_timer;
+    
+    std::string m_state;
+
+  public:
+    void Draw_Online_Image();
+    //GUIObject *m_object;
+    //QThread *m_thread;
 };
 
 #endif // MAINWINDOW_H

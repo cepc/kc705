@@ -3,10 +3,13 @@
 
 using namespace std::chrono_literals;
 
-GUIMonitor::GUIMonitor(const std::string& options):JadeMonitor(options),m_opt(options),m_ev_get(0),m_ev_num(0)
+GUIMonitor::GUIMonitor(const JadeOption& options):
+  JadeMonitor(options),
+  m_opt(options),
+  m_ev_get(0),
+  m_ev_num(0)
 {
-  if(!options.empty())
-    m_ev_get = std::stoul(options);
+    m_ev_get = m_opt.GetIntValue("PRINT_EVENT_N");
 };
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)

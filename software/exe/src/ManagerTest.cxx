@@ -78,11 +78,11 @@ int main(int argc, char **argv){
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
 
   auto pman = new JadeManager();
-  pman->SetRegCtrl(std::make_shared<JadeRegCtrl>(JadeOption("{\"PATH\":"+opt_reg+"}")));
-  pman->SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":"+opt_data_input+"}")));
-  pman->SetFilter(std::make_shared<JadeFilter>(JadeOption("")));
-  pman->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":"+data_output_path+"}")));
-  pman->SetMonitor(std::make_shared<JadeMonitor>(JadeOption("")));
+  pman->SetRegCtrl(std::make_shared<JadeRegCtrl>(JadeOption("{\"PATH\":\""+opt_reg+"\"}")));
+  pman->SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\""+opt_data_input+"\"}")));
+  pman->SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
+  pman->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+data_output_path+"\"}")));
+  pman->SetMonitor(std::make_shared<JadeMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+opt_ev_print+"}")));
   std::this_thread::sleep_for(200ms);
   std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
   pman->StartDataTaking(); 

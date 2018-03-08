@@ -59,11 +59,11 @@ void GUIManager::config(){
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
   std::cout<< "{chip adress: CHIPA"<<opt_chip_address<<"}"<<std::endl;
 
-  pman->SetRegCtrl(std::make_shared<JadeRegCtrl>(opt_reg));
-  pman->SetReader(std::make_shared<JadeRead>(opt_data_input, ""));
-  pman->SetFilter(std::make_shared<JadeFilter>(""));
-  pman->SetWriter(std::make_shared<JadeWrite>(data_output_path, ""));
-  auto pmonitor = std::make_shared<GUIMonitor>(std::to_string(ev_print));
+  pman->SetRegCtrl(std::make_shared<JadeRegCtrl>(JadeOption("{\"PATH\":\""+opt_reg+"\"}")));
+  pman->SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\""+opt_data_input+"\"}")));
+  pman->SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
+  pman->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+data_output_path+"\"}")));
+  auto pmonitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+opt_ev_print+"}"));
   pman->SetMonitor(std::static_pointer_cast<JadeMonitor>(pmonitor));
 
   std::string cmd = "CHIPA" + std::to_string(opt_chip_address);

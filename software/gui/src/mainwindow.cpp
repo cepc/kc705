@@ -11,13 +11,16 @@
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow),
-  m_GUIManager(new GUIManager()),
   m_nx(48),
   m_ny(16),
   m_state("STOPPED")
 {
   ui->setupUi(this);
 
+  m_GUIManager = new GUIManager();
+  m_thread_man = new QThread(this);
+  m_GUIManager->moveToThread(m_thread_man);
+  
   connect(ui->Action_Open, SIGNAL(triggered()), this, SLOT(Action_Open_Triggered()));
   connect(ui->Action_Save, SIGNAL(triggered()), this, SLOT(Action_Save_Triggered()));
   connect(ui->Action_Exit, SIGNAL(triggered()), this, SLOT(Action_Exit_Triggered()));
@@ -32,12 +35,13 @@ MainWindow::MainWindow(QWidget *parent) :
   Init_Online_Image();
 
   m_thread = new QThread(this);
-  m_thread->start();
   m_timer = new QTimer(0);
   m_timer->setInterval(1000);
   m_timer->moveToThread(m_thread);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(Update_Online_Image()), Qt::DirectConnection);
+  connect(m_GUIManager, SIGNAL(IsRunning()), m_thread, SLOT(start()));
   connect(m_thread, SIGNAL(started()), m_timer, SLOT(start()));
+  connect(m_thread_man, SIGNAL(finished()), m_thread, SLOT(quit()));
 }
 
 MainWindow::~MainWindow()
@@ -65,6 +69,10 @@ void MainWindow::Action_Exit_Triggered()
   if(m_thread){
     m_thread->quit();
     m_thread->wait();
+  }
+  if(m_thread_man){
+    m_thread_man->quit();
+    m_thread_man->wait();
   }
   this->close();
   qDebug() << "Action_Exit_Triggered... ";
@@ -96,36 +104,29 @@ void MainWindow::Btn_Online_Config_Clicked()
 
 void MainWindow::Btn_Online_StartRun_Clicked()
 {  
-  ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, false);
-  m_state="RUNNING";
-  Online_Update();
-  for(int i=0; i<m_GUIManager->get_nfiles();i++){
-    std::cout << "Start Run: " << i << std::endl;
-    m_GUIManager->config();
-    m_GUIManager->start_run();
-    Delay(1000);
-  }
+  std::cout<<"=========GUI Start RUN: " << "======="<< std::endl; 
+  
+  ui->Btn_Online_StartRun->setEnabled(false);
+  ui->Btn_Online_StopRun->setEnabled(true);
+  m_state = "RUNNING"; 
+
+  m_thread_man->start();
+  connect(m_thread_man, SIGNAL(started()),m_GUIManager, SLOT(start_run()));
+    
   qDebug() << "Btn_Online_StartRun_Clicked... ";
 }
 
 void MainWindow::Btn_Online_StopRun_Clicked()
 {
-  ui->Btn_Online_StopRun->setAttribute(Qt::WA_UnderMouse, false);
-  m_state="STOPPED";
-  Online_Update();
+  ui->Btn_Online_StopRun->setEnabled(false);
   m_GUIManager->stop_run();
+  std::cout<<"=========GUI Stop RUN: " << "======="<< std::endl; 
+  
+  m_thread_man->quit(); 
+  m_thread_man->wait(); 
+
+  ui->Btn_Online_StartRun->setEnabled(true);
   qDebug() << "Btn_Online_StopRun_Clicked... ";
-}
-
-void MainWindow::Online_Update()
-{
-  ui->Btn_Online_StartRun->setAttribute(Qt::WA_UnderMouse, (m_state=="STOPPED"));
-  ui->Btn_Online_StartRun->setEnabled((m_state=="STOPPED"));
-
-  ui->Btn_Online_StopRun->setAttribute(Qt::WA_UnderMouse, (m_state=="RUNNING"));
-  ui->Btn_Online_StopRun->setEnabled((m_state=="RUNNING"));
-
-  qDebug() << "Online_Update...";
 }
 
 void MainWindow::Init_Online_Image()
@@ -232,6 +233,7 @@ void MainWindow::Draw_Online_Image()
   colorScale->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
 
   ui->customPlot->rescaleAxes();
+  qRegisterMetaType<QCPRange>("QCPRange");
 }
 
 void MainWindow::Update_Online_Image()
@@ -245,13 +247,4 @@ void MainWindow::Update_Online_Image()
       ui->customPlot->replot();
     }
   qRegisterMetaType<QCPRange>("QCPRange");
-}
-
-void MainWindow::Delay(int millisecondsToWait)
-{
-  QTime dieTime = QTime::currentTime().addMSecs( millisecondsToWait );
-  while( QTime::currentTime() < dieTime )
-  {
-    QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
-  }
 }

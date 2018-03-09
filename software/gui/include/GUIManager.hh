@@ -1,14 +1,26 @@
 #ifndef GUIManager_HH
 #define GUIManager_HH
 
+#include <QObject>
+#include <QDebug>
+#include <QThread> 
+
 #include "JadeManager.hh"
+#include "JadeRegCtrl.hh"
 #include "GUIMonitor.hh"
+
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <iomanip>
+#include <chrono>
+#include <thread>
+#include <ctime>
 
-class GUIManager
+class GUIManager : public QObject 
 {
+  Q_OBJECT
+
   public:
     GUIManager();
     ~GUIManager();
@@ -29,11 +41,12 @@ class GUIManager
     size_t get_run_time(){return std::stoul(opt_time_run);}; 
     size_t get_ev_print(){return std::stoul(opt_ev_print);}; 
     int get_nfiles(){return opt_nfiles;};
-    //std::string get_state();
-    int start_run();
-    int stop_run();
-    void config();
     std::shared_ptr<GUIMonitor>get_monitor();
+ 
+  public slots:
+    void start_run();
+    void stop_run();
+    void config();
   
   private:
     std::string opt_data_input;
@@ -45,6 +58,9 @@ class GUIManager
     int opt_nfiles;
     JadeManager* pman;
     std::shared_ptr<GUIMonitor> pmonitor;
+
+  signals:
+    void IsRunning();
 };
 
 

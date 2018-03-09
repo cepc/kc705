@@ -1,14 +1,9 @@
-#include "JadeRegCtrl.hh"
 #include "GUIManager.hh"
-#include <iomanip>
-#include <chrono>
-#include <thread>
-#include <ctime>
 
 using namespace std::chrono_literals;
 
 GUIManager::GUIManager():opt_data_input("//./xillybus_read_32"),opt_reg("//./xillybus_mem_8"),opt_time_run("60"),opt_ev_print("10000"),opt_chip_address(1),opt_nfiles(1){
-  pman = new JadeManager();
+  pman = new JadeManager(JadeOption("{}"));
 }
 
 GUIManager::~GUIManager(){
@@ -23,32 +18,35 @@ std::string GUIManager::get_now_str(){
     return ss.str();
 }
 
-int GUIManager::start_run(){
-  size_t time_run = get_run_time();
-  
-  std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
-  pman->StartDataTaking(); 
-  std::this_thread::sleep_for(std::chrono::milliseconds(time_run));
-  pman->StopDataTaking();
-  std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
-  return 0;
+void GUIManager::start_run(){
+  for(int i=0; i<opt_nfiles; i++){
+    std::cout<<"=========>start run: "<< i <<" ======="<< std::endl; 
+    std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
+    config(); 
+    pman->DeviceConnect();
+    pman->StartDataTaking(); 
+    emit IsRunning();
+    std::this_thread::sleep_for(std::chrono::milliseconds(get_run_time()));
+    stop_run(); 
+    std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
+  }
 }
 
-int GUIManager::stop_run(){
+void GUIManager::stop_run(){
   pman->StopDataTaking();
-  std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
-  return 0;
+  pman->DeviceDisconnect();
+  pman->Reset();
 }
 
 void GUIManager::config(){
   size_t time_run = get_run_time();
   size_t ev_print = get_ev_print();
-  
+
   std::time_t time_now = std::time(nullptr);
   char time_buff[13];
   time_buff[12] = 0;
   std::strftime(time_buff, sizeof(time_buff),
-		"%y%m%d%H%M%S", std::localtime(&time_now));
+      "%y%m%d%H%M%S", std::localtime(&time_now));
   std::string time_str(time_buff);
   std::string data_output_path = opt_data_output+"_"+time_str +".df";
 
@@ -70,16 +68,6 @@ void GUIManager::config(){
   pman->DeviceControl(cmd);
   pman->DeviceControl("SET");
   std::this_thread::sleep_for(200ms);
-}
-
-std::string GUIManager::get_state(){
-  if(!pman->DeviceStatus("START")){ 
-    return "START";
-  }else if(!pman->DeviceStatus("STOP")){ 
-    return "STOP";
-  }else{
-    return "ERROR";
-  }
 }
 
 std::shared_ptr<GUIMonitor>GUIManager::get_monitor(){

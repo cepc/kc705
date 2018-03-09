@@ -29,12 +29,11 @@ class MainWindow : public QMainWindow
       void Btn_Online_Config_Clicked();
       void Btn_Online_StartRun_Clicked();
       void Btn_Online_StopRun_Clicked();
-      
+
       void Selection_Changed();    
       void Mouse_Press();    
       void Mouse_Wheel();    
 
-      void Online_Update();
       void Update_Online_Image();
       void Draw_Online_Image();
 
@@ -42,7 +41,6 @@ class MainWindow : public QMainWindow
     Ui::MainWindow *ui;
 
     void Init_Online_Image();
-    void Delay(int millisecondsToWait);
 
     int m_nx;
     int m_ny;
@@ -54,6 +52,7 @@ class MainWindow : public QMainWindow
     QCPColorScale* colorScale;
 
     QThread* m_thread;
+    QThread* m_thread_man;
     QTimer* m_timer;
 };
 

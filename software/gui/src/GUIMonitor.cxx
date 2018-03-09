@@ -45,18 +45,22 @@ void GUIMonitor::SetData(JadeDataFrameSP df)
 QCPColorMapData* GUIMonitor::GetData()
 {
   std::unique_lock<std::mutex> lk_out(m_mx_get);
-  while(m_data.empty()){
+  
+  data = new QCPColorMapData(m_ny, m_nx, QCPRange(0,m_ny), QCPRange(0,m_nx));
+
+  while(m_qu_data.empty()){
     while(m_cv_data.wait_for(lk_out, 10ms)==std::cv_status::timeout){
-      //throw;
-      break;
+      std::cerr << "GUIMonitor: the data queue is empty!" << std::endl;
+      data->setSize(0,0);
+      return data;
     }
   }
 
-  data = new QCPColorMapData(m_ny, m_nx, QCPRange(0,m_ny), QCPRange(0,m_nx));
   std::vector<uint16_t> u_data = m_qu_data.front();
   if(u_data.size() != 768){
-    std::cerr << " Unable to send full frame! " << std::endl;
-    std::cerr << " size: " << u_data.size() << std::endl;
+    std::cerr << " GUIMonitor: the data has wrong size! Frame size: " << u_data.size() << std::endl;
+    data->setSize(0,0);
+    return data;
   }
 
   for (unsigned int i = 0; i < m_ny; ++i)

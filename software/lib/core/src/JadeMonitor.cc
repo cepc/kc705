@@ -9,6 +9,10 @@ JadeMonitor::~JadeMonitor(){
 
 }
 
+void JadeMonitor::Reset(){
+  m_ev_n = 0;
+}
+
 void JadeMonitor::Monitor(JadeDataFrameSP df){
   if(m_ev_print!=0 && m_ev_n%m_ev_print == 0){
     df->Print(std::cout);

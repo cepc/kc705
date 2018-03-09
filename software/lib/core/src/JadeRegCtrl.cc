@@ -18,75 +18,140 @@
 
 
 JadeRegCtrl::JadeRegCtrl(const JadeOption &opt)
-  :m_opt(opt){
-    m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}, {"SET",{2, 10}}, {"CHIPA1",{8, 0}}, {"CHIPA2",{8, 1}},{"CHIPA3",{8, 2}}, {"CHIPA4",{8, 3}}, {"CHIPA5",{8, 4}}, {"CHIPA6",{8, 5}}, {"CHIPA7",{8, 6}}, {"CHIPA8",{8, 7}}, {"CHIPA9",{8, 8}}, {"CHIPA10",{8, 9}}};  
-    m_dev_path=m_opt.GetStringValue("PATH");
-  }
+  :m_opt(opt), m_fd(0), m_is_fd_read(false), m_is_fd_write(false){
+  m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}, {"SET",{2, 10}}, {"CHIPA1",{8, 0}}, {"CHIPA2",{8, 1}},{"CHIPA3",{8, 2}}, {"CHIPA4",{8, 3}}, {"CHIPA5",{8, 4}}, {"CHIPA6",{8, 5}}, {"CHIPA7",{8, 6}}, {"CHIPA8",{8, 7}}, {"CHIPA9",{8, 8}}, {"CHIPA10",{8, 9}}};
+}
 
 JadeRegCtrl::~JadeRegCtrl(){
+  Reset();
+}
 
+void JadeRegCtrl::Open(){
+  std::string path = m_opt.GetStringValue("PATH");
+  #ifdef _WIN32
+  m_fd = _open(path.c_str(), _O_RDONLY | _O_BINARY);
+#else
+  m_fd = open(path.c_str(), O_RDONLY);
+#endif
+  if(m_fd < 0){
+    std::cerr<<"JadeRegCtrl: Failed to open devfile by read mode: "<<path<<"\n";
+    throw;
+  }
+  close(m_fd);
+  m_fd = 0;
+  m_is_fd_read = false;
+  m_is_fd_write = false;
+  
+#ifdef _WIN32
+  m_fd = _open(path.c_str(), _O_WRONLY | _O_BINARY);
+#else
+  m_fd = open(path.c_str(), O_WRONLY);
+#endif
+  if(m_fd < 0){
+    std::cerr<<"JadeRegCtrl: Failed to open devfile by write mode: "<<path<<"\n";
+    throw;
+  }
+  m_is_fd_read = false;
+  m_is_fd_write = true;
+}
+
+void JadeRegCtrl::Close(){
+  if(m_fd){
+    close(m_fd);
+    m_fd = 0;
+    m_is_fd_read = false;
+    m_is_fd_write = false;
+  }
+}
+
+void JadeRegCtrl::Reset(){
+  Close();
 }
 
 void JadeRegCtrl::WriteByte(uint16_t addr, uint8_t val){
+  if(!m_fd || !m_is_fd_write){
+    if(m_fd){
+      close(m_fd);
+      m_fd = 0;
+      m_is_fd_read = false;
+      m_is_fd_write = false;
+    }
+    std::string path = m_opt.GetStringValue("PATH");
 #ifdef _WIN32
-  int fd = _open(m_dev_path.c_str(), _O_WRONLY | _O_BINARY);
+    m_fd = _open(path.c_str(), _O_WRONLY | _O_BINARY);
 #else
-  int fd = open(m_dev_path.c_str(), O_WRONLY);
+    m_fd = open(path.c_str(), O_WRONLY);
 #endif
-
-  if (fd < 0) {
-    perror("Failed to open devfile");
+    if(m_fd < 0){
+      std::cerr<<"JadeRegCtrl: Failed to open devfile by write mode: "<<path<<"\n";
+      throw;
+    }
+    m_is_fd_read = false;
+    m_is_fd_write = true;
+  }
+  
+#ifdef _WIN32
+  auto lseek_r = _lseek(m_fd, addr, SEEK_SET);
+#else 
+  auto lseek_r = lseek(m_fd, addr, SEEK_SET);
+#endif
+  if(lseek_r < 0){
+    std::cerr<<"JadeRegCtrl: Failed to seek devfile in write mode to the postion "<<addr<<"\n";
   }
 
 #ifdef _WIN32
-  auto lseek_r = _lseek(fd, addr, SEEK_SET);
-#else 
-  auto lseek_r = lseek(fd, addr, SEEK_SET);
-#endif
-  if(lseek_r < 0)
-    perror("Failed to seek");
-
-#ifdef _WIN32
-  auto write_r = _write(fd, &val, 1);
+  auto write_r = _write(m_fd, &val, 1);
 #else
-  auto write_r = write(fd, &val, 1);
+  auto write_r = write(m_fd, &val, 1);
 #endif
   if(write_r < 0) {
-    perror("allwrite() failed to write");
+    std::cerr<<"JadeRegCtrl: Failed to write devfile\n";
+    throw;
   }
-  close(fd);
 }
 
 uint8_t JadeRegCtrl::ReadByte(uint16_t addr){
-  uint8_t val;
-
+  if(!m_fd || !m_is_fd_read){
+    if(m_fd){
+      close(m_fd);
+      m_fd = 0;
+      m_is_fd_read = false;
+      m_is_fd_write = false;
+    }
+    std::string path = m_opt.GetStringValue("PATH");
 #ifdef _WIN32
-  int fd = _open(m_dev_path.c_str(), _O_RDONLY | _O_BINARY);
+    m_fd = _open(path.c_str(), _O_RDONLY | _O_BINARY);
 #else
-  int fd = open(m_dev_path.c_str(), O_RDONLY);
+    m_fd = open(path.c_str(), O_RDONLY);
 #endif
-
-  if (fd < 0) {
-    perror("Failed to open devfile");
+    if(m_fd < 0){
+      std::cerr<<"JadeRegCtrl: Failed to open devfile by read mode: "<<path<<"\n";
+      throw;
+    }
+    m_is_fd_read = true;
+    m_is_fd_write = false;
   }
+
 #ifdef _WIN32
-  auto lseek_r = _lseek(fd, addr, SEEK_SET);
+  auto lseek_r = _lseek(m_fd, addr, SEEK_SET);
 #else 
-  auto lseek_r = lseek(fd, addr, SEEK_SET);
+  auto lseek_r = lseek(m_fd, addr, SEEK_SET);
 #endif
   if(lseek_r < 0){
-    perror("Failed to seek");
+    std::cerr<<"JadeRegCtrl: Failed to seek devfile in read mode to the postion "<<addr<<"\n";
+    throw;
   }
-
+  
+  uint8_t val;
 #ifdef _WIN32
-  auto read_r = _read(fd, &val, 1);
+  auto read_r = _read(m_fd, &val, 1);
 #else
-  auto read_r = read(fd, &val, 1);
+  auto read_r = read(m_fd, &val, 1);
 #endif
   if(read_r < 0) {
-    perror("allread() failed to read");
+    std::cerr<<"JadeRegCtrl: Failed to read devfile\n";
+    throw;
   }
-  close(fd);
   return val;
 }
 
@@ -104,29 +169,10 @@ void JadeRegCtrl::SendCommand(const std::string &cmd, uint8_t val){
   WriteByte(addr_val.first, val);
 }
 
-uint8_t JadeRegCtrl::GetStatus(const std::string &cmd){
-  std::string str = cmd;
+const std::string& JadeRegCtrl::GetStatus(const std::string &type){
+  std::string str = type;
   std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-  auto addr_val = m_cmd_map.at(str);
-  return ReadByte(addr_val.first);
-}
-
-bool JadeRegCtrl::WaitStatus(const std::string &cmd, std::chrono::milliseconds timeout){
-  std::string str = cmd;
-  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-  auto addr_val = m_cmd_map.at(str);
-  uint16_t addr = addr_val.first;
-  uint8_t val_expected = addr_val.first;
-  auto tp_timeout =  std::chrono::system_clock::now() + timeout;
-  while(true){
-    uint8_t val_r = ReadByte(addr_val.first);
-    if(val_r == val_expected){
-      return true;
-    }
-    if(std::chrono::system_clock::now() > tp_timeout){
-      return false;
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-  }
-
+  auto& addr_status_pair = m_status_map.at(str);
+  uint8_t val = ReadByte(addr_status_pair.first);
+  return addr_status_pair.second.at(val); //TODO: if unknown
 }

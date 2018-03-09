@@ -14,8 +14,9 @@ class DLLEXPORT JadeRead{
  public:
   JadeRead(const JadeOption &opt);
   virtual ~JadeRead();
-  virtual void Open(){};
-  virtual void Reset(){};
+  virtual void Open();
+  virtual void Close();
+  virtual void Reset();
   virtual std::vector<JadeDataFrameSP> Read(size_t nframe,
 					    const std::chrono::milliseconds &timeout);
  private:

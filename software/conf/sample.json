@@ -1,0 +1,70 @@
+{
+    "System":"JadeCore",
+    "JadeCore":{
+	"JadeManager":{
+	    "type":"default",
+	    "parameter":{
+		"SecPerRun": 5,
+		"Loop": 3
+	    }
+	},
+	"JadeRead":{
+	    "type":"default",
+	    "parameter":{
+		"PATH":"//./xillybus_read_32"
+	    }
+	},
+	"JadeWrite":{
+	    "type":"default",
+	    "parameter":{
+		"PATH":"output"
+	    }
+	},
+	"JadeFilter":{
+	    "type":"default",
+	    "parameter":{
+	    }
+	}
+	"JadeMonitor":{
+	    "type":"default",
+	    "parameter":{
+		"PRINT_EVENT_N":10000
+	    }
+	}
+	"JadeRegCtrl":{
+	    "type":"default",
+	    "parameter":{
+		"PATH":"//./xillybus_mem_8",
+		"command_list":{
+		    "START":{
+			"address":3,
+			"default_val":15
+		    }
+		    "STOP":{
+			"address":4,
+			"default_val":15
+		    }
+		    "SET":{
+			"address":2,
+			"default_val":10
+		    }
+		    "CHIPA":{
+			"address":8,
+			"default_val":0
+		    }
+		}
+		"status_list":{
+		    "RUN_TYPE":{
+			"address":16,
+			"value_list":{
+			    "STOPPED":0,
+			    "STARTED":1
+			}
+		    }
+		}
+
+	    }
+	}
+    }
+}
+

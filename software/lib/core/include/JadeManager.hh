@@ -33,7 +33,7 @@ class DLLEXPORT JadeManager{
   void DeviceConnect();
   void DeviceDisconnect();
   void DeviceControl(const std::string &cmd);
-  const std::string& DeviceStatus(const std::string &type);
+  std::string DeviceStatus(const std::string &type);
  private:
   uint64_t AsyncReading();
   uint64_t AsyncDecoding();

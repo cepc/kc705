@@ -9,7 +9,7 @@ class DLLEXPORT JadeMonitor{
  public:
   JadeMonitor(const JadeOption& opt);
   virtual ~JadeMonitor();
-  virtual void Reset(){};
+  virtual void Reset();
   virtual void Monitor(JadeDataFrameSP df);
  private:
   JadeOption m_opt;

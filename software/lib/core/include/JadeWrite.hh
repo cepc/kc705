@@ -18,8 +18,9 @@ class DLLEXPORT JadeWrite{
  public:
   JadeWrite(const JadeOption &opt);
   virtual ~JadeWrite();
-  virtual void Open(){};
-  virtual void Reset(){};
+  virtual void Open();
+  virtual void Close();
+  virtual void Reset();
   void Write(JadeDataFrameSP df);
  private:
   FILE* m_fd;

@@ -2,42 +2,31 @@
 
 using namespace std::chrono_literals;
 
-JadeManager::JadeManager()
-  : m_is_running(false){
-}
-
 JadeManager::JadeManager(const JadeOption &opt)
   : m_is_running(false), m_opt(opt){
 }
 
-
 JadeManager::~JadeManager(){
-  if(m_is_running)
-    StopDataTaking();
+  Reset();
 }
 
 void JadeManager::SetRegCtrl(JadeRegCtrlSP ctrl){
-  m_ctrl.reset();
   m_ctrl = ctrl;
 }
 
 void JadeManager::SetReader(JadeReadSP rd){
-  m_rd.reset();
   m_rd = rd;
 }
 
 void JadeManager::SetWriter(JadeWriteSP wrt){
-  m_wrt.reset();
   m_wrt = wrt;
 }
 
 void JadeManager::SetFilter(JadeFilterSP flt){
-  m_flt.reset();
   m_flt = flt;
 }
 
 void JadeManager::SetMonitor(JadeMonitorSP mnt){
-  m_mnt.reset();
   m_mnt = mnt;
 }
 
@@ -169,15 +158,16 @@ uint64_t JadeManager::AsyncMonitoring(){
 }
 
 void JadeManager::StartDataTaking(){
-  if(!m_rd || !m_flt || !m_wrt | !m_mnt){
-    std::cerr<<"JadeManager: m_rd or m_flt or m_wrt is not set"<<std::endl;
+  if(!m_rd || !m_flt || !m_wrt || !m_mnt || !m_ctrl) {
+    std::cerr<<"JadeManager: m_rd, m_flt, m_wrt, m_mnt or m_ctrl is not set"<<std::endl;
     throw;
   }
-  
-  //checck/wait for STOPPED status
-  //m_ctrl->WaitStatus("STOPPED", std::chrono::milliseconds(1000))
+
+  m_wrt->Open();
   m_ctrl->SendCommand("START"); 
-  
+  // while(DeviceStatus("RUN_TYPE") != "STARTED"){
+  //   ;
+  // }
   m_is_running = true;
   m_fut_async_rd = std::async(std::launch::async,
       &JadeManager::AsyncReading, this);
@@ -192,17 +182,15 @@ void JadeManager::StartDataTaking(){
       &JadeManager::AsyncWriting, this);
 
   m_fut_async_mnt = std::async(std::launch::async,
-      &JadeManager::AsyncMonitoring, this);
-  
-  //m_ctrl->WaitStatus("RUNNING", std::chrono::milliseconds(1000))  
+      &JadeManager::AsyncMonitoring, this);  
 }
 
 void JadeManager::StopDataTaking(){
-  if(m_ctrl){
-    m_ctrl->SendCommand("STOP");
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //m_ctrl->WaitStatus("STOPPED", std::chrono::milliseconds(1000))
-  }
+  DeviceControl("STOP");
+  // while(DeviceStatus("RUN_TYPE") != "STOPPED"){
+  //   ;
+  // }
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));//TOBE REMOVEd
   
   m_is_running = false;
   if(m_fut_async_rd.valid())
@@ -219,12 +207,11 @@ void JadeManager::StopDataTaking(){
   m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
   m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
   m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
+
+  m_wrt->Close();
 }
 
 void JadeManager::Reset(){
-  // if(m_ctrl){
-  //   m_ctrl->SendCommand("RESET");
-  // }
   m_is_running = false;
   if(m_fut_async_rd.valid())
     m_fut_async_rd.get();
@@ -240,23 +227,32 @@ void JadeManager::Reset(){
   m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
   m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
   m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
-  m_ctrl.reset();
-  m_rd.reset();
-  m_flt.reset();
-  m_wrt.reset();
-  m_mnt.reset();
+  if(m_ctrl)
+    m_ctrl->Reset();
+  if(m_rd)
+    m_rd->Reset();
+  if(m_flt)
+    m_flt->Reset();
+  if(m_wrt)
+    m_wrt->Reset();
+  if(m_mnt)
+    m_mnt->Reset();
+}
+
+void JadeManager::DeviceConnect(){
+  m_rd->Open();
+  m_ctrl->Open();
+}
+
+void JadeManager::DeviceDisconnect(){
+  m_rd->Close();
+  m_ctrl->Close();
 }
 
 void JadeManager::DeviceControl(const std::string &cmd){
-  if(m_ctrl){
-    m_ctrl->SendCommand(cmd);
-  }
+  m_ctrl->SendCommand(cmd);
 }
 
-
-bool JadeManager::DeviceStatus(const std::string &status){
-  if(m_ctrl){
-    return m_ctrl->WaitStatus(status, 0ms);
-  }
-  return false;
+const std::string& JadeManager::DeviceStatus(const std::string &type){
+  return m_ctrl->GetStatus(type);
 }

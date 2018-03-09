@@ -29,7 +29,7 @@ class GUIManager
     size_t get_run_time(){return std::stoul(opt_time_run);}; 
     size_t get_ev_print(){return std::stoul(opt_ev_print);}; 
     int get_nfiles(){return opt_nfiles;};
-    std::string get_state();
+    //std::string get_state();
     int start_run();
     int stop_run();
     void config();

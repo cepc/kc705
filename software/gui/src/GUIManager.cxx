@@ -8,7 +8,7 @@
 using namespace std::chrono_literals;
 
 GUIManager::GUIManager():opt_data_input("//./xillybus_read_32"),opt_reg("//./xillybus_mem_8"),opt_time_run("60"),opt_ev_print("10000"),opt_chip_address(1),opt_nfiles(1){
-  pman = new JadeManager();
+  pman = new JadeManager(JadeOption("{}"));
 }
 
 GUIManager::~GUIManager(){
@@ -27,6 +27,7 @@ int GUIManager::start_run(){
   size_t time_run = get_run_time();
   
   std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
+  pman->DeviceConnect();
   pman->StartDataTaking(); 
   std::this_thread::sleep_for(std::chrono::milliseconds(time_run));
   pman->StopDataTaking();
@@ -36,6 +37,8 @@ int GUIManager::start_run(){
 
 int GUIManager::stop_run(){
   pman->StopDataTaking();
+  pman->DeviceDisconnect();
+  pman->Reset();
   std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
   return 0;
 }
@@ -72,15 +75,15 @@ void GUIManager::config(){
   std::this_thread::sleep_for(200ms);
 }
 
-std::string GUIManager::get_state(){
-  if(!pman->DeviceStatus("START")){ 
-    return "START";
-  }else if(!pman->DeviceStatus("STOP")){ 
-    return "STOP";
-  }else{
-    return "ERROR";
-  }
-}
+//std::string GUIManager::get_state(){
+//  if(!pman->DeviceStatus("START")){ 
+//    return "START";
+//  }else if(!pman->DeviceStatus("STOP")){ 
+//    return "STOP";
+//  }else{
+//    return "ERROR";
+//  }
+//}
 
 std::shared_ptr<GUIMonitor>GUIManager::get_monitor(){
   return pmonitor; 

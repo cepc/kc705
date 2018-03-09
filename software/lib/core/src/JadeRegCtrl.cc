@@ -19,7 +19,6 @@
 
 JadeRegCtrl::JadeRegCtrl(const JadeOption &opt)
   :m_opt(opt), m_fd(0), m_is_fd_read(false), m_is_fd_write(false){
-  m_cmd_map={{"START",{3, 15}}, {"STOP",{4, 15}}, {"SET",{2, 10}}, {"CHIPA1",{8, 0}}, {"CHIPA2",{8, 1}},{"CHIPA3",{8, 2}}, {"CHIPA4",{8, 3}}, {"CHIPA5",{8, 4}}, {"CHIPA6",{8, 5}}, {"CHIPA7",{8, 6}}, {"CHIPA8",{8, 7}}, {"CHIPA9",{8, 8}}, {"CHIPA10",{8, 9}}};
 }
 
 JadeRegCtrl::~JadeRegCtrl(){
@@ -156,23 +155,30 @@ uint8_t JadeRegCtrl::ReadByte(uint16_t addr){
 }
 
 void JadeRegCtrl::SendCommand(const std::string &cmd){
-  std::string str = cmd;
-  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-  auto addr_val = m_cmd_map.at(str);
-  WriteByte(addr_val.first, addr_val.second);
+  JadeOption cmd_opt =  m_opt.GetSubOption("command_list").GetSubOption(cmd);
+  uint16_t addr = cmd_opt.GetIntValue("address");
+  uint8_t default_val = cmd_opt.GetIntValue("default_val");
+  WriteByte(addr, default_val);
 }
 
 void JadeRegCtrl::SendCommand(const std::string &cmd, uint8_t val){
-  std::string str = cmd;
-  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-  auto addr_val = m_cmd_map.at(str);
-  WriteByte(addr_val.first, val);
+  JadeOption cmd_opt =  m_opt.GetSubOption("command_list").GetSubOption(cmd);
+  uint16_t addr = cmd_opt.GetIntValue("address");
+  WriteByte(addr, val);
 }
 
-const std::string& JadeRegCtrl::GetStatus(const std::string &type){
-  std::string str = type;
-  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-  auto& addr_status_pair = m_status_map.at(str);
-  uint8_t val = ReadByte(addr_status_pair.first);
-  return addr_status_pair.second.at(val); //TODO: if unknown
+std::string JadeRegCtrl::GetStatus(const std::string &type){
+  JadeOption type_opt = m_opt.GetSubOption("status_list").GetSubOption(type);
+  JadeOption value_list_opt = type_opt.GetSubOption("value_list");
+  std::map<std::string, JadeOption> opt_map = type_opt.GetSubMap();
+  std::map<int32_t, std::string> status_map;
+  for(auto& e: opt_map){
+    status_map[e.second.GetIntValue()] = e.first;
+  }
+  uint16_t addr = type_opt.GetIntValue("address");
+  uint8_t val = ReadByte(addr);
+  std::string str_status = status_map[val];
+  if(str_status.empty())
+    str_status = "UNKNOWN_STATUS";
+  return str_status;
 }

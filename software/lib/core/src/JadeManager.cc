@@ -253,6 +253,6 @@ void JadeManager::DeviceControl(const std::string &cmd){
   m_ctrl->SendCommand(cmd);
 }
 
-const std::string& JadeManager::DeviceStatus(const std::string &type){
+std::string JadeManager::DeviceStatus(const std::string &type){
   return m_ctrl->GetStatus(type);
 }

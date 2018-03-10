@@ -131,120 +131,91 @@ void MainWindow::Btn_Online_StopRun_Clicked()
 
 void MainWindow::Init_Online_Image()
 {
-  // configure axis rect:
-  ui->customPlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom|QCP::iSelectAxes); // this will also allow rescaling the color scale by dragging/zooming
-  ui->customPlot->axisRect()->setupFullAxesBox(true);
-  ui->customPlot->xAxis->setLabel("Col");
-  ui->customPlot->yAxis->setLabel("Row");
+  ui->customPlot->plotLayout()->clear();
+  ui->customPlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom|QCP::iSelectAxes);
+  
+  m_LayoutTop = new QCPLayoutGrid;
+  ui->customPlot->plotLayout()->addElement(0, 0, m_LayoutTop);
 
-  Draw_Online_Image();
+  m_LayoutBottom = new QCPLayoutGrid;
+  ui->customPlot->plotLayout()->addElement(1, 0, m_LayoutBottom);
+
+  m_adcAxisRect = new QCPAxisRect(ui->customPlot);
+  m_adcAxisRect->setupFullAxesBox(true);
+  m_adcAxisRect->axis(QCPAxis::atBottom)->setLabel("Col");
+  m_adcAxisRect->axis(QCPAxis::atLeft)->setLabel("Row");
 
   QSharedPointer<QCPAxisTickerFixed> fixedTicker(new QCPAxisTickerFixed);
   fixedTicker->setTickStep(4.0); 
   fixedTicker->setScaleStrategy(QCPAxisTickerFixed::ssNone);   
+  m_adcAxisRect->axis(QCPAxis::atBottom)->setTicker(fixedTicker);
+  m_adcAxisRect->axis(QCPAxis::atLeft)->setTicker(fixedTicker);
 
-  ui->customPlot->xAxis->setTicker(fixedTicker);
-  ui->customPlot->yAxis->setTicker(fixedTicker);
-  ui->customPlot->rescaleAxes();
+  m_adcScale = new QCPColorScale(ui->customPlot);
+  m_adcScale->setType(QCPAxis::atRight); 
+  m_adcScale->axis()->setLabel("ADC");
 
-  connect(ui->customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(Selection_Changed()));
-  connect(ui->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(Mouse_Press()));
-  connect(ui->customPlot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(Mouse_Wheel()));
+  m_pedestalAxisRect = new QCPAxisRect(ui->customPlot);
+  m_pedestalAxisRect->setupFullAxesBox(true);
+  
+  m_noiseAxisRect = new QCPAxisRect(ui->customPlot);
+  m_noiseAxisRect->setupFullAxesBox(true);
 
-  // make bottom and left axes transfer their ranges to top and right axes:
-  connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->xAxis2, SLOT(setRange(QCPRange)));
-  connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->yAxis2, SLOT(setRange(QCPRange)));
-}
+  m_LayoutTop->addElement(0,0,m_adcAxisRect);
+  m_LayoutTop->addElement(0,1,m_adcScale);   
 
-void MainWindow::Selection_Changed()
-{
-  // make top and bottom axes be selected synchronously, and handle axis and tick labels as one selectable object:
-  if (ui->customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis) || ui->customPlot->xAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
-      ui->customPlot->xAxis2->selectedParts().testFlag(QCPAxis::spAxis) || ui->customPlot->xAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
-  {
-    ui->customPlot->xAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-    ui->customPlot->xAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-  }
-  // make left and right axes be selected synchronously, and handle axis and tick labels as one selectable object:
-  if (ui->customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis) || ui->customPlot->yAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
-      ui->customPlot->yAxis2->selectedParts().testFlag(QCPAxis::spAxis) || ui->customPlot->yAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
-  {
-    ui->customPlot->yAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-    ui->customPlot->yAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-  }
+  m_LayoutBottom->addElement(0,0,m_pedestalAxisRect);
+  m_LayoutBottom->addElement(0,1,m_noiseAxisRect);
 
-  // synchronize selection of graphs with selection of corresponding legend items:
-  for (int i=0; i<ui->customPlot->graphCount(); ++i)
-  {
-    QCPGraph *graph = ui->customPlot->graph(i);
-    QCPPlottableLegendItem *item = ui->customPlot->legend->itemWithPlottable(graph);
-    if (item->selected() || graph->selected())
-    {
-      item->setSelected(true);
-      graph->setSelection(QCPDataSelection(graph->data()->dataRange()));
-    }
-  }
-}
+  m_marginGroup = new QCPMarginGroup(ui->customPlot);
+  m_adcAxisRect->setMarginGroup(QCP::msBottom | QCP::msTop, m_marginGroup); 
+  m_adcScale->setMarginGroup(QCP::msBottom | QCP::msTop, m_marginGroup); 
+  
+  m_pedestalAxisRect->setMarginGroup(QCP::msLeft, m_marginGroup); 
+  m_noiseAxisRect->setMarginGroup(QCP::msRight, m_marginGroup); 
 
-void MainWindow::Mouse_Press()
-{
-  if (ui->customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
-    ui->customPlot->axisRect()->setRangeDrag(ui->customPlot->xAxis->orientation());
-  else if (ui->customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
-    ui->customPlot->axisRect()->setRangeDrag(ui->customPlot->yAxis->orientation());
-  else
-    ui->customPlot->axisRect()->setRangeDrag(Qt::Horizontal|Qt::Vertical);
-}
-
-void MainWindow::Mouse_Wheel()
-{
-  if (ui->customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
-    ui->customPlot->axisRect()->setRangeZoom(ui->customPlot->xAxis->orientation());
-  else if (ui->customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
-    ui->customPlot->axisRect()->setRangeZoom(ui->customPlot->yAxis->orientation());
-  else
-    ui->customPlot->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
+  Draw_Online_Image();
 }
 
 void MainWindow::Draw_Online_Image()
 {
-  // set up the QCPColorMap:
-  colorMap = new QCPColorMap(ui->customPlot->xAxis, ui->customPlot->yAxis);
+  m_adcMap = new QCPColorMap(m_adcAxisRect->axis(QCPAxis::atBottom), m_adcAxisRect->axis(QCPAxis::atLeft));
+  m_adcMap->setColorScale(m_adcScale); 
+
   for (unsigned int i = 0; i < m_nx; ++i)
     for (unsigned int j = 0; j < m_ny; ++j)
     {
-      colorMap->data()->setCell(i,j,0);
+      m_adcMap->data()->setCell(i,j,i+j);
     }  
 
-  // add a color scale:
-  colorScale = new QCPColorScale(ui->customPlot);
-  ui->customPlot->plotLayout()->addElement(0, 1, colorScale);   
-  colorScale->setType(QCPAxis::atRight); 
-  colorMap->setColorScale(colorScale); 
-  colorScale->axis()->setLabel("ADC");
+  m_adcMap->setColorScale(m_adcScale); 
+  m_adcMap->setGradient(QCPColorGradient::gpPolar);
+  m_adcMap->rescaleDataRange();
 
-  // set the color gradient of the color map to one of the presets:
-  colorMap->setGradient(QCPColorGradient::gpPolar);
-  colorMap->rescaleDataRange();
+ 
+  m_pedestalGraph = new QCPGraph(m_pedestalAxisRect->axis(QCPAxis::atBottom), m_pedestalAxisRect->axis(QCPAxis::atLeft)); 
 
-  // make sure the axis rect and color scale synchronize their bottom and top margins (so they line up):
-  QCPMarginGroup *marginGroup = new QCPMarginGroup(ui->customPlot);
-  ui->customPlot->axisRect()->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
-  colorScale->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
+  m_noiseGraph = new QCPGraph(m_noiseAxisRect->axis(QCPAxis::atBottom), m_noiseAxisRect->axis(QCPAxis::atLeft)); 
 
   ui->customPlot->rescaleAxes();
+  ui->customPlot->replot();
   qRegisterMetaType<QCPRange>("QCPRange");
 }
 
 void MainWindow::Update_Online_Image()
 {
-  if(m_state == "RUNNING")
-    if(!m_GUIManager->get_monitor()->GetData()->isEmpty()){
-      colorMap->setData(m_GUIManager->get_monitor()->GetData());
-      colorMap->rescaleDataRange();
-      colorMap->setColorScale(colorScale); 
-      ui->customPlot->rescaleAxes();
-      ui->customPlot->replot();
-    }
+  if(m_state == "RUNNING") {
+    
+    m_GUIManager->get_monitor()->ProcessData();
+    
+    m_adcMap->setData(m_GUIManager->get_monitor()->GetADCMap());
+    m_adcMap->rescaleDataRange();
+    m_adcMap->setColorScale(m_adcScale); 
+  
+    m_pedestalGraph->addData(m_GUIManager->get_monitor()->GetPedestal(1,1)->data());
+
+    ui->customPlot->rescaleAxes();
+    ui->customPlot->replot();
+  }
   qRegisterMetaType<QCPRange>("QCPRange");
 }

@@ -10,71 +10,74 @@ GUIMonitor::GUIMonitor(const JadeOption& options):
   m_ev_num(0)
 {
   m_ev_get = m_opt.GetIntValue("PRINT_EVENT_N");
-};
+  for(int i=0; i<16; i++)
+    for(int j=0; j<48; j++)
+    {
+      m_last_frame_adc[i][j] = 0;
+      m_sum_frame_adc[i][j] = 0;
+      m_mean_adc[i][j] = 0;
+      m_rms_adc[i][j] = 0;
+    }
+}
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)
 {
-  if(m_ev_get!=0 && m_ev_num%m_ev_get == 0){
-    SetData(df);
-  }
-  m_ev_num++;
-}
-
-void GUIMonitor::SetData(JadeDataFrameSP df)
-{
-  m_offset_x = df->GetMatrixLowX();
-  m_offset_y = df->GetMatrixLowY();
-
-  m_nx = df->GetMatrixSizeX();
-  m_ny = df->GetMatrixSizeY();
-
-  uint16_t value;
   std::unique_lock<std::mutex> lk_in(m_mx_set);
-  m_data.clear();
-  for(size_t iy=0; iy<m_ny; iy++)
-    for(size_t ix=0; ix<m_nx; ix++)
-    {
-      uint16_t value = df->GetHitValue(ix+m_offset_x, iy+m_offset_y);
-      m_data.push_back(value);
-    }
-  m_qu_data.push(m_data);
+  m_df = df; 
   lk_in.unlock();
-  m_cv_data.notify_all();
 }
 
-QCPColorMapData* GUIMonitor::GetData()
+
+void GUIMonitor::ProcessData()
 {
   std::unique_lock<std::mutex> lk_out(m_mx_get);
-  
-  data = new QCPColorMapData(m_ny, m_nx, QCPRange(0,m_ny), QCPRange(0,m_nx));
-
-  while(m_qu_data.empty()){
-    while(m_cv_data.wait_for(lk_out, 10ms)==std::cv_status::timeout){
-      std::cerr << "GUIMonitor: the data queue is empty!" << std::endl;
-      data->setSize(0,0);
-      return data;
-    }
-  }
-
-  std::vector<uint16_t> u_data = m_qu_data.front();
-  if(u_data.size() != 768){
-    std::cerr << " GUIMonitor: the data has wrong size! Frame size: " << u_data.size() << std::endl;
-    data->setSize(0,0);
-    return data;
-  }
-
-  for (unsigned int i = 0; i < m_ny; ++i)
-    for (unsigned int j = 0; j < m_nx; ++j)
-    {
-      size_t pos = j + m_nx*i;
-      data->setCell(i, j, u_data.at(pos));
-      std::cout << u_data.at(pos) << " "; 
-    }
-  std::cout << "\nend send" << std::endl;
-  u_data.clear();
-  m_qu_data.pop();
+  m_u_df = m_df;  
   lk_out.unlock();
 
-  return data;
+  m_ev_num++;
+
+  m_offset_x = m_u_df->GetMatrixLowX();
+  m_offset_y = m_u_df->GetMatrixLowY();
+
+  m_nx = m_u_df->GetMatrixSizeX();
+  m_ny = m_u_df->GetMatrixSizeY();
+
+  for (size_t iy = 0; iy < m_ny; iy++)
+    for (size_t ix = 0; ix < m_nx; ix++)
+    {
+      uint16_t adc_value = m_u_df->GetHitValue(ix+m_offset_x, iy+m_offset_y);
+
+      m_cds_frame_adc[ix][iy] = adc_value - m_last_frame_adc[ix][iy]; 
+
+      m_last_frame_adc[ix][iy] = adc_value; 
+
+      m_sum_frame_adc[ix][iy] += m_cds_frame_adc[ix][iy];
+
+      m_mean_adc[ix][iy] = m_sum_frame_adc[ix][iy] / m_ev_num;  
+
+      m_rms_adc[ix][iy] = m_mean_adc[ix][iy] - m_cds_frame_adc[ix][iy];
+
+      std::cout << adc_value << " "; 
+    }
 }
 
+QCPColorMapData* GUIMonitor::GetADCMap()
+{
+  m_adc_map = new QCPColorMapData(m_ny, m_nx, QCPRange(0,m_ny), QCPRange(0,m_nx));
+
+  for (size_t iy = 0; iy < m_ny; iy++)
+    for (size_t ix = 0; ix < m_nx; ix++)
+    {
+      m_adc_map->setCell(iy, ix, m_cds_frame_adc[ix][iy]);
+    }
+  std::cout << "\nend send" << std::endl;
+
+  return m_adc_map;
+}
+
+QVector<QCPGraphData>* GUIMonitor::GetPedestal(int col, int row){
+  
+  m_pedestal->addData(1,1);
+  
+  return m_pedestal;
+}

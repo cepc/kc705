@@ -84,8 +84,8 @@ QVector<QCPGraphData> GUIMonitor::GetPedestal(int col, int row){
   m_hist_mean->Fill(m_mean_adc[col][row]);
   QCPGraphData point;
 
-  for(int iBin=0; iBin<4000; iBin++){
-    point.key = -2000+iBin; 
+  for(int iBin=0; iBin<m_hist_rms->GetNbinsX(); iBin++){
+    point.key = m_hist_mean->GetXaxis()->GetBinCenter(iBin); 
     point.value = m_hist_mean->GetBinContent(iBin);
     m_pedestal.append(point);
   }
@@ -99,8 +99,8 @@ QVector<QCPGraphData> GUIMonitor::GetNoise(int col, int row){
   m_hist_rms->Fill(m_rms_adc[col][row]);
   QCPGraphData point;
 
-  for(int iBin=0; iBin<4000; iBin++){
-    point.key = -2000+iBin; 
+  for(int iBin=0; iBin<m_hist_rms->GetNbinsX(); iBin++){
+    point.key = m_hist_rms->GetXaxis()->GetBinCenter(iBin); 
     point.value = m_hist_rms->GetBinContent(iBin);
     m_noise.append(point);
   }

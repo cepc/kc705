@@ -211,8 +211,10 @@ void MainWindow::Update_Online_Image()
     m_adcMap->setData(m_GUIManager->get_monitor()->GetADCMap());
     m_adcMap->rescaleDataRange();
     m_adcMap->setColorScale(m_adcScale); 
-  
-    m_pedestalGraph->addData(m_GUIManager->get_monitor()->GetPedestal(1,1)->data());
+ 
+    m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(1,1));
+    
+    m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(1,1));
 
     ui->customPlot->rescaleAxes();
     ui->customPlot->replot();

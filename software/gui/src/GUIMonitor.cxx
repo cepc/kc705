@@ -18,6 +18,8 @@ GUIMonitor::GUIMonitor(const JadeOption& options):
       m_mean_adc[i][j] = 0;
       m_rms_adc[i][j] = 0;
     }
+  m_hist_mean = new TH1D("mean","mean",4000,-2000,2000);
+  m_hist_rms = new TH1D("rms","rms",4000,-2000,2000);
 }
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)
@@ -75,9 +77,33 @@ QCPColorMapData* GUIMonitor::GetADCMap()
   return m_adc_map;
 }
 
-QVector<QCPGraphData>* GUIMonitor::GetPedestal(int col, int row){
+QVector<QCPGraphData> GUIMonitor::GetPedestal(int col, int row){
+
+  std::cout << "Get Pedestal..."<<std::endl;
   
-  m_pedestal->addData(1,1);
-  
+  m_hist_mean->Fill(m_mean_adc[col][row]);
+  QCPGraphData point;
+
+  for(int iBin=0; iBin<4000; iBin++){
+    point.key = -2000+iBin; 
+    point.value = m_hist_mean->GetBinContent(iBin);
+    m_pedestal.append(point);
+  }
   return m_pedestal;
+}
+
+QVector<QCPGraphData> GUIMonitor::GetNoise(int col, int row){
+
+  std::cout << "Get Noise..."<<std::endl;
+
+  m_hist_rms->Fill(m_rms_adc[col][row]);
+  QCPGraphData point;
+
+  for(int iBin=0; iBin<4000; iBin++){
+    point.key = -2000+iBin; 
+    point.value = m_hist_rms->GetBinContent(iBin);
+    m_noise.append(point);
+  }
+
+  return m_noise;
 }

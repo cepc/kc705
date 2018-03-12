@@ -4,6 +4,7 @@
 #include "JadeMonitor.hh"
 #include "JadeOption.hh"
 #include "qcustomplot.h"
+#include "TH1D.h"
 #include <mutex>
 
 class GUIMonitor : public JadeMonitor
@@ -13,7 +14,8 @@ class GUIMonitor : public JadeMonitor
     void Monitor(JadeDataFrameSP df);
     void ProcessData();
     QCPColorMapData* GetADCMap();
-    QCPGraph* GetPedestal(int col, int row);
+    QVector<QCPGraphData> GetPedestal(int col, int row);
+    QVector<QCPGraphData> GetNoise(int col, int row);
   
   private:
     JadeOption m_opt;
@@ -28,13 +30,16 @@ class GUIMonitor : public JadeMonitor
     uint32_t m_offset_x;
     uint32_t m_offset_y;
     QCPColorMapData* m_adc_map;
-    QCPGraph* m_pedestal;
+    QVector<QCPGraphData> m_pedestal;
+    QVector<QCPGraphData> m_noise;
 
     uint32_t m_cds_frame_adc[16][48];
     uint32_t m_last_frame_adc[16][48];   
     uint32_t m_sum_frame_adc[16][48];
     double m_mean_adc[16][48];
     double m_rms_adc[16][48];
+    TH1D* m_hist_mean;
+    TH1D* m_hist_rms;
 };
 
 #endif

@@ -23,14 +23,15 @@
 	"JadeFilter":{
 	    "type":"default",
 	    "parameter":{
+	    	"something": "somthing"
 	    }
-	}
+	},
 	"JadeMonitor":{
 	    "type":"default",
 	    "parameter":{
 		"PRINT_EVENT_N":10000
 	    }
-	}
+	},
 	"JadeRegCtrl":{
 	    "type":"default",
 	    "parameter":{
@@ -39,20 +40,20 @@
 		    "START":{
 			"address":3,
 			"default_val":15
-		    }
+		    },
 		    "STOP":{
 			"address":4,
 			"default_val":15
-		    }
+		    },
 		    "SET":{
 			"address":2,
 			"default_val":10
-		    }
+		    },
 		    "CHIPA":{
 			"address":8,
 			"default_val":0
 		    }
-		}
+		},
 		"status_list":{
 		    "RUN_TYPE":{
 			"address":16,
@@ -62,7 +63,6 @@
 			}
 		    }
 		}
-
 	    }
 	}
     }

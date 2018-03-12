@@ -36,6 +36,7 @@ void GUIManager::stop_run(){
   pman->StopDataTaking();
   pman->DeviceDisconnect();
   pman->Reset();
+  emit IsStop();
 }
 
 void GUIManager::config(){
@@ -62,7 +63,7 @@ void GUIManager::config(){
   pman->SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
   pman->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+data_output_path+"\"}")));
   pmonitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+opt_ev_print+"}"));
-  pman->SetMonitor(std::static_pointer_cast<JadeMonitor>(pmonitor));
+  pman->SetMonitor(std::dynamic_pointer_cast<JadeMonitor>(pmonitor));
 
   std::string cmd = "CHIPA" + std::to_string(opt_chip_address);
   pman->DeviceControl(cmd);

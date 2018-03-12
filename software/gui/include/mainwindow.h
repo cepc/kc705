@@ -30,10 +30,6 @@ class MainWindow : public QMainWindow
       void Btn_Online_StartRun_Clicked();
       void Btn_Online_StopRun_Clicked();
 
-      void Selection_Changed();    
-      void Mouse_Press();    
-      void Mouse_Wheel();    
-
       void Update_Online_Image();
       void Draw_Online_Image();
 
@@ -44,12 +40,25 @@ class MainWindow : public QMainWindow
 
     int m_nx;
     int m_ny;
+    
     GUIManager* m_GUIManager;
 
     std::string m_state;
 
-    QCPColorMap* colorMap;
-    QCPColorScale* colorScale;
+    QCPLayoutGrid* m_LayoutTop;
+    QCPLayoutGrid* m_LayoutBottom;
+    
+    QCPAxisRect* m_adcAxisRect;
+    QCPAxisRect* m_pedestalAxisRect;
+    QCPAxisRect* m_noiseAxisRect;
+   
+    QCPMarginGroup* m_marginGroup; 
+    
+    QCPColorMap* m_adcMap;
+    QCPColorScale* m_adcScale;
+
+    QCPGraph* m_pedestalGraph;
+    QCPGraph* m_noiseGraph;
 
     QThread* m_thread;
     QThread* m_thread_man;

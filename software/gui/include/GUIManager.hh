@@ -61,6 +61,7 @@ class GUIManager : public QObject
 
   signals:
     void IsRunning();
+    void IsStop();
 };
 
 

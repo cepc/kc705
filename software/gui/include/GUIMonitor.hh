@@ -4,32 +4,42 @@
 #include "JadeMonitor.hh"
 #include "JadeOption.hh"
 #include "qcustomplot.h"
-#include <vector>
-#include <queue>
+#include "TH1D.h"
 #include <mutex>
-#include <condition_variable>
 
 class GUIMonitor : public JadeMonitor
 {
   public:
     GUIMonitor(const JadeOption& options);
     void Monitor(JadeDataFrameSP df);
-    void SetData(JadeDataFrameSP df);
-    QCPColorMapData* GetData();
+    void ProcessData();
+    QCPColorMapData* GetADCMap();
+    QVector<QCPGraphData> GetPedestal(int col, int row);
+    QVector<QCPGraphData> GetNoise(int col, int row);
+  
   private:
     JadeOption m_opt;
     size_t m_ev_get;
     size_t m_ev_num;
-    std::vector<uint16_t> m_data;
-    std::queue<std::vector<uint16_t>> m_qu_data;
+    JadeDataFrameSP m_df; 
+    JadeDataFrameSP m_u_df; 
     std::mutex m_mx_get;
     std::mutex m_mx_set;
-    std::condition_variable m_cv_data;
     uint32_t m_nx;
     uint32_t m_ny;
     uint32_t m_offset_x;
     uint32_t m_offset_y;
-    QCPColorMapData* data;
+    QCPColorMapData* m_adc_map;
+    QVector<QCPGraphData> m_pedestal;
+    QVector<QCPGraphData> m_noise;
+
+    uint32_t m_cds_frame_adc[16][48];
+    uint32_t m_last_frame_adc[16][48];   
+    uint32_t m_sum_frame_adc[16][48];
+    double m_mean_adc[16][48];
+    double m_rms_adc[16][48];
+    std::shared_ptr<TH1D> m_hist_mean;
+    std::shared_ptr<TH1D> m_hist_rms;
 };
 
 #endif

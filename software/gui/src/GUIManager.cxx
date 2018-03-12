@@ -36,6 +36,7 @@ void GUIManager::stop_run(){
   pman->StopDataTaking();
   pman->DeviceDisconnect();
   pman->Reset();
+  emit IsStop();
 }
 
 void GUIManager::config(){

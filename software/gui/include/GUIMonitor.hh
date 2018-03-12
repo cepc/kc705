@@ -38,8 +38,8 @@ class GUIMonitor : public JadeMonitor
     uint32_t m_sum_frame_adc[16][48];
     double m_mean_adc[16][48];
     double m_rms_adc[16][48];
-    TH1D* m_hist_mean;
-    TH1D* m_hist_rms;
+    std::shared_ptr<TH1D> m_hist_mean;
+    std::shared_ptr<TH1D> m_hist_rms;
 };
 
 #endif

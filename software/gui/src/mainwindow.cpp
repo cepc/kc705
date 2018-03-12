@@ -36,12 +36,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
   m_thread = new QThread(this);
   m_timer = new QTimer(0);
-  m_timer->setInterval(1.0/ui->SpinBox_Online_evDisplay->value()*1000);
+  m_timer->setInterval(int(1e6/ui->SpinBox_Online_evDisplay->value()));
   m_timer->moveToThread(m_thread);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(Update_Online_Image()), Qt::DirectConnection);
   connect(m_GUIManager, SIGNAL(IsRunning()), m_thread, SLOT(start()));
   connect(m_thread, SIGNAL(started()), m_timer, SLOT(start()));
-  connect(m_thread_man, SIGNAL(finished()), m_thread, SLOT(quit()));
+  connect(m_GUIManager, SIGNAL(IsStop()), m_thread, SLOT(quit()));
 }
 
 MainWindow::~MainWindow()
@@ -97,6 +97,7 @@ void MainWindow::Btn_Online_Config_Clicked()
   m_GUIManager->set_register_data_path(qregfile.toStdString());
 
   m_GUIManager->set_run_time(std::to_string(ui->SpinBox_Online_TimeRun->value()));
+  m_timer->setInterval(int(1e6/ui->SpinBox_Online_evDisplay->value()));
   m_GUIManager->set_ev_print(std::to_string(ui->SpinBox_Online_evDisplay->value()));
   m_GUIManager->set_chip_address(ui->SpinBox_Online_ChipAddress->value());
   m_GUIManager->set_nfiles(ui->SpinBox_Online_NFiles->value());

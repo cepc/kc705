@@ -10,6 +10,7 @@ GUIMonitor::GUIMonitor(const JadeOption& options):
   m_ev_num(0)
 {
   m_ev_get = m_opt.GetIntValue("PRINT_EVENT_N");
+
   for(int i=0; i<16; i++)
     for(int j=0; j<48; j++)
     {
@@ -18,8 +19,8 @@ GUIMonitor::GUIMonitor(const JadeOption& options):
       m_mean_adc[i][j] = 0;
       m_rms_adc[i][j] = 0;
     }
-  m_hist_mean = new TH1D("mean","mean",4000,-2000,2000);
-  m_hist_rms = new TH1D("rms","rms",4000,-2000,2000);
+  m_hist_mean = std::shared_ptr<TH1D>(new TH1D("mean","mean",4000,-2000,2000));
+  m_hist_rms = std::shared_ptr<TH1D>(new TH1D("rms","rms",4000,-2000,2000));
 }
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)
@@ -80,7 +81,7 @@ QCPColorMapData* GUIMonitor::GetADCMap()
 QVector<QCPGraphData> GUIMonitor::GetPedestal(int col, int row){
 
   std::cout << "Get Pedestal..."<<std::endl;
-  
+
   m_hist_mean->Fill(m_mean_adc[col][row]);
   QCPGraphData point;
 

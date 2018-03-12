@@ -165,7 +165,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="label_22">
            <property name="text">
-            <string>Events Display [Hz]:</string>
+            <string>Events Display [mHz]:</string>
            </property>
           </widget>
          </item>
@@ -224,7 +224,7 @@
             <number>999999999</number>
            </property>
            <property name="value">
-            <number>1</number>
+            <number>1000</number>
            </property>
            <property name="displayIntegerBase">
             <number>10</number>

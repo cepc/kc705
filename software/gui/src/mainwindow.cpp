@@ -158,9 +158,11 @@ void MainWindow::Init_Online_Image()
 
   m_pedestalAxisRect = new QCPAxisRect(ui->customPlot);
   m_pedestalAxisRect->setupFullAxesBox(true);
+  m_pedestalAxisRect->axis(QCPAxis::atBottom)->setLabel("Pedestal");
   
   m_noiseAxisRect = new QCPAxisRect(ui->customPlot);
   m_noiseAxisRect->setupFullAxesBox(true);
+  m_noiseAxisRect->axis(QCPAxis::atBottom)->setLabel("Noise");
 
   m_LayoutTop->addElement(0,0,m_adcAxisRect);
   m_LayoutTop->addElement(0,1,m_adcScale);   
@@ -212,10 +214,12 @@ void MainWindow::Update_Online_Image()
     m_adcMap->setData(m_GUIManager->get_monitor()->GetADCMap());
     m_adcMap->rescaleDataRange();
     m_adcMap->setColorScale(m_adcScale); 
- 
-    m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(1,1));
-    
-    m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(1,1));
+
+    int Col = ui->SpinBox_Online_Col->value();
+    int Row = ui->SpinBox_Online_Row->value();
+    m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(Col,Row));
+
+    m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(Col,Row));
 
     ui->customPlot->rescaleAxes();
     ui->customPlot->replot();

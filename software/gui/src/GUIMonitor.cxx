@@ -60,7 +60,7 @@ void GUIMonitor::ProcessData()
 
       m_rms_adc[ix][iy] = m_mean_adc[ix][iy] - m_cds_frame_adc[ix][iy];
 
-      std::cout << adc_value << " "; 
+      //std::cout << adc_value << " "; 
     }
 }
 

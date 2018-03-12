@@ -33,8 +33,8 @@ void JadeManager::SetMonitor(JadeMonitorSP mnt){
 uint64_t JadeManager::AsyncReading(){
   uint64_t n_df = 0;
   while (m_is_running){
-    size_t nframe_per_read = 10;
-    auto v_df = m_rd->Read(nframe_per_read, 10ms);
+    size_t nframe_per_read = 1;
+    auto v_df = m_rd->Read(nframe_per_read, 100ms);
     size_t nframe_per_read_r = v_df.size();
 
     std::unique_lock<std::mutex> lk_out(m_mx_ev_to_dcd);
@@ -190,19 +190,24 @@ void JadeManager::StopDataTaking(){
   // while(DeviceStatus("RUN_TYPE") != "STOPPED"){
   //   ;
   // }
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));//TOBE REMOVEd
+  //std::this_thread::sleep_for(std::chrono::milliseconds(500));//TOBE REMOVEd
   
   m_is_running = false;
   if(m_fut_async_rd.valid())
     m_fut_async_rd.get();
+  std::cout<<">>>>>>>>>>>>>>>>>>end of rd"<<std::endl; 
   if(m_fut_async_dcd.valid())
     m_fut_async_dcd.get();
+  std::cout<<">>>>>>>>>>>>>>>>>>end of dcd"<<std::endl; 
   if(m_fut_async_flt.valid())
     m_fut_async_flt.get();
+  std::cout<<">>>>>>>>>>>>>>>>>>end of flt"<<std::endl;
   if(m_fut_async_wrt.valid())
     m_fut_async_wrt.get();
+  std::cout<<">>>>>>>>>>>>>>>>>>end of wrt"<<std::endl;
   if(m_fut_async_mnt.valid())
     m_fut_async_mnt.get();
+  std::cout<<">>>>>>>>>>>>>>>>>>end of mnt"<<std::endl;
   m_qu_ev_to_dcd=decltype(m_qu_ev_to_dcd)();
   m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
   m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
@@ -242,10 +247,14 @@ void JadeManager::Reset(){
 void JadeManager::DeviceConnect(){
   m_rd->Open();
   m_ctrl->Open();
+  m_ctrl->SendCommand("STOP");
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 void JadeManager::DeviceDisconnect(){
   m_rd->Close();
+  m_ctrl->SendCommand("STOP");
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
   m_ctrl->Close();
 }
 

@@ -83,16 +83,18 @@ int main(int argc, char **argv){
   pman.SetFilter(pflt);
   pman.SetWriter(pwrt);
   pman.SetMonitor(pmnt);
-  
-  // for(int i=0; i< 3; i++){
-  //   std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl;
-  //   pman.DeviceConnect();
-  //   pman.StartDataTaking(); 
-  //   std::this_thread::sleep_for(std::chrono::milliseconds(time_run));
-  //   pman.StopDataTaking();
-  //   pman.DeviceDisconnect();
-  //   std::cout<<"=========eixt at "<<get_now_str()<<"======="<< std::endl;
-  // }
+  pman.DeviceConnect();
+  for(int i=0; i< 3; i++){
+    std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl;
+    std::cout<<"========="<<std::endl;
+    pman.StartDataTaking(); 
+    std::cout<<"========="<<std::endl;      
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    pman.StopDataTaking();
+    std::cout<<"========="<<std::endl;
+    std::cout<<"=========eixt at "<<get_now_str()<<"======="<< std::endl;
+  }
+  pman.DeviceDisconnect();
   return 0;
 
 }

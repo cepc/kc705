@@ -27,7 +27,13 @@ JadeRegCtrl::~JadeRegCtrl(){
 
 void JadeRegCtrl::Open(){
   std::string path = m_opt.GetStringValue("PATH");
-  #ifdef _WIN32
+  if(m_fd){
+    close(m_fd);
+    m_fd = 0;
+    m_is_fd_read = false;
+    m_is_fd_write = false;
+  }
+#ifdef _WIN32
   m_fd = _open(path.c_str(), _O_RDONLY | _O_BINARY);
 #else
   m_fd = open(path.c_str(), O_RDONLY);

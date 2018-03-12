@@ -29,7 +29,7 @@
 	"JadeMonitor":{
 	    "type":"default",
 	    "parameter":{
-		"PRINT_EVENT_N":10000
+		"PRINT_EVENT_N":0
 	    }
 	},
 	"JadeRegCtrl":{

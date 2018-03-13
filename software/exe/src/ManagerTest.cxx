@@ -63,17 +63,9 @@ int main(int argc, char **argv){
   size_t time_run = std::stoul(opt_time_run);
   size_t ev_print = std::stoul(opt_ev_print);
   
-  std::time_t time_now = std::time(nullptr);
-  char time_buff[13];
-  time_buff[12] = 0;
-  std::strftime(time_buff, sizeof(time_buff),
-		"%y%m%d%H%M%S", std::localtime(&time_now));
-  std::string time_str(time_buff);
-  std::string data_output_path = opt_data_output+"_"+time_str +".df";
-
   std::cout<< "{opt_data_input:"<<opt_data_input<<"}"<<std::endl;
   std::cout<< "{opt_reg:"<<opt_reg<<"}"<<std::endl;
-  std::cout<< "{data_output_path:"<<data_output_path<<"}"<<std::endl;
+  std::cout<< "{opt_data_output:"<<opt_data_output<<"}"<<std::endl;
   std::cout<< "{time_run:"<<time_run<<"}"<<std::endl;
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
 
@@ -81,7 +73,7 @@ int main(int argc, char **argv){
   pman.SetRegCtrl(std::make_shared<JadeRegCtrl>(JadeOption("{\"PATH\":\""+opt_reg+"\"}")));
   pman.SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\""+opt_data_input+"\"}")));
   pman.SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
-  pman.SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+data_output_path+"\"}")));
+  pman.SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+opt_data_output+"\"}")));
   pman.SetMonitor(std::make_shared<JadeMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+opt_ev_print+"}")));
   for(int i=0; i< 3; i++){
     std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl;

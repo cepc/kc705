@@ -185,12 +185,6 @@ void MainWindow::Draw_Online_Image()
   m_adcMap = new QCPColorMap(m_adcAxisRect->axis(QCPAxis::atBottom), m_adcAxisRect->axis(QCPAxis::atLeft));
   m_adcMap->setColorScale(m_adcScale); 
 
-  for (unsigned int i = 0; i < m_nx; ++i)
-    for (unsigned int j = 0; j < m_ny; ++j)
-    {
-      m_adcMap->data()->setCell(i,j,i+j);
-    }  
-
   m_adcMap->setColorScale(m_adcScale); 
   m_adcMap->setGradient(QCPColorGradient::gpPolar);
   m_adcMap->rescaleDataRange();

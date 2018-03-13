@@ -203,20 +203,20 @@ void MainWindow::Update_Online_Image()
 {
   if(m_state == "RUNNING") {
     
-    m_GUIManager->get_monitor()->ProcessData();
-    
-    m_adcMap->setData(m_GUIManager->get_monitor()->GetADCMap());
-    m_adcMap->rescaleDataRange();
-    m_adcMap->setColorScale(m_adcScale); 
+    //m_GUIManager->get_monitor()->ProcessData();
+    //
+    //m_adcMap->setData(m_GUIManager->get_monitor()->GetADCMap());
+    //m_adcMap->rescaleDataRange();
+    //m_adcMap->setColorScale(m_adcScale); 
 
-    int Col = ui->SpinBox_Online_Col->value();
-    int Row = ui->SpinBox_Online_Row->value();
-    m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(Col,Row));
+    //int Col = ui->SpinBox_Online_Col->value();
+    //int Row = ui->SpinBox_Online_Row->value();
+    //m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(Col,Row));
 
-    m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(Col,Row));
+    //m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(Col,Row));
 
-    ui->customPlot->rescaleAxes();
-    ui->customPlot->replot();
+    //ui->customPlot->rescaleAxes();
+    //ui->customPlot->replot();
   }
   qRegisterMetaType<QCPRange>("QCPRange");
 }

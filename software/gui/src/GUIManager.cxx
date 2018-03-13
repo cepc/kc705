@@ -18,17 +18,11 @@ std::string GUIManager::get_now_str(){
 }
 
 void GUIManager::start_run(){
-  for(int i=0; i<m_opt_nfiles; i++){
-    std::cout<<"=========>start run: "<< i <<" ======="<< std::endl; 
-    std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
-    config(); 
-    m_man->DeviceConnect();
-    m_man->StartDataTaking(); 
-    emit IsRunning();
-    std::this_thread::sleep_for(std::chrono::milliseconds(get_run_time()));
-    stop_run(); 
-    std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
-  }
+  std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
+  config(); 
+  m_man->DeviceConnect();
+  m_man->StartDataTaking(); 
+  emit IsRunning();
 }
 
 void GUIManager::stop_run(){
@@ -36,6 +30,8 @@ void GUIManager::stop_run(){
   m_man->DeviceDisconnect();
   m_man->Reset();
   emit IsStop();
+  get_monitor()->Reset();
+  std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
 }
 
 void GUIManager::config(){

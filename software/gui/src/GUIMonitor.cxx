@@ -108,3 +108,8 @@ QVector<QCPGraphData> GUIMonitor::GetNoise(int col, int row){
 
   return m_noise;
 }
+
+void GUIMonitor::Reset(){
+  m_hist_mean->Reset();
+  m_hist_rms->Reset();
+}

@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QDebug>
-#include <QThread> 
 
 #include "JadeManager.hh"
 #include "JadeRegCtrl.hh"

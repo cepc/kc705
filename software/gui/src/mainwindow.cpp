@@ -96,6 +96,8 @@ void MainWindow::Btn_Online_Config_Clicked()
   m_GUIManager->set_ev_print(std::to_string(ui->SpinBox_Online_evDisplay->value()));
   m_GUIManager->set_chip_address(ui->SpinBox_Online_ChipAddress->value());
   m_GUIManager->set_nfiles(ui->SpinBox_Online_NFiles->value());
+  
+  m_GUIManager->config();
 }
 
 void MainWindow::Btn_Online_StartRun_Clicked()

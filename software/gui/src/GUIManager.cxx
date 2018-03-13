@@ -19,7 +19,6 @@ std::string GUIManager::get_now_str(){
 
 void GUIManager::start_run(){
   std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
-  config(); 
   m_man->DeviceConnect();
   m_man->StartDataTaking(); 
   emit IsRunning();
@@ -57,7 +56,7 @@ void GUIManager::config(){
   m_man->SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\""+m_opt_data_input+"\"}")));
   m_man->SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
   m_man->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+data_output_path+"\"}")));
-  m_monitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+m_opt_ev_print+"}"));
+  m_monitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+m_opt_ev_print+",\"CURRENT_TIME\":\""+time_str+"\"}"));
   m_man->SetMonitor(std::dynamic_pointer_cast<JadeMonitor>(m_monitor));
 
   std::string cmd = "CHIPA" + std::to_string(m_opt_chip_address);

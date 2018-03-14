@@ -48,7 +48,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
   delete ui;
-  delete m_GUIManager;
 }
 
 void MainWindow::Action_Open_Triggered()
@@ -196,14 +195,13 @@ void MainWindow::Update_Online_Image()
 {
   if(m_state == "RUNNING") {
     
-    m_GUIManager->get_monitor()->ProcessData();
-    
     m_adcMap->setData(m_GUIManager->get_monitor()->GetADCMap());
     m_adcMap->rescaleDataRange();
     m_adcMap->setColorScale(m_adcScale); 
 
     int Col = ui->SpinBox_Online_Col->value();
     int Row = ui->SpinBox_Online_Row->value();
+    
     m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(Col,Row));
 
     m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(Col,Row));

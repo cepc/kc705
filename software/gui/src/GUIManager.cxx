@@ -25,10 +25,10 @@ void GUIManager::start_run(){
 }
 
 void GUIManager::stop_run(){
+  emit IsStop();
   m_man->StopDataTaking();
   m_man->DeviceDisconnect();
   m_man->Reset();
-  emit IsStop();
   get_monitor()->Reset();
   std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
 }

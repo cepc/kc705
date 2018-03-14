@@ -5,6 +5,9 @@
 #include "JadeOption.hh"
 #include "qcustomplot.h"
 #include "TH1D.h"
+#include <algorithm>    
+#include <vector>       
+#include <functional>
 #include <mutex>
 
 class GUIMonitor : public JadeMonitor
@@ -12,7 +15,6 @@ class GUIMonitor : public JadeMonitor
   public:
     GUIMonitor(const JadeOption& options);
     void Monitor(JadeDataFrameSP df);
-    void ProcessData();
     QCPColorMapData* GetADCMap();
     QVector<QCPGraphData> GetPedestal(int col, int row);
     QVector<QCPGraphData> GetNoise(int col, int row);
@@ -35,13 +37,18 @@ class GUIMonitor : public JadeMonitor
     QVector<QCPGraphData> m_pedestal;
     QVector<QCPGraphData> m_noise;
 
-    uint32_t m_cds_frame_adc[16][48];
-    uint32_t m_last_frame_adc[16][48];   
-    uint32_t m_sum_frame_adc[16][48];
-    double m_mean_adc[16][48];
-    double m_rms_adc[16][48];
+    std::vector<int16_t> m_cds_frame_adc;
+    std::vector<int16_t> m_last_frame_adc;
+    std::vector<int16_t> m_sum_frame_adc;
+    std::vector<double> m_mean_frame_adc;
+    std::vector<double> m_rms_frame_adc;
     std::shared_ptr<TH1D> m_hist_mean;
     std::shared_ptr<TH1D> m_hist_rms;
+    struct adcFrame {
+      std::vector<int16_t> cds_frame_adc;
+      std::vector<double> mean_frame_adc;
+      std::vector<double> rms_frame_adc;
+    } m_adcFrame, m_u_adcFrame;
 };
 
 #endif

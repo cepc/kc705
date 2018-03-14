@@ -113,6 +113,10 @@ int16_t JadeDataFrame::GetHitValue(size_t x, size_t y) const{
   return val;
 }
 
+std::vector<int16_t> JadeDataFrame::GetFrameData() const{
+  return m_data;
+}
+
 void JadeDataFrame::Print(std::ostream & os, size_t ws) const{
   os << std::string(ws, ' ') << "{ name:JadeDataFrame,\n";
   os << std::string(ws+2, ' ') << "data_raw:"<<"TODO"<<",\n";

@@ -60,9 +60,8 @@ class MainWindow : public QMainWindow
     QCPGraph* m_pedestalGraph;
     QCPGraph* m_noiseGraph;
 
-    QThread* m_thread;
-    QThread* m_thread_man;
     QTimer* m_timer;
+    QTimer* m_timer_run;
 };
 
 #endif // MAINWINDOW_H

@@ -16,11 +16,13 @@ class GUIMonitor : public JadeMonitor
     QCPColorMapData* GetADCMap();
     QVector<QCPGraphData> GetPedestal(int col, int row);
     QVector<QCPGraphData> GetNoise(int col, int row);
-  
+    void Reset();
+
   private:
     JadeOption m_opt;
     size_t m_ev_get;
     size_t m_ev_num;
+    std::string m_curr_time;
     JadeDataFrameSP m_df; 
     JadeDataFrameSP m_u_df; 
     std::mutex m_mx_get;

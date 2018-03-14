@@ -18,8 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
 
   m_GUIManager = new GUIManager();
-  m_thread_man = new QThread(this);
-  m_GUIManager->moveToThread(m_thread_man);
   
   connect(ui->Action_Open, SIGNAL(triggered()), this, SLOT(Action_Open_Triggered()));
   connect(ui->Action_Save, SIGNAL(triggered()), this, SLOT(Action_Save_Triggered()));
@@ -34,14 +32,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
   Init_Online_Image();
 
-  m_thread = new QThread(this);
   m_timer = new QTimer(0);
   m_timer->setInterval(int(1e6/ui->SpinBox_Online_evDisplay->value()));
-  m_timer->moveToThread(m_thread);
-  connect(m_timer, SIGNAL(timeout()), this, SLOT(Update_Online_Image()), Qt::DirectConnection);
-  connect(m_GUIManager, SIGNAL(IsRunning()), m_thread, SLOT(start()));
-  connect(m_thread, SIGNAL(started()), m_timer, SLOT(start()));
-  connect(m_GUIManager, SIGNAL(IsStop()), m_thread, SLOT(quit()));
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(Update_Online_Image()));
+  connect(m_GUIManager, SIGNAL(IsRunning()), m_timer, SLOT(start()));
+  connect(m_GUIManager, SIGNAL(IsStop()), m_timer, SLOT(stop()));
+
+  m_timer_run = new QTimer(0);
+  m_timer_run->setInterval(int(ui->SpinBox_Online_TimeRun->value()));
+  connect(m_timer_run, SIGNAL(timeout()), this, SLOT(Btn_Online_StopRun_Clicked()));
+  connect(m_GUIManager, SIGNAL(IsRunning()), m_timer_run, SLOT(start()));
+  connect(m_GUIManager, SIGNAL(IsStop()), m_timer_run, SLOT(stop()));
 }
 
 MainWindow::~MainWindow()
@@ -66,14 +67,6 @@ void MainWindow::Action_Save_Triggered()
 
 void MainWindow::Action_Exit_Triggered()
 {
-  if(m_thread){
-    m_thread->quit();
-    m_thread->wait();
-  }
-  if(m_thread_man){
-    m_thread_man->quit();
-    m_thread_man->wait();
-  }
   this->close();
   qDebug() << "Action_Exit_Triggered... ";
 }
@@ -96,11 +89,15 @@ void MainWindow::Btn_Online_Config_Clicked()
   QString qregfile = ui->LineEdit_Online_RegName->text();
   m_GUIManager->set_register_data_path(qregfile.toStdString());
 
+  m_timer_run->setInterval(int(ui->SpinBox_Online_TimeRun->value()));
   m_GUIManager->set_run_time(std::to_string(ui->SpinBox_Online_TimeRun->value()));
+  
   m_timer->setInterval(int(1e6/ui->SpinBox_Online_evDisplay->value()));
   m_GUIManager->set_ev_print(std::to_string(ui->SpinBox_Online_evDisplay->value()));
   m_GUIManager->set_chip_address(ui->SpinBox_Online_ChipAddress->value());
   m_GUIManager->set_nfiles(ui->SpinBox_Online_NFiles->value());
+  
+  m_GUIManager->config();
 }
 
 void MainWindow::Btn_Online_StartRun_Clicked()
@@ -111,8 +108,7 @@ void MainWindow::Btn_Online_StartRun_Clicked()
   ui->Btn_Online_StopRun->setEnabled(true);
   m_state = "RUNNING"; 
 
-  m_thread_man->start();
-  connect(m_thread_man, SIGNAL(started()),m_GUIManager, SLOT(start_run()));
+  m_GUIManager->start_run();
     
   qDebug() << "Btn_Online_StartRun_Clicked... ";
 }
@@ -123,9 +119,6 @@ void MainWindow::Btn_Online_StopRun_Clicked()
   m_GUIManager->stop_run();
   std::cout<<"=========GUI Stop RUN: " << "======="<< std::endl; 
   
-  m_thread_man->quit(); 
-  m_thread_man->wait(); 
-
   ui->Btn_Online_StartRun->setEnabled(true);
   qDebug() << "Btn_Online_StopRun_Clicked... ";
 }
@@ -158,9 +151,11 @@ void MainWindow::Init_Online_Image()
 
   m_pedestalAxisRect = new QCPAxisRect(ui->customPlot);
   m_pedestalAxisRect->setupFullAxesBox(true);
+  m_pedestalAxisRect->axis(QCPAxis::atBottom)->setLabel("Pedestal");
   
   m_noiseAxisRect = new QCPAxisRect(ui->customPlot);
   m_noiseAxisRect->setupFullAxesBox(true);
+  m_noiseAxisRect->axis(QCPAxis::atBottom)->setLabel("Noise");
 
   m_LayoutTop->addElement(0,0,m_adcAxisRect);
   m_LayoutTop->addElement(0,1,m_adcScale);   
@@ -182,12 +177,6 @@ void MainWindow::Draw_Online_Image()
 {
   m_adcMap = new QCPColorMap(m_adcAxisRect->axis(QCPAxis::atBottom), m_adcAxisRect->axis(QCPAxis::atLeft));
   m_adcMap->setColorScale(m_adcScale); 
-
-  for (unsigned int i = 0; i < m_nx; ++i)
-    for (unsigned int j = 0; j < m_ny; ++j)
-    {
-      m_adcMap->data()->setCell(i,j,i+j);
-    }  
 
   m_adcMap->setColorScale(m_adcScale); 
   m_adcMap->setGradient(QCPColorGradient::gpPolar);
@@ -212,10 +201,12 @@ void MainWindow::Update_Online_Image()
     m_adcMap->setData(m_GUIManager->get_monitor()->GetADCMap());
     m_adcMap->rescaleDataRange();
     m_adcMap->setColorScale(m_adcScale); 
- 
-    m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(1,1));
-    
-    m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(1,1));
+
+    int Col = ui->SpinBox_Online_Col->value();
+    int Row = ui->SpinBox_Online_Row->value();
+    m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(Col,Row));
+
+    m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(Col,Row));
 
     ui->customPlot->rescaleAxes();
     ui->customPlot->replot();

@@ -83,7 +83,11 @@ QVector<QCPGraphData> GUIMonitor::GetPedestal(int col, int row){
 
   std::cout << "Get Pedestal..."<<std::endl;
 
-  m_hist_mean->Fill(m_mean_adc[col][row]);
+  if(m_ev_num == 1){
+    m_hist_mean->Fill(0);
+  }else{
+    m_hist_mean->Fill(m_mean_adc[col][row]);
+  }
   QCPGraphData point;
 
   for(int iBin=0; iBin<m_hist_rms->GetNbinsX(); iBin++){
@@ -98,7 +102,11 @@ QVector<QCPGraphData> GUIMonitor::GetNoise(int col, int row){
 
   std::cout << "Get Noise..."<<std::endl;
 
-  m_hist_rms->Fill(m_rms_adc[col][row]);
+  if(m_ev_num == 1){
+    m_hist_rms->Fill(0);
+  }else{
+    m_hist_rms->Fill(m_rms_adc[col][row]);
+  }
   QCPGraphData point;
 
   for(int iBin=0; iBin<m_hist_rms->GetNbinsX(); iBin++){

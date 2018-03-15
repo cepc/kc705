@@ -2,7 +2,7 @@
 
 using namespace std::chrono_literals;
 
-GUIManager::GUIManager():m_opt_data_input("//./xillybus_read_32"),m_opt_reg("//./xillybus_mem_8"),m_opt_time_run("60"),m_opt_ev_print("10000"),m_opt_chip_address(1),m_opt_nfiles(1){
+GUIManager::GUIManager():m_opt_data_input("//./xillybus_read_32"),m_opt_reg("//./xillybus_mem_8"),m_opt_time_run("60"),m_opt_ev_print("10000"),m_opt_chip_address(1),m_opt_nfiles(1),m_col(0),m_row(0){
   m_man = new JadeManager(JadeOption("{}"));
 }
 
@@ -25,11 +25,10 @@ void GUIManager::start_run(){
 }
 
 void GUIManager::stop_run(){
+  emit IsStop();
   m_man->StopDataTaking();
   m_man->DeviceDisconnect();
   m_man->Reset();
-  emit IsStop();
-  get_monitor()->Reset();
   std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
 }
 
@@ -56,7 +55,7 @@ void GUIManager::config(){
   m_man->SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\""+m_opt_data_input+"\"}")));
   m_man->SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
   m_man->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+data_output_path+"\"}")));
-  m_monitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+m_opt_ev_print+",\"CURRENT_TIME\":\""+time_str+"\"}"));
+  m_monitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+m_opt_ev_print+",\"CURRENT_TIME\":\""+time_str+"\",\"COLUMN\":"+std::to_string(m_col)+",\"ROW\":"+std::to_string(m_row)+"}"));
   m_man->SetMonitor(std::dynamic_pointer_cast<JadeMonitor>(m_monitor));
 
   std::string cmd = "CHIPA" + std::to_string(m_opt_chip_address);

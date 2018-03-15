@@ -21,6 +21,7 @@ class DLLEXPORT JadeDataFrame{
   std::chrono::system_clock::time_point& TimeStamp();
   bool IsInMatrix(size_t x, size_t y) const;
   int16_t GetHitValue(size_t x, size_t y) const;
+  std::vector<int16_t> GetFrameData() const;
   uint32_t GetMatrixLowX() const;
   uint32_t GetMatrixLowY() const;
   uint32_t GetMatrixHighX() const;

@@ -37,10 +37,14 @@ class MainWindow : public QMainWindow
     Ui::MainWindow *ui;
 
     void Init_Online_Image();
+    void Clear_Online_Image();
 
     int m_nx;
     int m_ny;
-    
+
+    int m_col;
+    int m_row;
+
     GUIManager* m_GUIManager;
 
     std::string m_state;

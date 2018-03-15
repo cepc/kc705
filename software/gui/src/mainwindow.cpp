@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow),
   m_nx(48),
   m_ny(16),
+  m_col(0),
+  m_row(0),
   m_state("STOPPED")
 {
   ui->setupUi(this);
@@ -29,6 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->Btn_Online_Config, SIGNAL(clicked()), this, SLOT(Btn_Online_Config_Clicked()));
   connect(ui->Btn_Online_StartRun, SIGNAL(clicked()), this, SLOT(Btn_Online_StartRun_Clicked()));
   connect(ui->Btn_Online_StopRun, SIGNAL(clicked()), this, SLOT(Btn_Online_StopRun_Clicked()));
+
+  m_col = ui->SpinBox_Online_Col->value();
+  m_row = ui->SpinBox_Online_Row->value();
 
   Init_Online_Image();
 
@@ -92,17 +97,19 @@ void MainWindow::Btn_Online_Config_Clicked()
   m_GUIManager->set_run_time(std::to_string(ui->SpinBox_Online_TimeRun->value()));
   
   m_timer->setInterval(int(1e6/ui->SpinBox_Online_evDisplay->value()));
-  m_GUIManager->set_ev_print(std::to_string(ui->SpinBox_Online_evDisplay->value()));
+  m_GUIManager->set_ev_print(std::to_string(ui->SpinBox_Online_SampleEvents->value()));
   m_GUIManager->set_chip_address(ui->SpinBox_Online_ChipAddress->value());
   m_GUIManager->set_nfiles(ui->SpinBox_Online_NFiles->value());
-  
+  m_GUIManager->set_channel(ui->SpinBox_Online_Col->value(), ui->SpinBox_Online_Row->value()); 
+
   m_GUIManager->config();
 }
 
 void MainWindow::Btn_Online_StartRun_Clicked()
 {  
   std::cout<<"=========GUI Start RUN: " << "======="<< std::endl; 
-  
+ 
+  Clear_Online_Image(); 
   ui->Btn_Online_StartRun->setEnabled(false);
   ui->Btn_Online_StopRun->setEnabled(true);
   m_state = "RUNNING"; 
@@ -199,15 +206,24 @@ void MainWindow::Update_Online_Image()
     m_adcMap->rescaleDataRange();
     m_adcMap->setColorScale(m_adcScale); 
 
-    int Col = ui->SpinBox_Online_Col->value();
-    int Row = ui->SpinBox_Online_Row->value();
-    
-    m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(Col,Row));
+    m_pedestalGraph->data()->clear();
+    m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(m_col,m_row));
 
-    m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(Col,Row));
+    m_noiseGraph->data()->clear();
+    m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(m_col,m_row));
 
     ui->customPlot->rescaleAxes();
     ui->customPlot->replot();
   }
   qRegisterMetaType<QCPRange>("QCPRange");
+}
+
+void MainWindow::Clear_Online_Image()
+{
+  m_pedestalGraph->data()->clear();
+  m_noiseGraph->data()->clear();
+  m_adcMap->data()->clear();
+
+  connect(m_GUIManager, SIGNAL(IsRunning()), m_timer, SLOT(start()));
+  connect(m_GUIManager, SIGNAL(IsStop()), m_timer, SLOT(stop()));
 }

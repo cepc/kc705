@@ -24,6 +24,8 @@ class GUIMonitor : public JadeMonitor
     JadeOption m_opt;
     size_t m_ev_get;
     size_t m_ev_num;
+    int m_col; 
+    int m_row; 
     std::string m_curr_time;
     JadeDataFrameSP m_df; 
     JadeDataFrameSP m_u_df; 
@@ -31,8 +33,7 @@ class GUIMonitor : public JadeMonitor
     std::mutex m_mx_set;
     uint32_t m_nx;
     uint32_t m_ny;
-    uint32_t m_offset_x;
-    uint32_t m_offset_y;
+    
     QCPColorMapData* m_adc_map;
     QVector<QCPGraphData> m_pedestal;
     QVector<QCPGraphData> m_noise;
@@ -42,13 +43,15 @@ class GUIMonitor : public JadeMonitor
     std::vector<int16_t> m_sum_frame_adc;
     std::vector<double> m_mean_frame_adc;
     std::vector<double> m_rms_frame_adc;
-    std::shared_ptr<TH1D> m_hist_mean;
-    std::shared_ptr<TH1D> m_hist_rms;
     struct adcFrame {
       std::vector<int16_t> cds_frame_adc;
       std::vector<double> mean_frame_adc;
       std::vector<double> rms_frame_adc;
-    } m_adcFrame, m_u_adcFrame;
-};
+      std::shared_ptr<TH1D> hist_mean;
+      std::shared_ptr<TH1D> hist_rms;
+    };
+    std::shared_ptr<adcFrame> m_adcFrame; 
+    std::shared_ptr<adcFrame> m_u_adcFrame; 
 
+};
 #endif

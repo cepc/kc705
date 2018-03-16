@@ -4,11 +4,12 @@
 #include "JadeMonitor.hh"
 #include "JadeOption.hh"
 #include "qcustomplot.h"
-#include "TH1D.h"
 #include <algorithm>    
 #include <vector>       
 #include <functional>
 #include <mutex>
+#include <unordered_map>
+
 
 class GUIMonitor : public JadeMonitor
 {
@@ -19,6 +20,7 @@ class GUIMonitor : public JadeMonitor
     QVector<QCPGraphData> GetPedestal(int col, int row);
     QVector<QCPGraphData> GetNoise(int col, int row);
     void Reset();
+    std::unordered_map<double, size_t> GetHistogram(const std::vector<double>& xVec);
 
   private:
     JadeOption m_opt;
@@ -43,12 +45,15 @@ class GUIMonitor : public JadeMonitor
     std::vector<int16_t> m_sum_frame_adc;
     std::vector<double> m_mean_frame_adc;
     std::vector<double> m_rms_frame_adc;
+    std::vector<double> m_mean;
+    std::vector<double> m_rms;
+
     struct adcFrame {
       std::vector<int16_t> cds_frame_adc;
       std::vector<double> mean_frame_adc;
       std::vector<double> rms_frame_adc;
-      std::shared_ptr<TH1D> hist_mean;
-      std::shared_ptr<TH1D> hist_rms;
+      std::unordered_map<double, size_t> hist_mean;
+      std::unordered_map<double, size_t> hist_rms;
     };
     std::shared_ptr<adcFrame> m_adcFrame; 
     std::shared_ptr<adcFrame> m_u_adcFrame; 

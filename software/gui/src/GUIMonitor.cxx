@@ -1,5 +1,4 @@
 #include "GUIMonitor.hh"
-#include <iostream>
 
 
 using namespace std::chrono_literals;

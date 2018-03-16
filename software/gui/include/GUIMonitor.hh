@@ -20,7 +20,7 @@ class GUIMonitor : public JadeMonitor
     QVector<QCPGraphData> GetPedestal(int col, int row);
     QVector<QCPGraphData> GetNoise(int col, int row);
     void Reset();
-    std::unordered_map<double, size_t> GetHistogram(const std::vector<double>& xVec);
+    std::map<double, size_t> GetHistogram(const std::vector<double>& xVec);
 
   private:
     JadeOption m_opt;
@@ -52,8 +52,8 @@ class GUIMonitor : public JadeMonitor
       std::vector<int16_t> cds_frame_adc;
       std::vector<double> mean_frame_adc;
       std::vector<double> rms_frame_adc;
-      std::unordered_map<double, size_t> hist_mean;
-      std::unordered_map<double, size_t> hist_rms;
+      std::map<double, size_t> hist_mean;
+      std::map<double, size_t> hist_rms;
     };
     std::shared_ptr<adcFrame> m_adcFrame; 
     std::shared_ptr<adcFrame> m_u_adcFrame; 

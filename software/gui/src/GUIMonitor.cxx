@@ -96,13 +96,11 @@ QVector<QCPGraphData> GUIMonitor::GetPedestal(int col, int row){
   auto u_adcFrame = m_adcFrame; 
   lk_in.unlock();
  
-  std::unordered_map<double, size_t>::iterator meanItr;
-  
   QCPGraphData point;
 
-  for(meanItr = (u_adcFrame->hist_mean).begin(); meanItr != (u_adcFrame->hist_mean).end(); meanItr++){
-    point.key = meanItr->first; 
-    point.value = meanItr->second;
+  for(auto meanItr : u_adcFrame->hist_mean){
+    point.key = meanItr.first; 
+    point.value = meanItr.second;
     m_pedestal.append(point);
   }
 
@@ -117,13 +115,11 @@ QVector<QCPGraphData> GUIMonitor::GetNoise(int col, int row){
   auto u_adcFrame = m_adcFrame; 
   lk_in.unlock();
   
-  std::unordered_map<double, size_t>::iterator rmsItr;
-  
   QCPGraphData point;
 
-  for(rmsItr = (u_adcFrame->hist_rms).begin(); rmsItr != (u_adcFrame->hist_rms).end(); rmsItr++){
-    point.key = rmsItr->first; 
-    point.value = rmsItr->second;
+  for(auto rmsItr : u_adcFrame->hist_rms){
+    point.key = rmsItr.first; 
+    point.value = rmsItr.second;
     m_noise.append(point);
   }
 
@@ -136,9 +132,9 @@ void GUIMonitor::Reset(){
 }
 
 
-std::unordered_map<double, size_t> GUIMonitor::GetHistogram(const std::vector<double>& xVec) {
+std::map<double, size_t> GUIMonitor::GetHistogram(const std::vector<double>& xVec) {
   
-  std::unordered_map<double, size_t> hMap;                        // histogram
+  std::map<double, size_t> hMap;                        // histogram
   
   size_t bmax=0;
   

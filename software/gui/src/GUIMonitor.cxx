@@ -1,5 +1,4 @@
 #include "GUIMonitor.hh"
-#include <iostream>
 
 
 using namespace std::chrono_literals;
@@ -28,8 +27,8 @@ GUIMonitor::GUIMonitor(const JadeOption& options):
   m_u_adcFrame->mean_frame_adc.resize(m_nx*m_ny,0);
   m_u_adcFrame->rms_frame_adc.resize(m_nx*m_ny,0);
   
-  m_u_adcFrame->hist_mean = std::make_shared<TH1D>(Form("mean_%s",m_curr_time),"mean",4000,-2000,2000);
-  m_u_adcFrame->hist_rms = std::make_shared<TH1D>(Form("rms_%s",m_curr_time),"rms",4000,-2000,2000);
+  m_u_adcFrame->hist_mean = {{0,0}};
+  m_u_adcFrame->hist_rms = {{0,0}};
  
   m_adcFrame = m_u_adcFrame; 
 }
@@ -54,9 +53,12 @@ void GUIMonitor::Monitor(JadeDataFrameSP df)
   std::transform(m_sum_frame_adc.begin(), m_sum_frame_adc.end(), m_u_adcFrame->mean_frame_adc.begin(), std::bind2nd(std::divides<int16_t>(),m_ev_num)); 
 
   std::transform(m_mean_frame_adc.begin(), m_mean_frame_adc.end(), m_u_adcFrame->cds_frame_adc.begin(), m_u_adcFrame->rms_frame_adc.begin(), std::minus<int16_t>()); 
- 
-  m_u_adcFrame->hist_mean->Fill(m_u_adcFrame->mean_frame_adc.at(m_row+m_col*m_ny));
-  m_u_adcFrame->hist_rms->Fill(m_u_adcFrame->rms_frame_adc.at(m_row+m_col*m_ny));
+
+  m_mean.push_back(m_u_adcFrame->mean_frame_adc.at(m_row+m_col*m_ny));
+  m_rms.push_back(m_u_adcFrame->rms_frame_adc.at(m_row+m_col*m_ny));
+  
+  m_u_adcFrame->hist_mean = GetHistogram(m_mean);
+  m_u_adcFrame->hist_rms = GetHistogram(m_rms);
 
   std::unique_lock<std::mutex> lk_out(m_mx_get);
   m_adcFrame = m_u_adcFrame; 
@@ -92,14 +94,15 @@ QVector<QCPGraphData> GUIMonitor::GetPedestal(int col, int row){
   std::unique_lock<std::mutex> lk_in(m_mx_get);
   auto u_adcFrame = m_adcFrame; 
   lk_in.unlock();
-  
+ 
   QCPGraphData point;
 
-  for(int iBin=0; iBin<u_adcFrame->hist_mean->GetNbinsX(); iBin++){
-    point.key = u_adcFrame->hist_mean->GetXaxis()->GetBinCenter(iBin); 
-    point.value = u_adcFrame->hist_mean->GetBinContent(iBin);
+  for(auto meanItr : u_adcFrame->hist_mean){
+    point.key = meanItr.first; 
+    point.value = meanItr.second;
     m_pedestal.append(point);
   }
+
   return m_pedestal;
 }
 
@@ -113,9 +116,9 @@ QVector<QCPGraphData> GUIMonitor::GetNoise(int col, int row){
   
   QCPGraphData point;
 
-  for(int iBin=0; iBin<u_adcFrame->hist_rms->GetNbinsX(); iBin++){
-    point.key = u_adcFrame->hist_rms->GetXaxis()->GetBinCenter(iBin); 
-    point.value = u_adcFrame->hist_rms->GetBinContent(iBin);
+  for(auto rmsItr : u_adcFrame->hist_rms){
+    point.key = rmsItr.first; 
+    point.value = rmsItr.second;
     m_noise.append(point);
   }
 
@@ -123,6 +126,23 @@ QVector<QCPGraphData> GUIMonitor::GetNoise(int col, int row){
 }
 
 void GUIMonitor::Reset(){
-  m_u_adcFrame->hist_mean->Reset();
-  m_u_adcFrame->hist_rms->Reset();
+  m_u_adcFrame->hist_mean.clear();
+  m_u_adcFrame->hist_rms.clear();
+}
+
+
+std::map<double, size_t> GUIMonitor::GetHistogram(const std::vector<double>& xVec) {
+  
+  std::map<double, size_t> hMap;                        // histogram
+  
+  size_t bmax=0;
+  
+  std::for_each(xVec.begin(), xVec.end(), 
+      [&hMap, &bmax](const double &element)
+      {
+        hMap[element]++;
+        bmax=std::max(bmax, hMap[element]);
+      });
+
+  return hMap;
 }

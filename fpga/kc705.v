@@ -1,7 +1,8 @@
 module kc705 (
     input        CLKOUTN_n,
     input        CLKOUTN_p,
-    output       CNV,
+    output       CNV_n,         // For 4 channel mother version
+    output       CNV_p,         // For 4 channel mother version
     output       SCK_n,
     output       SCK_p,
     input        SDO10_n, SDO11_n, SDO12_n, SDO13_n, SDO14_n, SDO15_n, SDO16_n, 
@@ -44,13 +45,45 @@ coregen_sysclk  sysclk_ins_test(
     .clk_out2   (  clk40M   ),  //  40MHz clock
     .clk_out3   (  clk100M_2),  // 100MHz clock
     .clk_in1    (  clk200M  )
-//    .clk_in1_p  (  sysclk_p ),
-//    .clk_in1_n  (  sysclk_n )
 );
  
 // Reset Signal 
 (* mark_debug = "true" *) wire rst_command; 
+(* mark_debug = "true" *) wire rst_pulse;
+(* mark_debug = "true" *) wire rst_command_pre; 
+(* mark_debug = "true" *) wire rst_pulse_pre;
+(* mark_debug = "true" *) wire init_command;
+(* mark_debug = "true" *) wire init_pulse;
 
+
+//*****************************************************//
+//*****  Temporal !!! Status Control              *****//
+//*****  Definitly replaced to be a State Machine *****//
+//*****  For the memoment, to control FIFO veto   *****//
+//*****************************************************//
+wire start_command;
+wire start_pulse;
+wire stop_command;
+wire stop_pulse;
+wire run_ctrl_wr_en;
+wire [1:0] run_status;
+wire frame_last_word;
+state_control state_control_ins (
+    .CLK           (  clk100M          ),  
+    .RST           (  rst_command_pre  ),
+    .RST_PULSE     (  rst_pulse_pre    ),
+    .INIT          (  init_command     ),
+    .INIT_PULSE    (  init_pulse       ),
+    .START         (  start_command    ),  
+    .START_PULSE   (  start_pulse      ),
+    .STOP          (  stop_command     ),
+    .STOP_PULSE    (  stop_pulse       ),
+    .FRAME_END     (  frame_last_word  ),
+    .STATE         (  run_status       ),
+    .FIFO_WR_EN    (  run_ctrl_wr_en   ),
+    .RST_SIG       (  rst_command      ),
+    .RST_SIG_PULSE (  rst_pulse        )
+);
 
 //**********************************************//
 //*****  Generate 2MHz/4MHz clock & reset  *****//
@@ -82,8 +115,9 @@ wire [15:0] data09, data10, data11, data12, data13, data14, data15, data16;
 // cnvclk is the clock(2MHz) we use to read the data, 
 // I suggest using the negedge of it to read the data
 (* MARK_DEBUG="true" *)wire cnvclk;          
+(* MARK_DEBUG="true" *)wire [3:0] addr_to_cmos;
 
-ADC_REC_LVDS AD_data_receiver(
+CPS_ReadOut_TOP CPS_ReadOut (
      .DATA1         (  data01       ), 
      .DATA2         (  data02       ), 
      .DATA3         (  data03       ), 
@@ -100,6 +134,7 @@ ADC_REC_LVDS AD_data_receiver(
      .DATA14        (  data14       ), 
      .DATA15        (  data15       ), 
      .DATA16        (  data16       ), 
+     .addr_sel      (  addr_to_cmos ),
      .d_A           (  d_A          ), 
      .sysclk_p      (  sysclk_p     ), 
      .sysclk_n      (  sysclk_n     ), 
@@ -138,8 +173,9 @@ ADC_REC_LVDS AD_data_receiver(
      .CLKOUTN_p     (  CLKOUTN_p    ), 
      .CLKOUTN_n     (  CLKOUTN_n    ), 
      .rst           (  rst          ), 
-     .start         (  start        ), 
-     .CNV           (  CNV          ), 
+     .start         (  start        ),  
+     .CNV_p         (  CNV_p        ),    // For 2018 version
+     .CNV_n         (  CNV_n        ),    // For 2018 version
      .cnvclk        (  cnvclk       ), 
      .SCK_p         (  SCK_p        ), 
      .SCK_n         (  SCK_n        ), 
@@ -317,7 +353,6 @@ wire [7:0] mem8_port_b_rdata;
 
 wire user_mem_8_write_en = user_w_mem_8_wren;
 wire user_mem_8_enable = (user_w_mem_8_wren | user_r_mem_8_rden);
-//wire user_mem_8_enable = 1'b1;  // Always Enable 
  
 coregen_user_mem8 user_mem8_inst (
   .clka  (  xillybus_user_clk   ),      // input wire clka
@@ -359,8 +394,6 @@ begin
         veto_cnt <= veto_cnt + 1'h1;
         fifo_write_veto_r <= 1'b0;
     end
-//    else
-//        fifo_write_veto_r <= 1'b0;
     else if ( full_async_fifo == 1 )
         fifo_write_veto_r <= 1'b1;
 end
@@ -400,19 +433,26 @@ gen_simple_data   top_dummy_data_inst_data07( .CLK ( clk_div ), .RST ( rst2M ),
 gen_simple_data   top_dummy_data_inst_data08( .CLK ( clk_div ), .RST ( rst2M ), 
 .DATA_OUT( data08_start ), .SR_OUT( sr_out08_start ) );
 
-
+// For test
+wire [5:0] row_read_start;
+wire [5:0] row_read_end;
+wire [3:0] column_read_start;
+wire [3:0] column_read_end;
 
 wire [15:0] tmp_data_out;
 wire tmp_wren;
 recieve_adc_packet rec_adc_packet_ins (
-    .CLK       (  clk100M          ),
-    .CLK2M     (  clk2M            ),
-    .CLK2M_DIV (  clk_div          ),
-    .CNVCLK    (  cnvclk           ),
+    .CLK            (  clk100M          ),
+//    .CLK2M          (  clk2M            ),
+    .CLK2M_IN       (  clk2M            ),
+    .CLK2M_DIV      (  clk_div          ),
+//    .CNVCLK         (  cnvclk           ),
+    .CNVCLK_IN      (  cnvclk           ),
 //    .SR_OUT    (  sr_out01_start   ),
-    .SR_OUT    (  SR_Top_out       ),
-    .RST       (  rst_command      ),
-    .RST2M     (  rst2M            ),
+    .SR_OUT         (  SR_Top_out       ),
+    .RST            (  rst_command      ),
+    .RST2M_IN          (  rst2M            ),
+//    .RST2M          (  rst2M            ),
 //    .DATA01    (  data01_start     ),
 //    .DATA02    (  data02_start     ),
 //    .DATA03    (  data03_start     ),
@@ -421,30 +461,35 @@ recieve_adc_packet rec_adc_packet_ins (
 //    .DATA06    (  data06_start     ),
 //    .DATA07    (  data07_start     ),
 //    .DATA08    (  data08_start     ),
-    .DATA01    (  data01           ),
-    .DATA02    (  data02           ),
-    .DATA03    (  data03           ),
-    .DATA04    (  data04           ),
-    .DATA05    (  data05           ),
-    .DATA06    (  data06           ),
-    .DATA07    (  data07           ),
-    .DATA08    (  data08           ),
-    .DATA09    (  data09           ),
-    .DATA10    (  data10           ),
-    .DATA11    (  data11           ),
-    .DATA12    (  data12           ),
-    .DATA13    (  data13           ),
-    .DATA14    (  data14           ),
-    .DATA15    (  data15           ),
-    .DATA16    (  data16           ),
-    .DATA_OUT  (  adc_fifo_out32   ),
-    .WR_EN     (  adcdata_wren     )
+    .SET_PARAM      (  init_command     ),
+    .ROW_START      (  row_read_start   ),
+    .ROW_END        (  row_read_end     ),
+    .COL_START      (  column_read_start),
+    .COL_END        (  column_read_end  ),
+    .DATA01         (  data01           ),
+    .DATA02         (  data02           ),
+    .DATA03         (  data03           ),
+    .DATA04         (  data04           ),
+    .DATA05         (  data05           ),
+    .DATA06         (  data06           ),
+    .DATA07         (  data07           ),
+    .DATA08         (  data08           ),
+    .DATA09         (  data09           ),
+    .DATA10         (  data10           ),
+    .DATA11         (  data11           ),
+    .DATA12         (  data12           ),
+    .DATA13         (  data13           ),
+    .DATA14         (  data14           ),
+    .DATA15         (  data15           ),
+    .DATA16         (  data16           ),
+    .DATA_OUT       (  adc_fifo_out32   ),
+    .FRAME_END_FLAG (  frame_last_word  ),
+    .WR_EN          (  adcdata_wren     )
 );      
 
 
 wire almost_full_flag;
-(* mark_debug = "true" *) wire adc_fifo_wren = ( !fifo_write_veto && adcdata_wren );  // For Data Generator
-//(* mark_debug = "true" *) wire adc_fifo_wren = ( !fifo_write_veto && adcdata_wren && !almost_full_flag );  // For Data Generator
+(* mark_debug = "true" *) wire adc_fifo_wren = ( !fifo_write_veto && adcdata_wren && run_ctrl_wr_en );  // For Data Generator
 
 coregen_clk_crossing_fifo32 clk_crossing_fifo32_ins (
   .rst           (  rst_command          ),  // input wire rst
@@ -453,7 +498,6 @@ coregen_clk_crossing_fifo32 clk_crossing_fifo32_ins (
   .din           (  adc_fifo_out32       ),  // input wire [31 : 0] din
   .wr_en         (  adc_fifo_wren        ),  // input wire wr_en
   .rd_en         (  user_r_read_32_rden  ),  // input wire rd_en
-//  .rd_en         (  rden_High            ),  // input wire rd_en
   .dout          (  user_r_read_32_data  ),  // output wire [31 : 0] dout
   .full          (  full_async_fifo      ),  // output wire full
   .almost_full   (  almost_full_flag     ),  // output wire almost_full
@@ -461,26 +505,48 @@ coregen_clk_crossing_fifo32 clk_crossing_fifo32_ins (
   .rd_data_count (  rd_data_count        ),  // output wire [14 : 0] rd_data_count
   .wr_data_count (  wr_data_count        )   // output wire [14 : 0] wr_data_count
 );
+     
+//**************************************************************//
+//*****   Brigde to send the chip address   ********************//
+//*****   -- Need clock crossing ( 100MHz <--> 200MHz )   ******//
+//**************************************************************//
+// Brigde to send chip address : need clock crossing 
+wire [7:0] addr_command;
+set_chip_addr set_chip_addr_ins(
+    .CLK           (  clk100M      ),
+    .CLK_IPCORE    (  clk200M      ),
+    .RST           (  rst_command  ),
+    .SET           (  init_command ),
+    .CHIP_ADDR_IN  (  addr_command ),
+    .CHIP_ADDR_OUT (  addr_to_cmos )
+);
 
-//**********************************************//
-//*****  Reset Signal Generator (Temporal) *****//
-//**********************************************//
 
-(* mark_debug = "true" *) wire rst_pulse;
-gen_user_reset gen_user_reset_ins(
+//**************************************//
+//*****  Command Signal Generator  *****//
+//**************************************//
+gen_user_command gen_user_command_ins (
     .CLK                    (  clk100M           ),
     .mem8_in_port_b         (  mem8_port_b_rdata ),
     .mem8_out_port_b        (  mem8_port_b_wdata ),
     .mem8_addr_port_b       (  mem8_port_b_addr  ),
     .mem8_access_en_port_b  (  mem8_port_b_rd_en ),
     .mem8_w_enable_port_b   (  mem8_port_b_wr_en ),
-    .RST                    (  rst_command       ),   // 100MHz 5 clock cycles
-    .RST_PULSE              (  rst_pulse         )    // 100MHz 1 clock cycle
+    .FIFO_OVER_FLOW_FLAG    (  full_async_fifo   ),
+    .ROW_READ_START         (  row_read_start    ),
+    .ROW_READ_END           (  row_read_end      ),
+    .COLUMN_READ_START      (  column_read_start ),
+    .COLUMN_READ_END        (  column_read_end   ),
+    .CHIP_ADDRESS           (  addr_command      ),
+    .INIT                   (  init_command      ),
+    .INIT_PULSE             (  init_pulse        ),
+    .START                  (  start_command     ),
+    .START_PULSE            (  start_pulse       ),
+    .STOP                   (  stop_command      ),
+    .STOP_PULSE             (  stop_pulse        ),
+    .RST                    (  rst_command_pre   ),
+    .RST_PULSE              (  rst_pulse_pre     )
 );
-     
-     
-
-
      
 endmodule   
 

@@ -1,11 +1,19 @@
 module recieve_adc_packet (
     input          CLK,     
-    input          CLK2M,    
+//    input          CLK2M,    
+    input          CLK2M_IN, 
     input          CLK2M_DIV,
-    input          CNVCLK,
+//    input          CNVCLK,
+    input          CNVCLK_IN,
     input          SR_OUT,
     input          RST,  
-    input          RST2M,
+    //input          RST2M,
+    input          RST2M_IN,
+    input          SET_PARAM,
+    input   [5:0]  ROW_START,
+    input   [5:0]  ROW_END,
+    input   [3:0]  COL_START,
+    input   [3:0]  COL_END,
     input  [15:0]  DATA01,
     input  [15:0]  DATA02,
     input  [15:0]  DATA03,
@@ -23,10 +31,25 @@ module recieve_adc_packet (
     input  [15:0]  DATA15,
     input  [15:0]  DATA16,
     output [31:0]  DATA_OUT,
+    output         FRAME_END_FLAG,
     output         WR_EN 
 );
 
-
+(* MARK_DEBUG="true" *)wire RST2M;
+(* MARK_DEBUG="true" *)wire CLK2M;
+(* MARK_DEBUG="true" *)wire CNVCLK;
+regenerate_ctrl_signal regen_ctrl_sig (
+    .CLK_IN     (  CLK       ),
+    .CLK2M_IN   (  CLK2M_IN  ),
+    .RST_IN     (  RST       ),
+    .CNVCLK_IN  (  CNVCLK_IN ),
+    .NSTEP1     (  ROW_START ),  // Very temporary !
+    .NSTEP2     (  ROW_END   ),  // Very temporary !
+    .CLK2M_OUT  (  CLK2M     ),
+    .RST2M_OUT  (  RST2M     ),
+    .CNVCLK_OUT (  CNVCLK    )
+);
+ 
 wire [15:0] sample_data01, sample_data02, sample_data03, sample_data04;
 wire [15:0] sample_data05, sample_data06, sample_data07, sample_data08;
 wire [15:0] sample_data09, sample_data10, sample_data11, sample_data12;
@@ -114,8 +137,10 @@ gen_simple_data   dummy_data_inst16( .CLK ( CLK2M ), .RST ( RST2M ), .DATA_OUT( 
     
     
 wire  [15:0] d_header, d_footer;
-wire  [15:0] d01, d02, d03, d04, d05, d06, d07, d08;
-wire  [15:0] d09, d10, d11, d12, d13, d14, d15, d16;
+(* mark_debug = "true" *) wire  [15:0] d01, d02, d03, d04;
+(* mark_debug = "true" *) wire  [15:0] d05, d06, d07, d08;
+(* mark_debug = "true" *) wire  [15:0] d09, d10, d11, d12;
+(* mark_debug = "true" *) wire  [15:0] d13, d14, d15, d16;
     
 wire   [5:0] a_header, a_footer;
 wire   [5:0] a01, a02, a03, a04, a05, a06, a07, a08; 
@@ -160,6 +185,26 @@ set_data  set_data_inst07(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_sign
 set_data  set_data_inst08(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( sample_data08 ), 
     .SR_OUT_IN( sample_sr_out08 ), .FIRST_ROW_FLAG( flag08 ),  .DATA_OUT( d08 ), .MEM_ADDR( a08 ), .MEM_WREN( wren08 ) ); 
             
+set_data  set_data_inst09(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( sample_data09 ), 
+    .SR_OUT_IN( sample_sr_out09 ), .FIRST_ROW_FLAG( flag09 ),  .DATA_OUT( d09 ), .MEM_ADDR( a09 ), .MEM_WREN( wren09 ) ); 
+set_data  set_data_inst10(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( sample_data10 ), 
+    .SR_OUT_IN( sample_sr_out10 ), .FIRST_ROW_FLAG( flag10 ),  .DATA_OUT( d10 ), .MEM_ADDR( a10 ), .MEM_WREN( wren10 ) );
+set_data  set_data_inst11(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( sample_data11 ), 
+    .SR_OUT_IN( sample_sr_out11 ), .FIRST_ROW_FLAG( flag11 ),  .DATA_OUT( d11 ), .MEM_ADDR( a11 ), .MEM_WREN( wren11 ) );    
+set_data  set_data_inst12(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( sample_data12 ), 
+    .SR_OUT_IN( sample_sr_out12 ), .FIRST_ROW_FLAG( flag12 ),  .DATA_OUT( d12 ), .MEM_ADDR( a12 ), .MEM_WREN( wren12 ) ); 
+                    
+set_data  set_data_inst13(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( sample_data13 ), 
+    .SR_OUT_IN( sample_sr_out13 ), .FIRST_ROW_FLAG( flag13 ),  .DATA_OUT( d13 ), .MEM_ADDR( a13 ), .MEM_WREN( wren13 ) ); 
+set_data  set_data_inst14(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( sample_data14 ), 
+    .SR_OUT_IN( sample_sr_out14 ), .FIRST_ROW_FLAG( flag14 ),  .DATA_OUT( d14 ), .MEM_ADDR( a14 ), .MEM_WREN( wren14 ) );
+set_data  set_data_inst15(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( sample_data15 ), 
+    .SR_OUT_IN( sample_sr_out15 ), .FIRST_ROW_FLAG( flag15 ),  .DATA_OUT( d15 ), .MEM_ADDR( a15 ), .MEM_WREN( wren15 ) );    
+set_data  set_data_inst16(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( sample_data16 ), 
+    .SR_OUT_IN( sample_sr_out16 ), .FIRST_ROW_FLAG( flag16 ),  .DATA_OUT( d16 ), .MEM_ADDR( a16 ), .MEM_WREN( wren16 ) ); 
+        
+        
+        
 //set_data  set_data_inst01(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data01 ), 
 //    .SR_OUT_IN( dummy_sr_out01 ), .FIRST_ROW_FLAG( flag01 ),  .DATA_OUT( d01 ), .MEM_ADDR( a01 ), .MEM_WREN( wren01 ) ); 
 //set_data  set_data_inst02(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data02 ), 
@@ -178,31 +223,33 @@ set_data  set_data_inst08(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_sign
 //set_data  set_data_inst08(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data08 ), 
 //    .SR_OUT_IN( dummy_sr_out08 ), .FIRST_ROW_FLAG( flag08 ),  .DATA_OUT( d08 ), .MEM_ADDR( a08 ), .MEM_WREN( wren08 ) ); 
           
-set_data  set_data_inst09(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data09 ), 
-    .SR_OUT_IN( dummy_sr_out09 ), .FIRST_ROW_FLAG( flag09 ),  .DATA_OUT( d09 ), .MEM_ADDR( a09 ), .MEM_WREN( wren09 ) ); 
-set_data  set_data_inst10(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data10 ), 
-    .SR_OUT_IN( dummy_sr_out10 ), .FIRST_ROW_FLAG( flag10 ),  .DATA_OUT( d10 ), .MEM_ADDR( a10 ), .MEM_WREN( wren10 ) );
-set_data  set_data_inst11(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data11 ), 
-    .SR_OUT_IN( dummy_sr_out11 ), .FIRST_ROW_FLAG( flag11 ),  .DATA_OUT( d11 ), .MEM_ADDR( a11 ), .MEM_WREN( wren11 ) );    
-set_data  set_data_inst12(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data12 ), 
-    .SR_OUT_IN( dummy_sr_out12 ), .FIRST_ROW_FLAG( flag12 ),  .DATA_OUT( d12 ), .MEM_ADDR( a12 ), .MEM_WREN( wren12 ) ); 
+//set_data  set_data_inst09(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data09 ), 
+//    .SR_OUT_IN( dummy_sr_out09 ), .FIRST_ROW_FLAG( flag09 ),  .DATA_OUT( d09 ), .MEM_ADDR( a09 ), .MEM_WREN( wren09 ) ); 
+//set_data  set_data_inst10(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data10 ), 
+//    .SR_OUT_IN( dummy_sr_out10 ), .FIRST_ROW_FLAG( flag10 ),  .DATA_OUT( d10 ), .MEM_ADDR( a10 ), .MEM_WREN( wren10 ) );
+//set_data  set_data_inst11(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data11 ), 
+//    .SR_OUT_IN( dummy_sr_out11 ), .FIRST_ROW_FLAG( flag11 ),  .DATA_OUT( d11 ), .MEM_ADDR( a11 ), .MEM_WREN( wren11 ) );    
+//set_data  set_data_inst12(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data12 ), 
+//    .SR_OUT_IN( dummy_sr_out12 ), .FIRST_ROW_FLAG( flag12 ),  .DATA_OUT( d12 ), .MEM_ADDR( a12 ), .MEM_WREN( wren12 ) ); 
                 
-set_data  set_data_inst13(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data13 ), 
-    .SR_OUT_IN( dummy_sr_out13 ), .FIRST_ROW_FLAG( flag13 ),  .DATA_OUT( d13 ), .MEM_ADDR( a13 ), .MEM_WREN( wren13 ) ); 
-set_data  set_data_inst14(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data14 ), 
-    .SR_OUT_IN( dummy_sr_out14 ), .FIRST_ROW_FLAG( flag14 ),  .DATA_OUT( d14 ), .MEM_ADDR( a14 ), .MEM_WREN( wren14 ) );
-set_data  set_data_inst15(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data15 ), 
-    .SR_OUT_IN( dummy_sr_out15 ), .FIRST_ROW_FLAG( flag15 ),  .DATA_OUT( d15 ), .MEM_ADDR( a15 ), .MEM_WREN( wren15 ) );    
-set_data  set_data_inst16(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data16 ), 
-    .SR_OUT_IN( dummy_sr_out16 ), .FIRST_ROW_FLAG( flag16 ),  .DATA_OUT( d16 ), .MEM_ADDR( a16 ), .MEM_WREN( wren16 ) ); 
+//set_data  set_data_inst13(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data13 ), 
+//    .SR_OUT_IN( dummy_sr_out13 ), .FIRST_ROW_FLAG( flag13 ),  .DATA_OUT( d13 ), .MEM_ADDR( a13 ), .MEM_WREN( wren13 ) ); 
+//set_data  set_data_inst14(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data14 ), 
+//    .SR_OUT_IN( dummy_sr_out14 ), .FIRST_ROW_FLAG( flag14 ),  .DATA_OUT( d14 ), .MEM_ADDR( a14 ), .MEM_WREN( wren14 ) );
+//set_data  set_data_inst15(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data15 ), 
+//    .SR_OUT_IN( dummy_sr_out15 ), .FIRST_ROW_FLAG( flag15 ),  .DATA_OUT( d15 ), .MEM_ADDR( a15 ), .MEM_WREN( wren15 ) );    
+//set_data  set_data_inst16(  .CLK( CLK2M ), .RST( RST2M ), .CH_ID( data_type_signal ), .DATA_IN( dummy_data16 ), 
+//    .SR_OUT_IN( dummy_sr_out16 ), .FIRST_ROW_FLAG( flag16 ),  .DATA_OUT( d16 ), .MEM_ADDR( a16 ), .MEM_WREN( wren16 ) ); 
                                            
     
     
     
 // Data Storage Buffer (TDP Memory :: 16bit/48depth )
 wire  [15:0] d_header_out, d_footer_out;
-wire  [15:0] d01_out, d02_out, d03_out, d04_out, d05_out, d06_out, d07_out, d08_out;
-wire  [15:0] d09_out, d10_out, d11_out, d12_out, d13_out, d14_out, d15_out, d16_out;
+(* mark_debug = "true" *) wire  [15:0] d01_out, d02_out, d03_out, d04_out;
+(* mark_debug = "true" *) wire  [15:0] d05_out, d06_out, d07_out, d08_out;
+(* mark_debug = "true" *) wire  [15:0] d09_out, d10_out, d11_out, d12_out;
+(* mark_debug = "true" *) wire  [15:0] d13_out, d14_out, d15_out, d16_out;
     
 wire   [5:0] mem_addr_read;
 wire   [5:0] mem_addr_header, mem_addr_footer;
@@ -295,39 +342,52 @@ coregen_buffer_mem16 buffer_mem16_inst16 (
     .clka( CLK2M ), .addra( a16 ), .dina( d16 ), .wea( wren16 ), .doutb( d16_out), .clkb( CLK ), .addrb( mem_addr16 ), .dinb( dinb16 ), .web( web16 )  );
     
     
-    
+   
+
 // Control System 
 wire [31:0] sel_data_out;
 wire        sel_fifo_wren;
+wire SET = 1'b0;
+wire        frame_end;
+//data_selector #( .ROW_START(6'd0), .ROW_END(6'd47), .COLUMN_START(4'd0), .COLUMN_END(4'd15) )
 data_selector data_selector_inst ( 
-    .CLK           (  CLK           ), 
-    .RST           (  RST           ), 
-    .DATA_H        (  d_header_out  ),  
-    .DATA_F        (  d_footer_out  ),  
-    .DATA01        (  d01_out       ), 
-    .DATA02        (  d02_out       ), 
-    .DATA03        (  d03_out       ), 
-    .DATA04        (  d04_out       ),    
-    .DATA05        (  d05_out       ), 
-    .DATA06        (  d06_out       ), 
-    .DATA07        (  d07_out       ), 
-    .DATA08        (  d08_out       ),
-    .DATA09        (  d09_out       ), 
-    .DATA10        (  d10_out       ), 
-    .DATA11        (  d11_out       ), 
-    .DATA12        (  d12_out       ),
-    .DATA13        (  d13_out       ), 
-    .DATA14        (  d14_out       ), 
-    .DATA15        (  d15_out       ), 
-    .DATA16        (  d16_out       ),
-    .MEM_RD_FLAG   (  flag01        ),
-    .MEM_ADDR_OUT  (  mem_addr_read ), 
-    .DATA_OUT      (  sel_data_out  ),
-    .FIFO_WR_EN    (  sel_fifo_wren )
+    .CLK            (  CLK           ), 
+    .RST            (  RST           ), 
+    .ROW_START      (  ROW_START     ),
+    .ROW_END        (  ROW_END       ),
+    .COL_START      (  COL_START     ),
+    .COL_END        (  COL_END       ),
+    .SET_PARAM      (  SET           ),    // No SET !!
+//    .SET_PARAM      (  SET_PARAM     ),
+    .DATA_H         (  d_header_out  ),  
+    .DATA_F         (  d_footer_out  ),  
+    .DATA01         (  d01_out       ), 
+    .DATA02         (  d02_out       ), 
+    .DATA03         (  d03_out       ), 
+    .DATA04         (  d04_out       ),    
+    .DATA05         (  d05_out       ), 
+    .DATA06         (  d06_out       ), 
+    .DATA07         (  d07_out       ), 
+    .DATA08         (  d08_out       ),
+    .DATA09         (  d09_out       ), 
+    .DATA10         (  d10_out       ), 
+    .DATA11         (  d11_out       ), 
+    .DATA12         (  d12_out       ),
+    .DATA13         (  d13_out       ), 
+    .DATA14         (  d14_out       ), 
+    .DATA15         (  d15_out       ), 
+    .DATA16         (  d16_out       ),
+//    .MEM_RD_FLAG    (  flag01        ),
+    .MEM_RD_FLAG    (  flag05        ),    // Change Memory Read Timing Flag to 05 ! 02/07/2018 night
+    .MEM_ADDR_OUT   (  mem_addr_read ), 
+    .DATA_OUT       (  sel_data_out  ),
+    .FRAME_END_FLAG (  frame_end     ),
+    .FIFO_WR_EN     (  sel_fifo_wren )
 );
     
-assign DATA_OUT = sel_data_out;
-assign WR_EN    = sel_fifo_wren;
+assign DATA_OUT  = sel_data_out;
+assign WR_EN     = sel_fifo_wren;
+assign FRAME_END_FLAG = frame_end;
 
 
 endmodule

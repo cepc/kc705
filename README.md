@@ -5,7 +5,7 @@ Kintex-7 FPGA KC705
 
 #### Windows
 * CMake: download and execute the [CMake Win32 Installer](http://www.cmake.org/download/). Make sure to set the PATH variable during installation
-* Mingw-64: download and install [mingw-w64](http://mingw-w64.yaxm.org/doku.php/download/mingw-builds). The default options work
+* Visual Studio 2017 community: download and install [vs studio 2017](https://www.visualstudio.com/downloads/). 
 * Swig
 
 #### OS X
@@ -33,15 +33,7 @@ Kintex-7 FPGA KC705
 ### Setup
 
 #### Windows
-Modify the build_env.bat according to your path 
-Open cmd and execute the following commands:
-```powershell
-mkdir build
-cd build
-../build_env.bat
-cmake -D_hypot=hypot .. -G "MinGW Makefiles"
-mingw32-make
-```
+See the document in doc
 
 #### OS X
 
@@ -63,11 +55,4 @@ make install-python # Install the python module to ${PYTHON_LIB}/site-packages/
 * Clean
 ```shell
 make clean
-```
-
-### Test
-
-```python
-python 
-import daq
 ```

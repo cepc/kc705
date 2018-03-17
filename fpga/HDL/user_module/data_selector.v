@@ -1,6 +1,11 @@
 module data_selector (
     input          CLK,
     input          RST,
+    input    [5:0] ROW_START,
+    input    [5:0] ROW_END,
+    input    [3:0] COL_START,
+    input    [3:0] COL_END, 
+    input          SET_PARAM,   
     input   [15:0] DATA_H, DATA_F,
     input   [15:0] DATA01, DATA02, DATA03, DATA04,
     input   [15:0] DATA05, DATA06, DATA07, DATA08,
@@ -9,6 +14,7 @@ module data_selector (
     input          MEM_RD_FLAG,
     output   [5:0] MEM_ADDR_OUT,
     output  [31:0] DATA_OUT,
+    output         FRAME_END_FLAG,
     output         FIFO_WR_EN
 );
 
@@ -35,7 +41,7 @@ end
 // Mage "reset" signal from "SR_OUT"
 reg [5:0] ch_cnt  = 6'h0;
 reg [5:0] ad_cnt  = 6'h0;
-reg sr_out_rst=1'b1;
+reg sr_out_rst=1'b0;
 always @( posedge CLK )
 begin
     //if ( mem_write_finish_pulse && ad_cnt!=6'd47 && ch_cnt!=5'd23)
@@ -102,8 +108,8 @@ begin
 end
 
 // First DFF 
-reg [5:0] ch_id;
-reg [5:0] ad_id;
+(* mark_debug = "true" *) reg [5:0] ch_id;
+(* mark_debug = "true" *) reg [5:0] ad_id;
 reg [15:0] d_header, d_footer;
 reg [15:0] d01, d02, d03, d04, d05, d06, d07, d08;
 reg [15:0] d09, d10, d11, d12, d13, d14, d15, d16;
@@ -187,26 +193,71 @@ begin
 end
 
 
+// For Row/Column Selectable
+(* mark_debug = "true" *) wire [3:0] col_sta_pre = ( (COL_START & 4'b1110) >> 1 ) + 4'd3;
+(* mark_debug = "true" *) wire [3:0] col_end_pre = ( (COL_END & 4'b1110) >> 1 ) + 4'd3;
+
+(* mark_debug = "true" *) reg [3:0] col_sta_raw = 4'd0;
+(* mark_debug = "true" *) reg [3:0] col_end_raw = 4'd15;
+(* mark_debug = "true" *) reg [5:0] col_sta = 6'd3;
+(* mark_debug = "true" *) reg [5:0] col_end = 6'd10;
+(* mark_debug = "true" *) reg [5:0] row_sta = 6'd0;
+(* mark_debug = "true" *) reg [5:0] row_end = 6'd47;
+
+// Define specific condition
+wire all_null = ( (COL_START==4'h0) && (COL_END==4'h0) && (ROW_START==6'h0) && (ROW_END==6'h0));  
+wire bad_set = ( ( COL_START > COL_END ) || ( ROW_START > ROW_END ) );
+
+always @( posedge CLK )
+begin
+    if ( SET_PARAM == 1'b1 ) begin
+        if ( all_null != 1'b1 && bad_set != 1'b1 ) begin
+            col_sta <= {"00", col_sta_pre};
+            col_end <= {"00", col_end_pre};
+            col_sta_raw <= COL_START;
+            col_end_raw <= COL_END;
+            row_sta <= ROW_START;
+            row_end <= ROW_END;
+        end
+        else begin
+            col_sta <= col_sta;
+            col_end <= col_end;
+            col_sta_raw <= col_sta_raw;
+            col_end_raw <= col_end_raw;
+            row_sta <= row_sta;
+            row_end <= row_end;
+        end
+    end
+    else begin  // To make it sure the operation when SET_PARAM=0
+        col_sta <= col_sta;
+        col_end <= col_end;
+        col_sta_raw <= col_sta_raw;
+        col_end_raw <= col_end_raw;
+        row_sta <= row_sta;
+        row_end <= row_end;
+    end
+end
+
+
 // Get Data from Memory Buffers
 reg [31:0] data32_pre = 32'h0;
 reg [31:0] data32 = 32'h0;
-//reg [31:0] data32_pre;
-//reg [31:0] data32;
 always @( posedge CLK )
 begin
     case ( ch_id )
         6'd1  : data32_pre <= event_header;                // multiplexer1
-        6'd2  : data32_pre <= { d_header, event_number };
-        6'd3  : data32_pre <= { d1_d02, d1_d01 };          // multiplexer2
-        6'd4  : data32_pre <= { d1_d04, d1_d03 };
-        6'd5  : data32_pre <= { d2_d06, d2_d05 };          // multiplexer3
-        6'd6  : data32_pre <= { d2_d08, d2_d07 };
+        6'd2  : data32_pre <= { d_header, col_sta_raw, col_end_raw, 2'h0, ad_id };
+//        6'd2  : data32_pre <= { d_header, event_number };
+        6'd3  : data32_pre <= { d1_d02, d1_d01 };          // multiplexer2     // 0 <-> 3  : 0/2 + 3
+        6'd4  : data32_pre <= { d1_d04, d1_d03 };                              // 2 <-> 4  : 2/2 + 3
+        6'd5  : data32_pre <= { d2_d06, d2_d05 };          // multiplexer3     // 4 <-> 5  : 4/2 + 3
+        6'd6  : data32_pre <= { d2_d08, d2_d07 };                              // 6 <-> 6  : 6/2 + 3
         6'd7  : data32_pre <= { d3_d10, d3_d09 };          // multiplexer4
         6'd8  : data32_pre <= { d3_d12, d3_d11 };
         6'd9  : data32_pre <= { d4_d14, d4_d13 };          // multiplexer5
-        6'd10 : data32_pre <= { d4_d16, d4_d15 };
-        6'd11 : data32_pre <= { d5_d_footer, 10'h0, ad_id };  // multiplexer6
-        //6'd11 : data32_pre <= { d5_d_footer, 2'b00, ad_id };  // multiplexer6
+        6'd10 : data32_pre <= { d4_d16, d4_d15 };                              // 14<->10 : 14/2 + 3
+        6'd11 : data32_pre <= { d5_d_footer[15:12], row_sta, row_end, event_number};  // multiplexer6
+//        6'd11 : data32_pre <= { d5_d_footer, 10'h0, ad_id };  // multiplexer6
         6'd12 : data32_pre <= d5_event_footer;
         default : data32_pre <= 32'h0;
     endcase
@@ -216,35 +267,69 @@ end
 
 assign DATA_OUT = data32;
 
+
+
 // FIFO Write Enable
 reg wr_en_pre = 1'b0;
 reg wr_en = 1'b0;
+reg frame_end_pre = 1'b0;
+reg frame_end = 1'b0;
 always @( posedge CLK )
 begin
-    if ( ad_id == 6'h0 ) begin
-        if ( ch_id >= 6'd1 && ch_id <= 6'd11)
+    if ( ad_id == row_sta ) begin
+        if ( ch_id == 6'd1 ) begin
             wr_en_pre <= 1'b1;
+            frame_end_pre <= 1'b0;  // First word in this frame ( == Event Header )
+        end
+        else if ( ch_id == 6'd2 || ( ch_id >= col_sta && ch_id <= col_end ) || ch_id == 6'd11 )
+            wr_en_pre <= 1'b1;
+        else 
+            wr_en_pre <= 1'b0;
+    end
+    else if ( ad_id == row_end ) begin
+        if ( ch_id == 6'd2 || ( ch_id >= col_sta && ch_id <= col_end ) || ch_id == 6'd11 ) begin
+            wr_en_pre <= 1'b1;
+            frame_end <= 1'b0;
+        end
+        else if ( ch_id == 6'd12 ) begin
+            wr_en_pre <= 1'b1;
+            frame_end_pre <= 1'b1;    // Last word in this frame (== Event Footer)
+        end
         else
             wr_en_pre <= 1'b0;
     end
-    else if ( ad_id == 6'd47 ) begin
-        if ( ch_id >= 6'd2 && ch_id <= 6'd12)
-            wr_en_pre <= 1'b1;
-        else
-            wr_en_pre <= 1'b0;
-    end
-    else begin
-        if ( ch_id >= 6'd2 && ch_id <= 6'd11)
+    else if ( ad_id > row_sta && ad_id < row_end ) begin
+        if ( ch_id == 6'd2 || ( ch_id >= col_sta && ch_id <= col_end ) || ch_id == 6'd11 )
             wr_en_pre <= 1'b1;
         else
             wr_en_pre <= 1'b0;    
     end
+    else
+        wr_en_pre <= 1'b0;
     
     wr_en <= wr_en_pre;
+    frame_end <= frame_end_pre;
 end
 
-assign FIFO_WR_EN = wr_en;
+// Event Type Check 
+//reg sr_out_tag = 1'b0;
+//reg [1:0] test_sr_out_tag = 2'b00;
+//always @( posedge CLK )
+//begin
+//    test_sr_out_tag <= d_header[11:10];
+//    if ( d_header[11:10] == 2'b00 ) 
+//        sr_out_tag <= 1'b0;
+//    if ( d_header[11:10] == 2'b10 ) 
+//        sr_out_tag <= 1'b1;
+//end
 
+wire sr_out_tag = ( d_header[11:10] == 2'b10 );
+
+//wire wr_test = wr_en & sr_out_tag ;
+
+//assign FIFO_WR_EN = wr_en;
+assign FIFO_WR_EN = wr_en & sr_out_tag;
+assign FRAME_END_FLAG = frame_end;
 
 endmodule
 

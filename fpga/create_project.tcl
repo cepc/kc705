@@ -1,4 +1,4 @@
-# Xillydemo project generation script for Vivado 2014.1
+# Xillydemo project generation script for Vivado 2017.2
 
 set proj_name kc705
 set proj_dir [file dirname [info script]]
@@ -40,23 +40,26 @@ set files [list \
  "[file normalize "$proj_dir/HDL/user_module/delay_ff.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/gen_simple_data.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/gen_user_clock.v"]"\
- "[file normalize "$proj_dir/HDL/user_module/gen_user_reset.v"]"\
+ "[file normalize "$proj_dir/HDL/user_module/gen_user_command.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/rec_sample_data.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/recieve_adc_packet.v"]"\
+ "[file normalize "$proj_dir/HDL/user_module/regen_ctrl_sig.v"]"\
+ "[file normalize "$proj_dir/HDL/user_module/set_chip_addr.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/set_data.v"]"\
- "[file normalize "$proj_dir/HDL/adc/ADC_REC_LVDS.edf"]"\
- "[file normalize "$proj_dir/HDL/adc/ADC_REC_LVDS_stub.v"]"\
+ "[file normalize "$proj_dir/HDL/user_module/state_control.v"]"\
+ "[file normalize "$proj_dir/HDL/adc/CPS_ReadOut_TOP.edf"]"\
+ "[file normalize "$proj_dir/HDL/adc/CPS_ReadOut_TOP_stub.v"]"\
  "[file normalize "$proj_dir/HDL/xillybus/verilog/src/xillydemo.v"]"\
  "[file normalize "$proj_dir/HDL/xillybus/verilog/src/xillybus.v"]"\
  "[file normalize "$proj_dir/HDL/xillybus/verilog/src/xillybus_core.v"]"\
  "[file normalize "$essentials_dir/$pcie.v"]"\
  "[file normalize "$essentials_dir/${pcie}_pipe_clock.v"]"\
  "[file normalize "$essentials_dir/fifo_8x2048/fifo_8x2048.xci"]"\
- "[file normalize "$essentials_dir/fifo_32x512/fifo_32x512.xci"]"\
  "[file normalize "$essentials_dir/$pcie_vivado/$pcie_vivado.xci"]"\
  "[file normalize "$proj_dir/IP_Core/clk1/coregen_sysclk.xci"]"\
  "[file normalize "$proj_dir/IP_Core/mem1/coregen_user_mem8.xci"]"\
  "[file normalize "$proj_dir/IP_Core/mem2/coregen_buffer_mem16.xci"]"\
+ "[file normalize "$proj_dir/IP_Core/mem3/coregen_mem8_chipaddr.xci"]"\
  "[file normalize "$proj_dir/IP_Core/fifo1/coregen_clk_crossing_fifo32.xci"]"\
  "[file normalize "$proj_dir/IP_Core/fifo2/coregen_clk2M_crossing_fifo.xci"]"\
 ]
@@ -86,7 +89,7 @@ if {[string equal [get_filesets constrs_1] ""]} {
 # Add files to 'constrs_1' fileset
 set obj [get_filesets constrs_1]
 add_files -fileset $obj -norecurse "[file normalize "$essentials_dir/xillydemo.xdc"]"
-add_files -fileset $obj -norecurse "[file normalize "$proj_dir/HDL/adc/ADC_REC_LVDS.xdc"]"
+add_files -fileset $obj -norecurse "[file normalize "$proj_dir/HDL/adc/CPS_ReadOut_TOP.xdc"]"
 add_files -fileset $obj -norecurse "[file normalize "$proj_dir/kc705.xdc"]"
 
 # Create 'sim_1' fileset (if not found)

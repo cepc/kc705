@@ -155,26 +155,32 @@ void MainWindow::Init_Online_Image()
   m_adcScale->setType(QCPAxis::atRight); 
   m_adcScale->axis()->setLabel("ADC");
 
-  m_pedestalAxisRect = new QCPAxisRect(ui->customPlot);
-  m_pedestalAxisRect->setupFullAxesBox(true);
-  m_pedestalAxisRect->axis(QCPAxis::atBottom)->setLabel("Pedestal");
+  m_histADCAxisRect = new QCPAxisRect(ui->customPlot);
+  m_histADCAxisRect->setupFullAxesBox(true);
+  m_histADCAxisRect->axis(QCPAxis::atBottom)->setLabel("ADC");
+
+  //m_pedestalAxisRect = new QCPAxisRect(ui->customPlot);
+  //m_pedestalAxisRect->setupFullAxesBox(true);
+  //m_pedestalAxisRect->axis(QCPAxis::atBottom)->setLabel("Pedestal");
   
-  m_noiseAxisRect = new QCPAxisRect(ui->customPlot);
-  m_noiseAxisRect->setupFullAxesBox(true);
-  m_noiseAxisRect->axis(QCPAxis::atBottom)->setLabel("Noise");
+  //m_noiseAxisRect = new QCPAxisRect(ui->customPlot);
+  //m_noiseAxisRect->setupFullAxesBox(true);
+  //m_noiseAxisRect->axis(QCPAxis::atBottom)->setLabel("Noise");
 
   m_LayoutTop->addElement(0,0,m_adcAxisRect);
   m_LayoutTop->addElement(0,1,m_adcScale);   
 
-  m_LayoutBottom->addElement(0,0,m_pedestalAxisRect);
-  m_LayoutBottom->addElement(0,1,m_noiseAxisRect);
+  m_LayoutBottom->addElement(0,0,m_histADCAxisRect);
+  //m_LayoutBottom->addElement(0,0,m_pedestalAxisRect);
+  //m_LayoutBottom->addElement(0,1,m_noiseAxisRect);
 
   m_marginGroup = new QCPMarginGroup(ui->customPlot);
   m_adcAxisRect->setMarginGroup(QCP::msBottom | QCP::msTop, m_marginGroup); 
   m_adcScale->setMarginGroup(QCP::msBottom | QCP::msTop, m_marginGroup); 
   
-  m_pedestalAxisRect->setMarginGroup(QCP::msLeft, m_marginGroup); 
-  m_noiseAxisRect->setMarginGroup(QCP::msRight, m_marginGroup); 
+  m_histADCAxisRect->setMarginGroup(QCP::msLeft, m_marginGroup); 
+  //m_pedestalAxisRect->setMarginGroup(QCP::msLeft, m_marginGroup); 
+  //m_noiseAxisRect->setMarginGroup(QCP::msRight, m_marginGroup); 
 
   Draw_Online_Image();
 }
@@ -189,9 +195,11 @@ void MainWindow::Draw_Online_Image()
   m_adcMap->rescaleDataRange();
 
  
-  m_pedestalGraph = new QCPGraph(m_pedestalAxisRect->axis(QCPAxis::atBottom), m_pedestalAxisRect->axis(QCPAxis::atLeft)); 
+  m_histADCGraph = new QCPGraph(m_histADCAxisRect->axis(QCPAxis::atBottom), m_histADCAxisRect->axis(QCPAxis::atLeft)); 
+ 
+  //m_pedestalGraph = new QCPGraph(m_pedestalAxisRect->axis(QCPAxis::atBottom), m_pedestalAxisRect->axis(QCPAxis::atLeft)); 
 
-  m_noiseGraph = new QCPGraph(m_noiseAxisRect->axis(QCPAxis::atBottom), m_noiseAxisRect->axis(QCPAxis::atLeft)); 
+  //m_noiseGraph = new QCPGraph(m_noiseAxisRect->axis(QCPAxis::atBottom), m_noiseAxisRect->axis(QCPAxis::atLeft)); 
 
   ui->customPlot->rescaleAxes();
   ui->customPlot->replot();
@@ -206,11 +214,14 @@ void MainWindow::Update_Online_Image()
     m_adcMap->rescaleDataRange();
     m_adcMap->setColorScale(m_adcScale); 
 
-    m_pedestalGraph->data()->clear();
-    m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(m_col,m_row));
+    m_histADCGraph->data()->clear();
+    m_histADCGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(m_col,m_row));
 
-    m_noiseGraph->data()->clear();
-    m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(m_col,m_row));
+    //m_pedestalGraph->data()->clear();
+    //m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(m_col,m_row));
+
+    //m_noiseGraph->data()->clear();
+    //m_noiseGraph->data()->add(m_GUIManager->get_monitor()->GetNoise(m_col,m_row));
 
     ui->customPlot->rescaleAxes();
     ui->customPlot->replot();
@@ -220,8 +231,9 @@ void MainWindow::Update_Online_Image()
 
 void MainWindow::Clear_Online_Image()
 {
-  m_pedestalGraph->data()->clear();
-  m_noiseGraph->data()->clear();
+  //m_pedestalGraph->data()->clear();
+  //m_noiseGraph->data()->clear();
+  m_histADCGraph->data()->clear();
   m_adcMap->data()->clear();
 
   connect(m_GUIManager, SIGNAL(IsRunning()), m_timer, SLOT(start()));

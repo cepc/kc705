@@ -53,16 +53,18 @@ class MainWindow : public QMainWindow
     QCPLayoutGrid* m_LayoutBottom;
     
     QCPAxisRect* m_adcAxisRect;
-    QCPAxisRect* m_pedestalAxisRect;
-    QCPAxisRect* m_noiseAxisRect;
+    //QCPAxisRect* m_pedestalAxisRect;
+    //QCPAxisRect* m_noiseAxisRect;
+    QCPAxisRect* m_histADCAxisRect;
    
     QCPMarginGroup* m_marginGroup; 
     
     QCPColorMap* m_adcMap;
     QCPColorScale* m_adcScale;
 
-    QCPGraph* m_pedestalGraph;
-    QCPGraph* m_noiseGraph;
+    //QCPGraph* m_pedestalGraph;
+    //QCPGraph* m_noiseGraph;
+    QCPGraph* m_histADCGraph;
 
     QTimer* m_timer;
     QTimer* m_timer_run;

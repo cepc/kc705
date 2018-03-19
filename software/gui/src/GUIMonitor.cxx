@@ -56,9 +56,12 @@ void GUIMonitor::Monitor(JadeDataFrameSP df)
 
   m_mean.push_back(m_u_adcFrame->mean_frame_adc.at(m_row+m_col*m_ny));
   m_rms.push_back(m_u_adcFrame->rms_frame_adc.at(m_row+m_col*m_ny));
-  
+  m_cds_adc.push_back(m_u_adcFrame->cds_frame_adc.at(m_row+m_col*m_ny));
+   
+
   m_u_adcFrame->hist_mean = GetHistogram(m_mean);
   m_u_adcFrame->hist_rms = GetHistogram(m_rms);
+  m_u_adcFrame->hist_cds_adc = GetHistogram(m_cds_adc);
 
   std::unique_lock<std::mutex> lk_out(m_mx_get);
   m_adcFrame = m_u_adcFrame; 
@@ -85,6 +88,25 @@ QCPColorMapData* GUIMonitor::GetADCMap()
   //std::cout << "\nend send" << std::endl;
 
   return m_adc_map;
+}
+
+QVector<QCPGraphData> GUIMonitor::GetHistADC(int col, int row){
+
+  std::cout << "Get Hist ADC..."<<std::endl;
+  
+  std::unique_lock<std::mutex> lk_in(m_mx_get);
+  auto u_adcFrame = m_adcFrame; 
+  lk_in.unlock();
+ 
+  QCPGraphData point;
+
+  for(auto adcItr : u_adcFrame->hist_cds_adc){
+    point.key = adcItr.first; 
+    point.value = adcItr.second;
+    m_hist_cds_adc.append(point);
+  }
+
+  return m_hist_cds_adc;
 }
 
 QVector<QCPGraphData> GUIMonitor::GetPedestal(int col, int row){
@@ -139,6 +161,23 @@ std::map<double, size_t> GUIMonitor::GetHistogram(const std::vector<double>& xVe
   
   std::for_each(xVec.begin(), xVec.end(), 
       [&hMap, &bmax](const double &element)
+      {
+        hMap[element]++;
+        bmax=std::max(bmax, hMap[element]);
+      });
+
+  return hMap;
+}
+
+
+std::map<int16_t, size_t> GUIMonitor::GetHistogram(const std::vector<int16_t>& xVec) {
+  
+  std::map<int16_t, size_t> hMap;                        // histogram
+  
+  size_t bmax=0;
+  
+  std::for_each(xVec.begin(), xVec.end(), 
+      [&hMap, &bmax](const int16_t &element)
       {
         hMap[element]++;
         bmax=std::max(bmax, hMap[element]);

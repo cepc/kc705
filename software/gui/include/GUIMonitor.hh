@@ -19,8 +19,10 @@ class GUIMonitor : public JadeMonitor
     QCPColorMapData* GetADCMap();
     QVector<QCPGraphData> GetPedestal(int col, int row);
     QVector<QCPGraphData> GetNoise(int col, int row);
+    QVector<QCPGraphData> GetHistADC(int col, int row);
     void Reset();
     std::map<double, size_t> GetHistogram(const std::vector<double>& xVec);
+    std::map<int16_t, size_t> GetHistogram(const std::vector<int16_t>& xVec);
 
   private:
     JadeOption m_opt;
@@ -39,6 +41,7 @@ class GUIMonitor : public JadeMonitor
     QCPColorMapData* m_adc_map;
     QVector<QCPGraphData> m_pedestal;
     QVector<QCPGraphData> m_noise;
+    QVector<QCPGraphData> m_hist_cds_adc;
 
     std::vector<int16_t> m_cds_frame_adc;
     std::vector<int16_t> m_last_frame_adc;
@@ -47,6 +50,7 @@ class GUIMonitor : public JadeMonitor
     std::vector<double> m_rms_frame_adc;
     std::vector<double> m_mean;
     std::vector<double> m_rms;
+    std::vector<int16_t> m_cds_adc;
 
     struct adcFrame {
       std::vector<int16_t> cds_frame_adc;
@@ -54,6 +58,7 @@ class GUIMonitor : public JadeMonitor
       std::vector<double> rms_frame_adc;
       std::map<double, size_t> hist_mean;
       std::map<double, size_t> hist_rms;
+      std::map<int16_t, size_t> hist_cds_adc;
     };
     std::shared_ptr<adcFrame> m_adcFrame; 
     std::shared_ptr<adcFrame> m_u_adcFrame; 

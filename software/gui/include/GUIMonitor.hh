@@ -21,8 +21,8 @@ class GUIMonitor : public JadeMonitor
     QVector<QCPGraphData> GetNoise(int col, int row);
     QVector<QCPGraphData> GetHistADC(int col, int row);
     void Reset();
-    std::map<double, size_t> GetHistogram(const std::vector<double>& xVec);
-    std::map<int16_t, size_t> GetHistogram(const std::vector<int16_t>& xVec);
+    void GetHistogram(const std::vector<double>& xVec, std::map<double, size_t>& hMap);
+    void GetHistogram(const std::vector<int16_t>& xVec, std::map<int16_t, size_t>& hMap);
 
   private:
     JadeOption m_opt;

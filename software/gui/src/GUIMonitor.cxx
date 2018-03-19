@@ -59,9 +59,9 @@ void GUIMonitor::Monitor(JadeDataFrameSP df)
   m_cds_adc.push_back(m_u_adcFrame->cds_frame_adc.at(m_row+m_col*m_ny));
    
 
-  m_u_adcFrame->hist_mean = GetHistogram(m_mean);
-  m_u_adcFrame->hist_rms = GetHistogram(m_rms);
-  m_u_adcFrame->hist_cds_adc = GetHistogram(m_cds_adc);
+  GetHistogram(m_mean, m_u_adcFrame->hist_mean);
+  GetHistogram(m_rms, m_u_adcFrame->hist_rms);
+  GetHistogram(m_cds_adc, m_u_adcFrame->hist_cds_adc);
 
   std::unique_lock<std::mutex> lk_out(m_mx_get);
   m_adcFrame = m_u_adcFrame; 
@@ -153,9 +153,7 @@ void GUIMonitor::Reset(){
 }
 
 
-std::map<double, size_t> GUIMonitor::GetHistogram(const std::vector<double>& xVec) {
-  
-  std::map<double, size_t> hMap;                        // histogram
+void GUIMonitor::GetHistogram(const std::vector<double>& xVec, std::map<double, size_t>& hMap) {
   
   size_t bmax=0;
   
@@ -165,14 +163,10 @@ std::map<double, size_t> GUIMonitor::GetHistogram(const std::vector<double>& xVe
         hMap[element]++;
         bmax=std::max(bmax, hMap[element]);
       });
-
-  return hMap;
 }
 
 
-std::map<int16_t, size_t> GUIMonitor::GetHistogram(const std::vector<int16_t>& xVec) {
-  
-  std::map<int16_t, size_t> hMap;                        // histogram
+void GUIMonitor::GetHistogram(const std::vector<int16_t>& xVec, std::map<int16_t,size_t>& hMap) {
   
   size_t bmax=0;
   
@@ -183,5 +177,4 @@ std::map<int16_t, size_t> GUIMonitor::GetHistogram(const std::vector<int16_t>& x
         bmax=std::max(bmax, hMap[element]);
       });
 
-  return hMap;
 }

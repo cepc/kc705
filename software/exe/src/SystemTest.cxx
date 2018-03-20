@@ -77,26 +77,34 @@ int main(int argc, char **argv){
   JadeFilterSP pflt = std::make_shared<JadeFilter>(conf_flt_para);
   JadeWriteSP pwrt = std::make_shared<JadeWrite>(conf_wrt_para);
   JadeMonitorSP pmnt = std::make_shared<JadeMonitor>(conf_mnt_para);
+
+  size_t nloop = conf_man_para.GetIntValue("SecPerLoop");
+  size_t nsec = conf_man_para.GetIntValue("N_Loops");
   
   pman.SetRegCtrl(pctrl);
   pman.SetReader(pread);
   pman.SetFilter(pflt);
   pman.SetWriter(pwrt);
   pman.SetMonitor(pmnt);
-  pman.DeviceConnect();
-  for(int i=0; i< 20; i++){
+  pman.DeviceConnect();  
+  for(size_t i=0; i< nloop; i++){
+    if(pman.DeviceStatus("FIFO_MODE")=="FULL"){
+      pman.DeviceControl("RESET");
+      std::cout<<"=========reset at "<<get_now_str()<<"======="<< std::endl;
+      std::this_thread::sleep_for(1s);
+    }
     std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl;
     pman.DeviceControl("START");
-    pman.DeviceControl("START");
     std::cout<<"========="<<std::endl;
-    pman.StartDataTaking(); 
-    std::cout<<"========="<<std::endl;      
-    std::this_thread::sleep_for(100s);
+    pman.StartDataTaking();
     std::cout<<"========="<<std::endl;
-    pman.StopDataTaking();
+    std::this_thread::sleep_for(std::chrono::seconds(nsec));
     std::cout<<"========="<<std::endl;
     pman.DeviceControl("STOP");
+    std::cout<<"=========stop at "<<get_now_str()<<"======="<< std::endl;
     std::this_thread::sleep_for(1s);
+    std::cout<<"========="<<std::endl;
+    pman.StopDataTaking();
     std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl;
   }
   pman.DeviceDisconnect();

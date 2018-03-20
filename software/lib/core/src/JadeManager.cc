@@ -159,7 +159,7 @@ void JadeManager::StartDataTaking(){
   }
   
   m_wrt->Open();
-  // while(DeviceStatus("RUN_TYPE") != "STARTED"){
+  // while(DeviceStatus("RUN_MODE") != "STARTED"){
   //   ;
   // }
   //m_ctrl->SendCommand("START");
@@ -180,7 +180,7 @@ void JadeManager::StartDataTaking(){
 
 void JadeManager::StopDataTaking(){
   //DeviceControl("STOP");
-  // while(DeviceStatus("RUN_TYPE") != "STOPPED"){
+  // while(DeviceStatus("RUN_MODE") != "STOPPED"){
   //   ;
   // }
   //std::this_thread::sleep_for(std::chrono::milliseconds(500));//TOBE REMOVEd

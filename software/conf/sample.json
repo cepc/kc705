@@ -4,8 +4,8 @@
 	"JadeManager":{
 	    "type":"default",
 	    "parameter":{
-		"SecPerRun": 5,
-		"Loop": 3
+		"SecPerLoop": 10,
+		"N_Loops": 3
 	    }
 	},
 	"JadeRead":{
@@ -17,7 +17,7 @@
 	"JadeWrite":{
 	    "type":"default",
 	    "parameter":{
-		"PATH":"output"
+		"PATH":"F:\\data\\output"
 	    }
 	},
 	"JadeFilter":{
@@ -29,7 +29,7 @@
 	"JadeMonitor":{
 	    "type":"default",
 	    "parameter":{
-		"PRINT_EVENT_N":0
+		"PRINT_EVENT_N":40000
 	    }
 	},
 	"JadeRegCtrl":{
@@ -37,6 +37,14 @@
 	    "parameter":{
 		"PATH":"//./xillybus_mem_8",
 		"command_list":{
+		    "RESET":{
+			"address":1,
+			"default_val":15
+		    },
+		    "SET":{
+			"address":2,
+			"default_val":10
+		    },
 		    "START":{
 			"address":3,
 			"default_val":15
@@ -45,17 +53,20 @@
 			"address":4,
 			"default_val":15
 		    },
-		    "SET":{
-			"address":2,
-			"default_val":10
-		    },
 		    "CHIPA":{
 			"address":8,
 			"default_val":0
 		    }
 		},
 		"status_list":{
-		    "RUN_TYPE":{
+		    "FIFO_MODE":{
+			"address":16,
+			"value_list":{
+			    "NOT_FULL":0,
+			    "FULL":1
+			}
+		    },
+		    "RUN_MODE":{
 			"address":16,
 			"value_list":{
 			    "STOPPED":0,

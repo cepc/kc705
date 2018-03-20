@@ -1,4 +1,6 @@
 #include "JadeWrite.hh"
+#include <ctime>
+
 
 JadeWrite::JadeWrite(const JadeOption &opt)
   :m_opt(opt), m_fd(0){

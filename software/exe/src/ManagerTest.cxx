@@ -83,7 +83,7 @@ int main(int argc, char **argv){
     pman.StopDataTaking();
     pman.DeviceDisconnect();
     pman.Reset();//remove
-    std::cout<<"=========eixt at "<<get_now_str()<<"======="<< std::endl;
+    std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl;
   }
   return 0;
 }

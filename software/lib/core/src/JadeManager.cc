@@ -31,45 +31,39 @@ void JadeManager::SetMonitor(JadeMonitorSP mnt){
 }
 
 uint64_t JadeManager::AsyncReading(){
+  auto tp_start = std::chrono::system_clock::now();
+  auto tp_print_prev = std::chrono::system_clock::now();
+  uint64_t ndf_print_next = 10000;
+  uint64_t ndf_print_prev = 0;
   uint64_t n_df = 0;
   while (m_is_running){
-    size_t nframe_per_read = 1;
+    size_t nframe_per_read = 10;
     auto v_df = m_rd->Read(nframe_per_read, 100ms);
     size_t nframe_per_read_r = v_df.size();
-
-    std::unique_lock<std::mutex> lk_out(m_mx_ev_to_dcd);
+    //if(!n_df && !v_df.empty()){
+    std::unique_lock<std::mutex> lk_out(m_mx_ev_to_flt);
     for(auto &&df: v_df){
-      m_qu_ev_to_dcd.push(df);
+      m_qu_ev_to_flt.push(df);
       n_df ++;
     }
     lk_out.unlock();
-    m_cv_valid_ev_to_dcd.notify_all();
+    m_cv_valid_ev_to_flt.notify_all();
+    //}
+    if(n_df >= ndf_print_next){
+      auto tp_now = std::chrono::system_clock::now();
+      auto dur = tp_now - tp_start;
+      double dur_sec_c = dur.count() * decltype(dur)::period::num * 1.0/ decltype(dur)::period::den;
+      double av_hz = n_df/dur_sec_c;
+      dur = tp_now - tp_print_prev;
+      dur_sec_c = dur.count() * decltype(dur)::period::num * 1.0/ decltype(dur)::period::den;
+      double cr_hz = (n_df-ndf_print_prev) / dur_sec_c;
+      std::cout<<"JadeManager:: average data rate<"<< av_hz<<"> current data rate<"<<cr_hz<<">"<<std::endl;
+      ndf_print_next += 10000;
+      ndf_print_prev = n_df;
+      tp_print_prev = tp_now;
+    }
     if(nframe_per_read_r < nframe_per_read)
       break;
-  }
-  return n_df;
-}
-
-uint64_t JadeManager::AsyncDecoding(){
-  uint64_t n_df = 0;
-  while(m_is_running){
-    std::unique_lock<std::mutex> lk_in(m_mx_ev_to_dcd);
-    while(m_qu_ev_to_dcd.empty()){
-      while(m_cv_valid_ev_to_dcd.wait_for(lk_in, 10ms) ==
-          std::cv_status::timeout){
-        if(!m_is_running)
-          return n_df;
-      }
-    }
-    auto df = m_qu_ev_to_dcd.front();
-    m_qu_ev_to_dcd.pop();
-    lk_in.unlock();
-    df->Decode();
-    std::unique_lock<std::mutex> lk_out(m_mx_ev_to_flt);
-    m_qu_ev_to_flt.push(df);
-    n_df ++;
-    lk_out.unlock();
-    m_cv_valid_ev_to_flt.notify_all();   
   }
   return n_df;
 }
@@ -90,6 +84,7 @@ uint64_t JadeManager::AsyncFiltering(){
     m_qu_ev_to_flt.pop();
     lk_in.unlock();
     JadeDataFrameSP df_r = df;
+    df_r->Decode();
     if(m_flt)
       df_r = m_flt->Filter(df);
     if(df_r){
@@ -162,31 +157,29 @@ void JadeManager::StartDataTaking(){
     std::cerr<<"JadeManager: m_rd, m_flt, m_wrt, m_mnt or m_ctrl is not set"<<std::endl;
     throw;
   }
-
+  
   m_wrt->Open();
-  m_ctrl->SendCommand("START"); 
   // while(DeviceStatus("RUN_TYPE") != "STARTED"){
   //   ;
   // }
+  //m_ctrl->SendCommand("START");
+   
   m_is_running = true;
   m_fut_async_rd = std::async(std::launch::async,
-      &JadeManager::AsyncReading, this);
-
-  m_fut_async_dcd = std::async(std::launch::async,
-      &JadeManager::AsyncDecoding, this);
+			      &JadeManager::AsyncReading, this);
 
   m_fut_async_flt = std::async(std::launch::async,
-      &JadeManager::AsyncFiltering, this);
+			       &JadeManager::AsyncFiltering, this);
 
   m_fut_async_wrt = std::async(std::launch::async,
-      &JadeManager::AsyncWriting, this);
+			       &JadeManager::AsyncWriting, this);
 
   m_fut_async_mnt = std::async(std::launch::async,
-      &JadeManager::AsyncMonitoring, this);  
+			       &JadeManager::AsyncMonitoring, this);
 }
 
 void JadeManager::StopDataTaking(){
-  DeviceControl("STOP");
+  //DeviceControl("STOP");
   // while(DeviceStatus("RUN_TYPE") != "STOPPED"){
   //   ;
   // }
@@ -196,9 +189,6 @@ void JadeManager::StopDataTaking(){
   if(m_fut_async_rd.valid())
     m_fut_async_rd.get();
   std::cout<<">>>>>>>>>>>>>>>>>>end of rd"<<std::endl; 
-  if(m_fut_async_dcd.valid())
-    m_fut_async_dcd.get();
-  std::cout<<">>>>>>>>>>>>>>>>>>end of dcd"<<std::endl; 
   if(m_fut_async_flt.valid())
     m_fut_async_flt.get();
   std::cout<<">>>>>>>>>>>>>>>>>>end of flt"<<std::endl;
@@ -208,11 +198,9 @@ void JadeManager::StopDataTaking(){
   if(m_fut_async_mnt.valid())
     m_fut_async_mnt.get();
   std::cout<<">>>>>>>>>>>>>>>>>>end of mnt"<<std::endl;
-  m_qu_ev_to_dcd=decltype(m_qu_ev_to_dcd)();
   m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
   m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
   m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
-
   m_wrt->Close();
 }
 
@@ -220,15 +208,12 @@ void JadeManager::Reset(){
   m_is_running = false;
   if(m_fut_async_rd.valid())
     m_fut_async_rd.get();
-  if(m_fut_async_dcd.valid())
-    m_fut_async_dcd.get();
   if(m_fut_async_flt.valid())
     m_fut_async_flt.get();
   if(m_fut_async_wrt.valid())
     m_fut_async_wrt.get();
   if(m_fut_async_mnt.valid())
     m_fut_async_mnt.get();
-  m_qu_ev_to_dcd=decltype(m_qu_ev_to_dcd)();
   m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
   m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
   m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
@@ -247,14 +232,14 @@ void JadeManager::Reset(){
 void JadeManager::DeviceConnect(){
   m_rd->Open();
   m_ctrl->Open();
-  m_ctrl->SendCommand("STOP");
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  //m_ctrl->SendCommand("STOP");
+  //std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 void JadeManager::DeviceDisconnect(){
   m_rd->Close();
-  m_ctrl->SendCommand("STOP");
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  //m_ctrl->SendCommand("STOP");
+  //std::this_thread::sleep_for(std::chrono::milliseconds(500));
   m_ctrl->Close();
 }
 

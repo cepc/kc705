@@ -42,7 +42,7 @@ register but no effect)
 
 \[  **Data Format**  \]
 
-| ÅgNameÅh  | Description (Value) |
+| Name  | Description (Value) |
 |:--:|:--|
 | Frame Header   |  0xaaaa_aaaa      |
 | Row Header (row 1) | 0xf [D31..D28], event_type [D27..D26], row_counter [D25..D20], 4bit counter [D19..D16], column_start [D15..D12], column_end [D11..D8], 00 [D7..D6], memory address [D5..D0] |

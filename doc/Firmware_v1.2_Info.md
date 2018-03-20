@@ -5,8 +5,8 @@ Kintex\-7 FPGA KC705
 
 **Change from v1.1.1**  
 All of 16 channels are connected.  
-Several timing constraints are added.   
-(it is only for firmware feature and not affected for data taking)
+Several timing constraints are added in XDC file.   
+(it is only for firmware feature and not affected for data taking)  
 
 * Command Line access (using xillybus executable)
 > hexdump.exe \-C \-v \-n 32 \\\\.\\xillybus_mem_8

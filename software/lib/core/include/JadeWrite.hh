@@ -25,6 +25,7 @@ class DLLEXPORT JadeWrite{
  private:
   FILE* m_fd;
   JadeOption m_opt;
+  bool m_disable_file_write;
 };
 
 using JadeWriteSP = std::shared_ptr<JadeWrite>;

@@ -3,7 +3,7 @@
 
 
 JadeWrite::JadeWrite(const JadeOption &opt)
-  :m_opt(opt), m_fd(0){
+  :m_opt(opt), m_fd(0), m_disable_file_write(false){
 }
 
 JadeWrite::~JadeWrite(){
@@ -11,6 +11,9 @@ JadeWrite::~JadeWrite(){
 }
 
 void JadeWrite::Open(){
+  m_disable_file_write = m_opt.GetBoolValue("DISABLE_FILE_WRITE");
+  if(m_disable_file_write)
+    return;
   std::string path = m_opt.GetStringValue("PATH");
   std::time_t time_now = std::time(nullptr);
   char time_buff[13];
@@ -31,6 +34,8 @@ void JadeWrite::Reset(){
 }
 
 void JadeWrite::Close(){
+  if(m_disable_file_write)
+    return;
   if(m_fd){
     std::fclose(m_fd);
     m_fd = 0;
@@ -38,6 +43,8 @@ void JadeWrite::Close(){
 }
 
 void JadeWrite::Write(JadeDataFrameSP df){
+  if(m_disable_file_write)
+    return;
   if(!df){
     std::cerr<<"JadeWrite: File is not opened/created before writing\n";
     throw;

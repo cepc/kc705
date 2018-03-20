@@ -100,11 +100,10 @@ int main(int argc, char **argv){
     std::cout<<"========="<<std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(nsec));
     std::cout<<"========="<<std::endl;
-    pman.DeviceControl("STOP");
-    std::cout<<"=========stop at "<<get_now_str()<<"======="<< std::endl;
-    std::this_thread::sleep_for(1s);
-    std::cout<<"========="<<std::endl;
     pman.StopDataTaking();
+    std::cout<<"========="<<std::endl;
+    pman.DeviceControl("STOP");
+    std::this_thread::sleep_for(1s);
     std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl;
   }
   pman.DeviceDisconnect();

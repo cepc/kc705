@@ -62,10 +62,35 @@ int main(int argc, char **argv){
   JadeRegCtrl ctrl(conf_ctrl_para);
   ctrl.Open();
 
+  //ctrl.SendCommand("STOP");
+  //std::this_thread::sleep_for(500ms);
   ctrl.SendCommand("START");
+
+  auto tp_start = std::chrono::system_clock::now();
+  auto tp_print_prev = std::chrono::system_clock::now();
+  uint64_t ndf = 0;
+  uint64_t ndf_print_next = 10000;
+  uint64_t ndf_print_prev = 0;
   while(1){
     auto df_v = rd.Read(1, 10ms);
+    ndf += df_v.size();
+    for(auto&e: df_v){
+      //e->Decode();
+    }
     df_v.clear();
+    if(ndf >= ndf_print_next){
+      auto tp_now = std::chrono::system_clock::now();
+      auto dur = tp_now - tp_start;
+      double dur_sec_c = dur.count() * decltype(dur)::period::num * 1.0/ decltype(dur)::period::den;
+      double av_hz = ndf/dur_sec_c;
+      dur = tp_now - tp_print_prev;
+      dur_sec_c = dur.count() * decltype(dur)::period::num * 1.0/ decltype(dur)::period::den; 
+      double cr_hz = (ndf-ndf_print_prev) / dur_sec_c;
+      std::cout<<"average data rate: "<< av_hz<<"  curent data rate: "<< cr_hz<<std::endl;
+      ndf_print_next += 10000;
+      ndf_print_prev = ndf;
+      tp_print_prev = tp_now;
+    }
   }
   
 }

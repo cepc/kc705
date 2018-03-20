@@ -84,15 +84,20 @@ int main(int argc, char **argv){
   pman.SetWriter(pwrt);
   pman.SetMonitor(pmnt);
   pman.DeviceConnect();
-  for(int i=0; i< 3; i++){
+  for(int i=0; i< 20; i++){
     std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl;
+    pman.DeviceControl("START");
+    pman.DeviceControl("START");
     std::cout<<"========="<<std::endl;
     pman.StartDataTaking(); 
     std::cout<<"========="<<std::endl;      
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(100s);
+    std::cout<<"========="<<std::endl;
     pman.StopDataTaking();
     std::cout<<"========="<<std::endl;
-    std::cout<<"=========eixt at "<<get_now_str()<<"======="<< std::endl;
+    pman.DeviceControl("STOP");
+    std::this_thread::sleep_for(1s);
+    std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl;
   }
   pman.DeviceDisconnect();
   return 0;

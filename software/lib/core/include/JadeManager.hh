@@ -36,7 +36,6 @@ class DLLEXPORT JadeManager{
   std::string DeviceStatus(const std::string &type);
  private:
   uint64_t AsyncReading();
-  uint64_t AsyncDecoding();
   uint64_t AsyncFiltering();
   uint64_t AsyncWriting();
   uint64_t AsyncMonitoring();
@@ -52,19 +51,15 @@ class DLLEXPORT JadeManager{
   
   bool m_is_running;
   std::future<uint64_t> m_fut_async_rd;
-  std::future<uint64_t> m_fut_async_dcd;
   std::future<uint64_t> m_fut_async_flt;
   std::future<uint64_t> m_fut_async_wrt;
   std::future<uint64_t> m_fut_async_mnt;
-  std::mutex m_mx_ev_to_dcd;
   std::mutex m_mx_ev_to_flt;
   std::mutex m_mx_ev_to_wrt;
   std::mutex m_mx_ev_to_mnt;
-  std::queue<JadeDataFrameSP> m_qu_ev_to_dcd;
   std::queue<JadeDataFrameSP> m_qu_ev_to_flt;
   std::queue<JadeDataFrameSP> m_qu_ev_to_wrt;
   std::queue<JadeDataFrameSP> m_qu_ev_to_mnt;
-  std::condition_variable m_cv_valid_ev_to_dcd;
   std::condition_variable m_cv_valid_ev_to_flt;
   std::condition_variable m_cv_valid_ev_to_wrt;
   std::condition_variable m_cv_valid_ev_to_mnt;    

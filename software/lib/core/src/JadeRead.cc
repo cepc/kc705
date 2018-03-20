@@ -71,9 +71,19 @@ JadeRead::Read(size_t nframe,
   size_t size_filled = 0;
   std::chrono::system_clock::time_point tp_timeout;
   bool can_time_out = false;
+  uint32_t n = 0;
+  uint32_t n_next = 4;
   while(size_filled < size_buf){
 #ifdef _WIN32
+    if(n+1 == n_next){
+      std::cout<<n<<"  "<<size_filled<<"  "<<size_buf<<"  "<<(unsigned int)(size_buf-size_filled)<<std::endl;
+    }
     int read_r = _read(m_fd, &m_buf[size_filled], (unsigned int)(size_buf-size_filled));
+    n++;
+    if(n == n_next){
+      std::cout<<n<<std::endl;
+      n_next = n_next*2;
+    }
 #else
     int read_r = read(m_fd, &m_buf[size_filled], size_buf-size_filled);
 #endif
@@ -83,6 +93,7 @@ JadeRead::Read(size_t nframe,
     }
 
     if(read_r == 0){
+      std::cout<<"read_r==0"<<std::endl;
       if(!can_time_out){
 	can_time_out = true;
 	tp_timeout = std::chrono::system_clock::now() + timeout;

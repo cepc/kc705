@@ -6,6 +6,7 @@
 
 class PyJadeFilter: public JadeFilter{
 public:
+  using JadeFilter::JadeFilter;
   static void InitPybind11(pybind11::module &m);  
 };
 

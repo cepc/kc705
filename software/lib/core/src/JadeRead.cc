@@ -12,36 +12,49 @@
 
 #define FRAME_SIZE (4+48*(4+16*2+4)+4)
 
-JadeRead::JadeRead(const std::string& path,
-		   const std::string options)
-  :m_dev_path(path), m_options(options){
+JadeRead::JadeRead(const JadeOption &opt)
+  :m_opt(opt){
+}
+
+JadeRead::~JadeRead(){
+  Reset();
+}
+
+void JadeRead::Open(){
+  std::string path = m_opt.GetStringValue("PATH");
 #ifdef _WIN32
-  m_fd = _open(m_dev_path.c_str(), _O_RDONLY | _O_BINARY);
+  m_fd = _open(path.c_str(), _O_RDONLY | _O_BINARY);
 #else
-  m_fd = open(m_dev_path.c_str(), O_RDONLY);
+  m_fd = open(path.c_str(), O_RDONLY);
 #endif
   if(m_fd < 0){
-    std::cerr<<"JadeRead: Failed to open devfile: "<<m_dev_path<<"\n";
+    std::cerr<<"JadeRead: Failed to open devfile: "<<path<<"\n";
     throw;
   }
 }
 
-JadeRead::~JadeRead(){
+void JadeRead::Close(){
+  m_buf.clear();
   if(m_fd>0){
 #ifdef _WIN32
     _close(m_fd);
 #else
     close(m_fd);
 #endif
+    m_fd = 0;
   }
 }
 
-std::vector<JadeDataFrameUP>
+void JadeRead::Reset(){
+  Close();
+}
+
+std::vector<JadeDataFrameSP>
 JadeRead::Read(size_t nframe,
 	       const std::chrono::milliseconds &timeout){
   size_t size_buf = FRAME_SIZE * nframe;
   m_buf.resize(size_buf);
-  std::vector<JadeDataFrameUP> v_df;
+  std::vector<JadeDataFrameSP> v_df;
   v_df.reserve(nframe);
   
   size_t size_filled = 0;
@@ -52,12 +65,8 @@ JadeRead::Read(size_t nframe,
 #else
     int read_r = read(m_fd, &m_buf[size_filled], size_buf-size_filled);
 #endif
-    // std::cout<<m_fd<<" : "<< size_filled<< " : "
-    // 	     <<size_buf-size_filled <<" : " <<read_r<<std::endl;
     if(read_r < 0){
       std::cerr<<"JadeRead: reading error\n";
-      // std::cout<<m_fd<<" : "<< size_filled<< " : "
-      // 	  <<size_buf-size_filled <<" : " <<read_r<<std::endl;
       throw;
     }
 
@@ -68,7 +77,8 @@ JadeRead::Read(size_t nframe,
       size_filled += read_r;
       if(std::chrono::system_clock::now() > tp_timeout){
 	std::cerr<<"JadeRead: reading timeout\n";
-	break;
+	//TODO: keep remain data, nothrow
+	throw;
       }
     }
     else{
@@ -81,6 +91,6 @@ JadeRead::Read(size_t nframe,
   while(sub_beg + FRAME_SIZE <=  size_filled){
     v_df.emplace_back(new JadeDataFrame(m_buf.substr(sub_beg, FRAME_SIZE)));
     sub_beg += FRAME_SIZE;
-  }
+  }  
   return v_df;
 }

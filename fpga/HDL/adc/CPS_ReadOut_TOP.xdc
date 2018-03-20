@@ -14,7 +14,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports {d_A[5]}]
 set_property IOSTANDARD LVCMOS25 [get_ports {d_A[6]}]
 set_property PACKAGE_PIN G13 [get_ports clk_div]
 set_property PACKAGE_PIN F21 [get_ports CLKOUTN_p]
-set_property PACKAGE_PIN D22 [get_ports CNV]
+
+
 set_property PACKAGE_PIN A11 [get_ports oe]
 set_property PACKAGE_PIN AC6 [get_ports rst]
 set_property PACKAGE_PIN D12 [get_ports SCK_p]
@@ -41,7 +42,8 @@ set_property PACKAGE_PIN AD12 [get_ports sysclk_p]
 set_property IOSTANDARD LVCMOS25 [get_ports clk_div]
 set_property IOSTANDARD LVDS_25 [get_ports CLKOUTN_p]
 set_property IOSTANDARD LVDS_25 [get_ports CLKOUTN_n]
-set_property IOSTANDARD LVCMOS25 [get_ports CNV]
+
+
 set_property IOSTANDARD LVCMOS25 [get_ports oe]
 set_property IOSTANDARD LVCMOS15 [get_ports rst]
 set_property IOSTANDARD LVDS_25 [get_ports SCK_p]
@@ -69,4 +71,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports sync]
 set_property DRIVE 12 [get_ports sync]
 set_property SLEW SLOW [get_ports sync]
 
+set_property IOSTANDARD LVDS_25 [get_ports CNV_p]
+set_property IOSTANDARD LVDS_25 [get_ports CNV_n]
+set_property PACKAGE_PIN D22 [get_ports CNV_p]
+set_property PACKAGE_PIN C22 [get_ports CNV_n]
 

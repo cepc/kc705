@@ -6,6 +6,7 @@
 
 class PyJadeDataFrame : public JadeDataFrame{
 public:
+  using JadeDataFrame::JadeDataFrame;
   static void InitPybind11(pybind11::module &m);
 
   void Decode() override;

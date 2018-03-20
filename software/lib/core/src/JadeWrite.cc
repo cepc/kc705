@@ -1,26 +1,40 @@
 #include "JadeWrite.hh"
 
-JadeWrite::JadeWrite(const std::string& path,
-		    const std::string options)
-  :m_path(path), m_options(options){
-  m_fd = std::fopen(m_path.c_str(), "wb" );
-  if(m_fd == NULL){
-    std::cerr<<"JadeWrite: Failed to open devfile: "<<m_path<<"\n";
-    // throw;
-  }
+JadeWrite::JadeWrite(const JadeOption &opt)
+  :m_opt(opt), m_fd(0){
 }
 
 JadeWrite::~JadeWrite(){
-  if(m_fd)
-    std::fclose(m_fd);
+  Reset();
 }
 
-void JadeWrite::Write(JadeDataFrameUP &&df){
-  if(!df)
+void JadeWrite::Open(){
+  std::string path = m_opt.GetStringValue("PATH");
+  m_fd = std::fopen(path.c_str(), "wb" );
+  if(m_fd == NULL){
+    std::cerr<<"JadeWrite: Failed to open/create file: "<<path<<"\n";
     throw;
+  }
+}
+
+void JadeWrite::Reset(){
+  Close();
+}
+
+void JadeWrite::Close(){
+  if(m_fd){
+    std::fclose(m_fd);
+    m_fd = 0;
+  }
+}
+
+void JadeWrite::Write(JadeDataFrameSP df){
+  if(!df){
+    std::cerr<<"JadeWrite: File is not opened/created before writing\n";
+    throw;
+  }
   std::string &rawstring = df->RawDataString();
   if(rawstring.size()){
     std::fwrite(&(rawstring.at(0)), 1, rawstring.size(), m_fd);
-    std::cout<< "writing:"<< df->RawDataString().size()<<std::endl;
   }
 }

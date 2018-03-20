@@ -1,15 +1,21 @@
 #include  "JadeFilter.hh"
 
-JadeFilter::JadeFilter(const std::string &options)
-  :m_options(options){
+using namespace std::chrono_literals;
+
+JadeFilter::JadeFilter(const JadeOption &opt)
+  :m_opt(opt){
   
 }
 
 JadeFilter::~JadeFilter(){
-
+  
 }
 
-JadeDataFrameUP JadeFilter::Filter(JadeDataFrameUP &&df) const {
-  return std::move(df);
+
+void JadeFilter::Reset(){
+  
 }
 
+JadeDataFrameSP JadeFilter::Filter(JadeDataFrameSP df){
+  return df;
+}

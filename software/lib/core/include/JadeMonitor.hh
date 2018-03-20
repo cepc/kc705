@@ -15,6 +15,8 @@ class DLLEXPORT JadeMonitor{
   JadeOption m_opt;
   size_t m_ev_print;
   size_t m_ev_n;
+  bool m_enable_print_discon;
+  size_t m_last_df_n;
 };
 
 using JadeMonitorSP = std::shared_ptr<JadeMonitor>;

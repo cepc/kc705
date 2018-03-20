@@ -17,7 +17,8 @@
 	"JadeWrite":{
 	    "type":"default",
 	    "parameter":{
-		"PATH":"F:\\data\\output"
+		"PATH":"F:\\data\\output",
+		"DISABLE_FILE_WRITE":false
 	    }
 	},
 	"JadeFilter":{
@@ -29,7 +30,8 @@
 	"JadeMonitor":{
 	    "type":"default",
 	    "parameter":{
-		"PRINT_EVENT_N":40000
+		"PRINT_EVENT_N":40000,
+		"PRINT_EVENT_DISCONTINUOUS":true
 	    }
 	},
 	"JadeRegCtrl":{

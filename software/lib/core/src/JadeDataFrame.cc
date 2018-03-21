@@ -79,10 +79,16 @@ void JadeDataFrame::Decode(){
   m_data.clear();
   m_data.resize(m_n_x*m_n_y, 0);
   const char *p_raw = m_data_raw.data();
-  m_description = m_data_raw.substr(0, 4);
-  m_frame_n = LE16TOH(*reinterpret_cast<const uint16_t*>(p_raw+2));
-  size_t p_offset = 4;
+  size_t p_offset = 0;
+  uint64_t header32 = LE32TOH(*reinterpret_cast<const uint32_t*>
+			      (p_raw+p_offset));
+  if(header32 != 0xaaaaaaaa){
+    std::cerr<<"JadeDataFrame: data frame header is incorrect\n";
+    throw;
+  } 
+  p_offset += 4;
   int16_t *p_data = m_data.data();
+  bool is_first_row = true;
   for(size_t yn=0; yn<m_n_y; yn++){
     //Y head 4 bytes
     p_offset += 4;
@@ -94,7 +100,25 @@ void JadeDataFrame::Decode(){
       p_offset +=2;
     }
     //Y tail 4 bytes
+    if(is_first_row){
+      m_frame_n = LE16TOH(*reinterpret_cast<const uint16_t*>
+			  (p_raw+p_offset));
+      is_first_row = false;
+    }
     p_offset += 4;
+  }
+
+  uint64_t footer32 = LE32TOH(*reinterpret_cast<const uint32_t*>
+			      (p_raw+p_offset));
+  if(footer32 != 0xf0f0f0f0){
+    std::cerr<<"JadeDataFrame: data frame footer is incorrect\n";
+    throw;
+  }
+
+  p_offset += 4;
+  if(p_offset != m_data_raw.size()){
+    std::cerr<<"JadeDataFrame: raw data size is incorrect\n";
+    throw;
   }
   return;
 }

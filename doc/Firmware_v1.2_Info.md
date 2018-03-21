@@ -1,11 +1,12 @@
 # KC705 Firmware Information
 Kintex\-7 FPGA KC705
 
-### Version 1.1.1: Last update ( 02/11/2018 )
+### Version 1.2: Last update ( 03/20/2018 )
 
-**Change from v1.1**  
-Disable row/column selection. (values can be written in the 
-register but no effect)  
+**Change from v1.1.1**  
+All of 16 channels are connected.  
+Several timing constraints are added in XDC file.   
+(it is only for firmware feature and not affected for data taking)  
 
 * Command Line access (using xillybus executable)
 > hexdump.exe \-C \-v \-n 32 \\\\.\\xillybus_mem_8

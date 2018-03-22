@@ -68,21 +68,23 @@ wire stop_pulse;
 wire run_ctrl_wr_en;
 wire [1:0] run_status;
 wire frame_last_word;
+(* mark_debug = "true" *) wire prog_full;
 state_control state_control_ins (
-    .CLK           (  clk100M          ),  
-    .RST           (  rst_command_pre  ),
-    .RST_PULSE     (  rst_pulse_pre    ),
-    .INIT          (  init_command     ),
-    .INIT_PULSE    (  init_pulse       ),
-    .START         (  start_command    ),  
-    .START_PULSE   (  start_pulse      ),
-    .STOP          (  stop_command     ),
-    .STOP_PULSE    (  stop_pulse       ),
-    .FRAME_END     (  frame_last_word  ),
-    .STATE         (  run_status       ),
-    .FIFO_WR_EN    (  run_ctrl_wr_en   ),
-    .RST_SIG       (  rst_command      ),
-    .RST_SIG_PULSE (  rst_pulse        )
+    .CLK            (  clk100M          ),  
+    .RST            (  rst_command_pre  ),
+    .RST_PULSE      (  rst_pulse_pre    ),
+    .INIT           (  init_command     ),
+    .INIT_PULSE     (  init_pulse       ),
+    .START          (  start_command    ),  
+    .START_PULSE    (  start_pulse      ),
+    .STOP           (  stop_command     ),
+    .STOP_PULSE     (  stop_pulse       ),
+    .FRAME_END      (  frame_last_word  ),
+    .FIFO_PROG_FULL (  prog_full        ),
+    .STATE          (  run_status       ),
+    .FIFO_WR_EN     (  run_ctrl_wr_en   ),
+    .RST_SIG        (  rst_command      ),
+    .RST_SIG_PULSE  (  rst_pulse        )
 );
 
 //**********************************************//
@@ -377,7 +379,9 @@ coregen_user_mem8 user_mem8_inst (
 
 // Veto Logic to prevent further writing when reading from the FIFO
 (* mark_debug = "true" *) wire full_async_fifo;
-wire [14:0] rd_data_count;
+//(* mark_debug = "true" *) wire [9:0] rd_data_count;
+//(* mark_debug = "true" *) wire [9:0] wr_data_count;
+(* mark_debug = "true" *) wire [14:0] rd_data_count;
 (* mark_debug = "true" *) wire [14:0] wr_data_count;
 
 (* mark_debug = "true" *) reg [9:0] veto_cnt = 10'h0;
@@ -388,14 +392,14 @@ begin
         fifo_write_veto_r <= 1'b1;
         veto_cnt <= 10'h0;
     end
-    else if ( veto_cnt < 10'd450 )      // original 200 --> 200+50*5=450
+    else if ( veto_cnt < 10'd450 )       // original 200 --> 200+50*5=450
         veto_cnt <= veto_cnt + 1'h1;
-    else if (veto_cnt ==10'd450 ) begin  // original 200 --> 450
-        veto_cnt <= veto_cnt + 1'h1;
+    else if (veto_cnt >=10'd450 ) begin  // original 200 --> 450
+        veto_cnt <= veto_cnt;
         fifo_write_veto_r <= 1'b0;
     end
-    else if ( full_async_fifo == 1 )
-        fifo_write_veto_r <= 1'b1;
+//    else if ( full_async_fifo == 1 )   //  "FIFO BLOCK": once FIFO reaches full, no more data can be written into the FIFO
+//        fifo_write_veto_r <= 1'b1;
 end
 wire fifo_write_veto = fifo_write_veto_r;
 
@@ -490,7 +494,7 @@ recieve_adc_packet rec_adc_packet_ins (
 
 wire almost_full_flag;
 (* mark_debug = "true" *) wire adc_fifo_wren = ( !fifo_write_veto && adcdata_wren && run_ctrl_wr_en );  // For Data Generator
-
+//(* mark_debug = "true" *) wire prog_full;
 coregen_clk_crossing_fifo32 clk_crossing_fifo32_ins (
   .rst           (  rst_command          ),  // input wire rst
   .wr_clk        (  clk100M              ),  // input wire wr_clk
@@ -503,7 +507,8 @@ coregen_clk_crossing_fifo32 clk_crossing_fifo32_ins (
   .almost_full   (  almost_full_flag     ),  // output wire almost_full
   .empty         (  user_r_read_32_empty ),  // output wire empty
   .rd_data_count (  rd_data_count        ),  // output wire [14 : 0] rd_data_count
-  .wr_data_count (  wr_data_count        )   // output wire [14 : 0] wr_data_count
+  .wr_data_count (  wr_data_count        ),  // output wire [14 : 0] wr_data_count
+  .prog_full     (  prog_full            )   // output wire prog_full
 );
      
 //**************************************************************//

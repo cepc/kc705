@@ -377,8 +377,7 @@ data_selector data_selector_inst (
     .DATA14         (  d14_out       ), 
     .DATA15         (  d15_out       ), 
     .DATA16         (  d16_out       ),
-//    .MEM_RD_FLAG    (  flag01        ),
-    .MEM_RD_FLAG    (  flag05        ),    // Change Memory Read Timing Flag to 05 ! 02/07/2018 night
+    .MEM_RD_FLAG    (  flag01        ),
     .MEM_ADDR_OUT   (  mem_addr_read ), 
     .DATA_OUT       (  sel_data_out  ),
     .FRAME_END_FLAG (  frame_end     ),

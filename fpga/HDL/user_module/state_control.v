@@ -9,6 +9,7 @@ module state_control (
     input          STOP,
     input          STOP_PULSE,
     input          FRAME_END,
+    input          FIFO_PROG_FULL,
     output   [1:0] STATE,
     output         FIFO_WR_EN,
     output         RST_SIG,       
@@ -68,13 +69,24 @@ begin
     end
 end
 
-// Additional Veto after "Stop" 
+////////////////////////////////////////////////////////////////////////
+// If "Prog_FULL" "High" status continues more than 50 clocks, 
+// write_enable signals will be OFF, after the end of current frame. 
+//reg [9:0] prog_full_cnt = 10'h0;
 //always @( posedge CLK )
 //begin
-//    if( STOP ) 
-//        fifo_write_veto_r <= 1'b1;
+//    if( FIFO_PROG_FULL == 1'b1 ) begin 
+//        if ( prog_full_cnt > 10'd1000 )     // if count = 1000, stop increment to prevent loop-back.
+//            prog_full_cnt <= prog_full_cnt;
+//        else
+//            prog_full_cnt <= prog_full_cnt + 10'h1;
+//        end
+//    else
+//        prog_full_cnt <= 10'h0;            
 //end
 
+
+////////////////////////////////////////////////////////////////////////
 
 (* mark_debug = "true" *) reg fifo_wr_enable = 1'b0;
 always @( posedge CLK )
@@ -82,7 +94,9 @@ begin
     case ( run_status ) 
         2'b10   :   
         begin
-            if( fifo_write_veto_r == 1'b0 )
+            if ( FIFO_PROG_FULL == 1'b1 )   
+                fifo_wr_enable <= 1'b0;
+            else if ( fifo_write_veto_r == 1'b0 )
                 fifo_wr_enable <= 1'b1;
             else
                 fifo_wr_enable <= 1'b0;

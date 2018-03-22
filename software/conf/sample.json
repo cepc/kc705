@@ -5,7 +5,8 @@
 	    "type":"default",
 	    "parameter":{
 		"SecPerLoop": 10,
-		"N_Loops": 3
+		"N_Loops": 3,
+    "ChipAddress": "CHIPA1"
 	    }
 	},
 	"JadeRead":{
@@ -55,11 +56,47 @@
 			"address":4,
 			"default_val":15
 		    },
-		    "CHIPA":{
+		    "CHIPA1":{
 			"address":8,
 			"default_val":0
+		    },
+		    "CHIPA2":{
+			"address":8,
+			"default_val":1
+		    },
+		    "CHIPA3":{
+			"address":8,
+			"default_val":2
+		    },
+		    "CHIPA4":{
+			"address":8,
+			"default_val":3
+		    },
+		    "CHIPA5":{
+			"address":8,
+			"default_val":4
+		    },
+		    "CHIPA6":{
+			"address":8,
+			"default_val":5
+		    },
+		    "CHIPA7":{
+			"address":8,
+			"default_val":6
+		    },
+		    "CHIPA8":{
+			"address":8,
+			"default_val":7
+		    },
+		    "CHIPA9":{
+			"address":8,
+			"default_val":8
+		    },
+		    "CHIPA10":{
+			"address":8,
+			"default_val":9
 		    }
-		},
+    },
 		"status_list":{
 		    "FIFO_MODE":{
 			"address":16,

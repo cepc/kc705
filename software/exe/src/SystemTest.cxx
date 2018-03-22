@@ -78,21 +78,25 @@ int main(int argc, char **argv){
   JadeWriteSP pwrt = std::make_shared<JadeWrite>(conf_wrt_para);
   JadeMonitorSP pmnt = std::make_shared<JadeMonitor>(conf_mnt_para);
 
-  size_t nloop = conf_man_para.GetIntValue("SecPerLoop");
-  size_t nsec = conf_man_para.GetIntValue("N_Loops");
-  
+  size_t nsec = conf_man_para.GetIntValue("SecPerLoop");
+  size_t nloop = conf_man_para.GetIntValue("N_Loops");
+  std::string chip_address = conf_man_para.GetStringValue("ChipAddress"); 
+
   pman.SetRegCtrl(pctrl);
   pman.SetReader(pread);
   pman.SetFilter(pflt);
   pman.SetWriter(pwrt);
   pman.SetMonitor(pmnt);
   pman.DeviceConnect();  
+  pman.DeviceControl(chip_address);
+  pman.DeviceControl("SET");
+  std::cout << "Select address: " << chip_address << std::endl;
+  pman.DeviceDisconnect();
+
   for(size_t i=0; i< nloop; i++){
-    if(pman.DeviceStatus("FIFO_MODE")=="FULL"){
-      pman.DeviceControl("RESET");
-      std::cout<<"=========reset at "<<get_now_str()<<"======="<< std::endl;
-      std::this_thread::sleep_for(1s);
-    }
+    pman.DeviceConnect();  
+    pman.DeviceControl("STOP");
+    std::this_thread::sleep_for(1s);
     std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl;
     pman.DeviceControl("START");
     std::cout<<"========="<<std::endl;
@@ -105,8 +109,8 @@ int main(int argc, char **argv){
     pman.DeviceControl("STOP");
     std::this_thread::sleep_for(1s);
     std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl;
+    pman.DeviceDisconnect();
   }
-  pman.DeviceDisconnect();
   return 0;
 
 }

@@ -20,6 +20,8 @@ std::string GUIManager::get_now_str(){
 void GUIManager::start_run(){
   std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl; 
   m_man->DeviceConnect();
+  m_man->DeviceControl("STOP");
+  std::this_thread::sleep_for(1s);
   m_man->StartDataTaking(); 
   emit IsRunning();
 }
@@ -27,8 +29,9 @@ void GUIManager::start_run(){
 void GUIManager::stop_run(){
   emit IsStop();
   m_man->StopDataTaking();
+  m_man->DeviceControl("STOP");
+  std::this_thread::sleep_for(1s);
   m_man->DeviceDisconnect();
-  m_man->Reset();
   std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl; 
 }
 
@@ -59,9 +62,11 @@ void GUIManager::config(){
   m_man->SetMonitor(std::dynamic_pointer_cast<JadeMonitor>(m_monitor));
 
   std::string cmd = "CHIPA" + std::to_string(m_opt_chip_address);
+  m_man->DeviceConnect();
   m_man->DeviceControl(cmd);
   m_man->DeviceControl("SET");
   std::this_thread::sleep_for(200ms);
+  m_man->DeviceDisconnect();
 }
 
 std::shared_ptr<GUIMonitor>GUIManager::get_monitor(){

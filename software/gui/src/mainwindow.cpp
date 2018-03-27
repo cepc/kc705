@@ -196,7 +196,10 @@ void MainWindow::Draw_Online_Image()
 
  
   m_histADCGraph = new QCPGraph(m_histADCAxisRect->axis(QCPAxis::atBottom), m_histADCAxisRect->axis(QCPAxis::atLeft)); 
- 
+  //m_histADCGraph->setLineStyle(QCPGraph::lsStepCenter);
+  m_histADCGraph->setLineStyle(QCPGraph::lsImpulse);
+  m_histADCGraph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 5));
+
   //m_pedestalGraph = new QCPGraph(m_pedestalAxisRect->axis(QCPAxis::atBottom), m_pedestalAxisRect->axis(QCPAxis::atLeft)); 
 
   //m_noiseGraph = new QCPGraph(m_noiseAxisRect->axis(QCPAxis::atBottom), m_noiseAxisRect->axis(QCPAxis::atLeft)); 
@@ -215,7 +218,7 @@ void MainWindow::Update_Online_Image()
     m_adcMap->setColorScale(m_adcScale); 
 
     m_histADCGraph->data()->clear();
-    m_histADCGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(m_col,m_row));
+    m_histADCGraph->data()->add(m_GUIManager->get_monitor()->GetHistADC(m_col,m_row));
 
     //m_pedestalGraph->data()->clear();
     //m_pedestalGraph->data()->add(m_GUIManager->get_monitor()->GetPedestal(m_col,m_row));

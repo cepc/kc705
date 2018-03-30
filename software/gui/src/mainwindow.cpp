@@ -7,6 +7,7 @@
 #include <QString>
 #include <QDebug>
 #include <QTime>
+#include <QIcon>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -18,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
   m_state("STOPPED")
 {
   ui->setupUi(this);
+  this->setWindowIcon(QIcon("../software/gui/form/iheplogo.gif"));
 
   m_GUIManager = new GUIManager();
   
@@ -158,6 +160,7 @@ void MainWindow::Init_Online_Image()
   m_histADCAxisRect = new QCPAxisRect(ui->customPlot);
   m_histADCAxisRect->setupFullAxesBox(true);
   m_histADCAxisRect->axis(QCPAxis::atBottom)->setLabel("ADC");
+  m_histADCAxisRect->axis(QCPAxis::atLeft)->setLabel("Count");
 
   //m_pedestalAxisRect = new QCPAxisRect(ui->customPlot);
   //m_pedestalAxisRect->setupFullAxesBox(true);

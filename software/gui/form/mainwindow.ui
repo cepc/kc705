@@ -11,11 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>JadePixel</string>
-  </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>iheplogo.gif</normaloff>iheplogo.gif</iconset>
+   <string>JadePix</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -43,7 +39,7 @@
             <item row="7" column="1">
              <widget class="QLineEdit" name="LineEdit_Online_RegName">
               <property name="text">
-               <string>/tmp/test_reg</string>
+               <string>//./xillybus_mem_8</string>
               </property>
              </widget>
             </item>
@@ -92,7 +88,7 @@
             <item row="5" column="1">
              <widget class="QLineEdit" name="LineEdit_Online_InName">
               <property name="text">
-               <string>/tmp/test_pipe</string>
+               <string>//./xillybus_read_32</string>
               </property>
              </widget>
             </item>

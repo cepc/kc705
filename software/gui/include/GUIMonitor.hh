@@ -20,6 +20,7 @@ class GUIMonitor : public JadeMonitor
     QVector<QCPGraphData> GetPedestal(int col, int row);
     QVector<QCPGraphData> GetNoise(int col, int row);
     QVector<QCPGraphData> GetHistADC(int col, int row);
+    size_t GetCount(int col, int row);
     void Reset();
     void GetHistogram(const std::vector<double>& xVec, std::map<double, size_t>& hMap);
     void GetHistogram(const std::vector<int16_t>& xVec, std::map<int16_t, size_t>& hMap);

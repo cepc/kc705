@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
   m_row = ui->SpinBox_Online_Row->value();
 
   Init_Online_Image();
-  Update_Online_Image();
+  Update_Online_Opt();
 
   m_timer = new QTimer(0);
   m_timer->setInterval(int(1e6/ui->SpinBox_Online_evDisplay->value()));
@@ -263,7 +263,8 @@ void MainWindow::Clear_Online_Image()
 
 void MainWindow::Update_Online_Opt()
 {
-  QString countStr = m_GUIManager->get_monitor()->GetCount(m_col,m_row);
+  auto count = std::to_string(m_GUIManager->get_monitor()->GetCount(m_col,m_row));
+  QString countStr = QString::fromStdString(count);
   ui->Label_Online_FrameNumber->setText(countStr);
 
   QString stateStr = QString::fromStdString(m_state);

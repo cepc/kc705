@@ -182,7 +182,8 @@ void GUIMonitor::GetHistogram(const std::vector<int16_t>& xVec, std::map<int16_t
 
 size_t GUIMonitor::GetCount(int col, int row){
   std::cout << "Get Count..."<<std::endl;
-  auto count = m_ev_num;
+  size_t count = m_ev_num;
+  //std::cout << count << std::endl;
 
   return count;
 }

@@ -41,12 +41,10 @@ MainWindow::MainWindow(QWidget *parent) :
   m_row = ui->SpinBox_Online_Row->value();
 
   Init_Online_Image();
-  Update_Online_Opt();
 
   m_timer = new QTimer(0);
   m_timer->setInterval(int(1e6/ui->SpinBox_Online_evDisplay->value()));
   connect(m_timer, SIGNAL(timeout()), this, SLOT(Update_Online_Image()));
-  connect(m_timer, SIGNAL(timeout()), this, SLOT(Update_Online_Opt()));
   connect(m_GUIManager, SIGNAL(IsRunning()), m_timer, SLOT(start()));
   connect(m_GUIManager, SIGNAL(IsStop()), m_timer, SLOT(stop()));
 
@@ -167,11 +165,6 @@ void MainWindow::Init_Online_Image()
   m_histADCAxisRect->axis(QCPAxis::atBottom)->setLabel("ADC");
   m_histADCAxisRect->axis(QCPAxis::atLeft)->setLabel("Count");
 
-  m_countAxisRect = new QCPAxisRect(ui->customPlot);
-  m_countAxisRect->setupFullAxesBox(true);
-  m_countAxisRect->axis(QCPAxis::atBottom)->setLabel("Time");
-  m_countAxisRect->axis(QCPAxis::atLeft)->setLabel("Count");
-
 
   //m_pedestalAxisRect = new QCPAxisRect(ui->customPlot);
   //m_pedestalAxisRect->setupFullAxesBox(true);
@@ -185,7 +178,6 @@ void MainWindow::Init_Online_Image()
   m_LayoutTop->addElement(0,1,m_adcScale);   
 
   m_LayoutBottom->addElement(0,0,m_histADCAxisRect);
-  m_LayoutBottom->addElement(0,1,m_countAxisRect);
   //m_LayoutBottom->addElement(0,0,m_pedestalAxisRect);
   //m_LayoutBottom->addElement(0,1,m_noiseAxisRect);
 
@@ -194,7 +186,6 @@ void MainWindow::Init_Online_Image()
   m_adcScale->setMarginGroup(QCP::msBottom | QCP::msTop, m_marginGroup); 
   
   m_histADCAxisRect->setMarginGroup(QCP::msLeft, m_marginGroup); 
-  m_countAxisRect->setMarginGroup(QCP::msRight, m_marginGroup);
   //m_pedestalAxisRect->setMarginGroup(QCP::msLeft, m_marginGroup); 
   //m_noiseAxisRect->setMarginGroup(QCP::msRight, m_marginGroup); 
 
@@ -215,9 +206,6 @@ void MainWindow::Draw_Online_Image()
   //m_histADCGraph->setLineStyle(QCPGraph::lsStepCenter);
   m_histADCGraph->setLineStyle(QCPGraph::lsImpulse);
   m_histADCGraph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 5));
-
-  m_countGraph = new QCPGraph(m_countAxisRect->axis(QCPAxis::atBottom), m_countAxisRect->axis(QCPAxis::atLeft)); 
-  m_countGraph->setLineStyle(QCPGraph::lsLine);
 
   //m_pedestalGraph = new QCPGraph(m_pedestalAxisRect->axis(QCPAxis::atBottom), m_pedestalAxisRect->axis(QCPAxis::atLeft)); 
   //m_noiseGraph = new QCPGraph(m_noiseAxisRect->axis(QCPAxis::atBottom), m_noiseAxisRect->axis(QCPAxis::atLeft)); 
@@ -259,15 +247,4 @@ void MainWindow::Clear_Online_Image()
 
   connect(m_GUIManager, SIGNAL(IsRunning()), m_timer, SLOT(start()));
   connect(m_GUIManager, SIGNAL(IsStop()), m_timer, SLOT(stop()));
-}
-
-void MainWindow::Update_Online_Opt()
-{
-  auto count = std::to_string(m_GUIManager->get_monitor()->GetCount(m_col,m_row));
-  QString countStr = QString::fromStdString(count);
-  ui->Label_Online_FrameNumber->setText(countStr);
-
-  QString stateStr = QString::fromStdString(m_state);
-  ui->Label_Online_State->setText(stateStr);
-
 }

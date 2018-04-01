@@ -32,7 +32,6 @@ class MainWindow : public QMainWindow
 
       void Update_Online_Image();
       void Draw_Online_Image();
-      void Update_Online_Opt();
 
   private:
     Ui::MainWindow *ui;
@@ -57,7 +56,6 @@ class MainWindow : public QMainWindow
     //QCPAxisRect* m_pedestalAxisRect;
     //QCPAxisRect* m_noiseAxisRect;
     QCPAxisRect* m_histADCAxisRect;
-    QCPAxisRect* m_countAxisRect;
    
     QCPMarginGroup* m_marginGroup; 
     
@@ -67,7 +65,6 @@ class MainWindow : public QMainWindow
     //QCPGraph* m_pedestalGraph;
     //QCPGraph* m_noiseGraph;
     QCPGraph* m_histADCGraph;
-    QCPGraph* m_countGraph;
 
     QTimer* m_timer;
     QTimer* m_timer_run;

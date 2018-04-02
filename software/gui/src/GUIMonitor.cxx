@@ -18,6 +18,7 @@ GUIMonitor::GUIMonitor(const JadeOption& options):
   m_curr_time = m_opt.GetStringValue("CURRENT_TIME");
   m_col = m_opt.GetIntValue("COLUMN");
   m_row = m_opt.GetIntValue("ROW");
+  m_thr = m_opt.GetIntValue("ADC_THREASHOLD");
 
   m_last_frame_adc.resize(m_nx*m_ny,0);
   m_sum_frame_adc.resize(m_nx*m_ny,0);

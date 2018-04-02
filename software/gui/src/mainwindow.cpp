@@ -6,7 +6,11 @@
 #include <QDir>
 #include <QString>
 #include <QDebug>
+
+
+
 #include <QTime>
+#include <QIcon>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -18,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
   m_state("STOPPED")
 {
   ui->setupUi(this);
+  this->setWindowIcon(QIcon("../software/gui/form/iheplogo.gif"));
 
   m_GUIManager = new GUIManager();
   
@@ -101,6 +106,7 @@ void MainWindow::Btn_Online_Config_Clicked()
   m_GUIManager->set_chip_address(ui->SpinBox_Online_ChipAddress->value());
   m_GUIManager->set_nfiles(ui->SpinBox_Online_NFiles->value());
   m_GUIManager->set_channel(ui->SpinBox_Online_Col->value(), ui->SpinBox_Online_Row->value()); 
+  m_GUIManager->set_adc_threshold(ui->SpinBox_Online_ADCThreshold->value());
 
   m_GUIManager->config();
 }
@@ -158,6 +164,8 @@ void MainWindow::Init_Online_Image()
   m_histADCAxisRect = new QCPAxisRect(ui->customPlot);
   m_histADCAxisRect->setupFullAxesBox(true);
   m_histADCAxisRect->axis(QCPAxis::atBottom)->setLabel("ADC");
+  m_histADCAxisRect->axis(QCPAxis::atLeft)->setLabel("Count");
+
 
   //m_pedestalAxisRect = new QCPAxisRect(ui->customPlot);
   //m_pedestalAxisRect->setupFullAxesBox(true);
@@ -201,7 +209,6 @@ void MainWindow::Draw_Online_Image()
   m_histADCGraph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 5));
 
   //m_pedestalGraph = new QCPGraph(m_pedestalAxisRect->axis(QCPAxis::atBottom), m_pedestalAxisRect->axis(QCPAxis::atLeft)); 
-
   //m_noiseGraph = new QCPGraph(m_noiseAxisRect->axis(QCPAxis::atBottom), m_noiseAxisRect->axis(QCPAxis::atLeft)); 
 
   ui->customPlot->rescaleAxes();
@@ -213,7 +220,10 @@ void MainWindow::Update_Online_Image()
 {
   if(m_state == "RUNNING") {
     
-    m_adcMap->setData(m_GUIManager->get_monitor()->GetADCMap());
+    //m_adcMap->setData(m_GUIManager->get_monitor()->GetADCMap());
+    m_adcMap->setData(m_GUIManager->get_monitor()->GetCountMap());//count model
+    qDebug() << "ADC Count Model... ";
+
     m_adcMap->rescaleDataRange();
     m_adcMap->setColorScale(m_adcScale); 
 

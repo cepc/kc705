@@ -58,7 +58,7 @@ void GUIManager::config(){
   m_man->SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\""+m_opt_data_input+"\"}")));
   m_man->SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
   m_man->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+data_output_path+"\"}")));
-  m_monitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+m_opt_ev_print+",\"CURRENT_TIME\":\""+time_str+"\",\"COLUMN\":"+std::to_string(m_col)+",\"ROW\":"+std::to_string(m_row)+"}"));
+  m_monitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+m_opt_ev_print+",\"CURRENT_TIME\":\""+time_str+"\",\"COLUMN\":"+std::to_string(m_col)+",\"ROW\":"+std::to_string(m_row)+",\"ADC_THREASHOLD\":"+std::to_string(m_thr)+"}"));
   m_man->SetMonitor(std::dynamic_pointer_cast<JadeMonitor>(m_monitor));
 
   std::string cmd = "CHIPA" + std::to_string(m_opt_chip_address);

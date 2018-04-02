@@ -17,6 +17,7 @@ class GUIMonitor : public JadeMonitor
     GUIMonitor(const JadeOption& options);
     void Monitor(JadeDataFrameSP df);
     QCPColorMapData* GetADCMap();
+    QCPColorMapData* GetCountMap();//add count map
     QVector<QCPGraphData> GetPedestal(int col, int row);
     QVector<QCPGraphData> GetNoise(int col, int row);
     QVector<QCPGraphData> GetHistADC(int col, int row);
@@ -30,6 +31,7 @@ class GUIMonitor : public JadeMonitor
     size_t m_ev_num;
     int m_col; 
     int m_row; 
+    int m_thr;//*
     std::string m_curr_time;
     JadeDataFrameSP m_df; 
     JadeDataFrameSP m_u_df; 
@@ -39,6 +41,7 @@ class GUIMonitor : public JadeMonitor
     uint32_t m_ny;
     
     QCPColorMapData* m_adc_map;
+    QCPColorMapData* m_count_map;
     QVector<QCPGraphData> m_pedestal;
     QVector<QCPGraphData> m_noise;
     QVector<QCPGraphData> m_hist_cds_adc;
@@ -46,11 +49,13 @@ class GUIMonitor : public JadeMonitor
     std::vector<int16_t> m_cds_frame_adc;
     std::vector<int16_t> m_last_frame_adc;
     std::vector<int16_t> m_sum_frame_adc;
+    std::vector<int16_t> m_count_frame_adc;//add count map
     std::vector<double> m_mean_frame_adc;
     std::vector<double> m_rms_frame_adc;
     std::vector<double> m_mean;
     std::vector<double> m_rms;
     std::vector<int16_t> m_cds_adc;
+
 
     struct adcFrame {
       std::vector<int16_t> cds_frame_adc;

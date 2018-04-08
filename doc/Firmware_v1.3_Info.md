@@ -57,7 +57,7 @@ re-arrangement of data sample (CNV clock) timing adjustment.
 * Row/Column selector : The defalt value ( row_start=0, row_end=0, col_start=0, col_end=0 ) is taken as row_start=0, row_end=47, col_start=0, col_end=15 to prevent the situation of issuing SET command without any input number for row/column.   
 
 * Run status : 0 (INITIAL), 1 (IDLE), 2 (STARTUP), 3 (WAIT), 4 (BUSY)  
- -- There is no trigger in this version,  and BUSY status is only prepared for future application. 
+ -- There is no trigger in this version,  and BUSY status is only prepared for future application.   
  -- INITIAL or IDLE status represents the system is in condition to have stopped. ( or not started yet )   
  -- STARTUP is the status just after START command and this status is issuing veto on filling FIFO for 4000 clocks (100MHz) to cover the timing of RESET etc. accompanied with START. However, 4000 clocks with 100Mhz is really short, and is difficult to observe this status.  
 -- The meaning of Wait is the status for waiting next trigger. Since there is no trigger yet, the running (filling into FIFO normally) status is this WAIT status.   
@@ -66,6 +66,7 @@ re-arrangement of data sample (CNV clock) timing adjustment.
 -- FIFO_empty : fifo is empty. Note that this signal synchronizes with FIFO write side, and for example, not empty state, can be possibly marked as FIF_empty with the situation of a few word left in the FIFO.   
 -- FIFO_programmable_full : the number of words in the FIFO reaches a threshold. When it is asserted, further writing to the FIFO is stopped.   
 -- FIFO_full : Since the FIFO_programmable_full prevents the FIFO to be completely full, it can be asserted only when the timing of FIFO clear(reset).   
+
 
 \[  **Data Format**  \]
 

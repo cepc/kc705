@@ -13,7 +13,7 @@ FIFO becomes less than another threshold by reading from PC side.
 2. Only complete frame can be written into the FIFO. The above function 
 guarantees this functionality.  
 
-3. Change the logic to handle the SR_OUT signal, so that the system works, when the ÅgSR_OUTÅhis  always HIGH. (It happens running the firmware 
+3. Change the logic to handle the SR_OUT signal, so that the system works, when the SR_OUT is  always HIGH. (It happens running the firmware 
 without the sensor, but does not it the sensor is really connected. ) 
 
 4. Modify running status part, and add run status/fifo status into the 
@@ -43,10 +43,10 @@ re-arrangement of data sample (CNV clock) timing adjustment.
 | 4       |  15   | Write only |  Stop       |
 | 5       |       | | (reserved)  |
 | 6       |       | | (reserved)  |
-| 7       |       | Read only| RUN Sstatus (see the table for return value) |
-| 8      |       | Read/Write|  Sensor Chip address (default = 0 is set in the firmware) |
+| 7       |       | Read only| RUN status  |
+| 8      |       | Read/Write|  Sensor sector address (default = 0 is set in the firmware) |
 | 9       |       | | (reserved) |
-| 10      |       | Read/Write | Row Start. When ÅgsetÅh command is issued, the value is set. (default = 0)  |
+| 10      |       | Read/Write | Row Start. When SET command is issued, the value is set. (default = 0)  |
 | 11      |       | Read/Write  |  Row End   (default = 47) |
 | 12      |       | Read/Write  |  Column Start  (default = 0) |
 | 13      |       | Read/Write  |  Column End    (default = 15) |
@@ -54,14 +54,14 @@ re-arrangement of data sample (CNV clock) timing adjustment.
 | 15      |       | | (reserved) |
 | 16      |       | Read only | FIFO status |
 
-* Row/Column selector : The defalt value ( row_start=0, row_end=0, col_start=0, col_end=0 ) is taken as row_start=0, row_end=47, col_start=0, col_end=15 to prevent the situation of issuing ÅgsetÅh without any setting for row/column.   
+* Row/Column selector : The defalt value ( row_start=0, row_end=0, col_start=0, col_end=0 ) is taken as row_start=0, row_end=47, col_start=0, col_end=15 to prevent the situation of issuing SET command without any input number for row/column.   
 
 * Run status : 0 (INITIAL), 1 (IDLE), 2 (STARTUP), 3 (WAIT), 4 (BUSY)  
- -- There is no trigger in this version,  and ÅgBUSYÅh status is just prepared.  
- -- ÅgSTARTUPÅh is the status just afterÅgstartÅh command and issuing veto on filling FIFO for 4000 clocks (100MHz) to cover the timing of ÅgresetÅh etc accompanied with ÅgstartÅh. However, 4000 clocks with 100Mhz is really short, and is difficult to observe this status.  
+ -- There is no trigger in this version,  and BUSY status is just prepared.  
+ -- STARTUP is the status just after START command and issuing veto on filling FIFO for 4000 clocks (100MHz) to cover the timing of RESET etc. accompanied with START. However, 4000 clocks with 100Mhz is really short, and is difficult to observe this status.  
 
 * FIFO stats : D[2:0] (3bit). [ FIFO_full,FIFO_programmable_Full,FIFO_empty ]  
--- FIFO_empty : fifo is empty. Note that this signal synchronizes with FIFO write side,  Ågnot emptyÅh state can be possible ÅgemptyÅh with the situation of a few word left in the FIFO.   
+-- FIFO_empty : fifo is empty. Note that this signal synchronizes with FIFO write side, and for example, not empty state, can be possibly marked as FIF_empty with the situation of a few word left in the FIFO.   
 -- FIFO_programmable_full : the number of words in the FIFO reaches a threshold. When it is asserted, further writing to the FIFO is stopped.   
 -- FIFO_full : Since the FIFO_programmable_full prevents the FIFO to be completely full, it can be asserted only when the timing of FIFO clear(reset).   
 

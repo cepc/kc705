@@ -67,7 +67,6 @@ re-arrangement of data sample (CNV clock) timing adjustment.
 -- FIFO_programmable_full : the number of words in the FIFO reaches a threshold. When it is asserted, further writing to the FIFO is stopped.   
 -- FIFO_full : Since the FIFO_programmable_full prevents the FIFO to be completely full, it can be asserted only when the timing of FIFO clear(reset).   
 
-
 \[  **Data Format**  \]
 
 | Name  | Description (Value) |

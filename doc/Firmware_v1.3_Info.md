@@ -51,7 +51,7 @@ re-arrangement of data sample (CNV clock) timing adjustment.
 | 12      |       | Read/Write  |  Column Start  (default = 0) |
 | 13      |       | Read/Write  |  Column End    (default = 15) |
 | 14      |       | | (reserved) |
-| 15      |       | | (reserved) |
+| 15    |       | Read/Write | Data sampling timing delay (default = 0) |
 | 16      |       | Read only | FIFO status |
 
 * Row/Column selector : The defalt value ( row_start=0, row_end=0, col_start=0, col_end=0 ) is taken as row_start=0, row_end=47, col_start=0, col_end=15 to prevent the situation of issuing SET command without any input number for row/column.   

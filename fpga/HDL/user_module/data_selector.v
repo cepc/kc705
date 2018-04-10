@@ -19,7 +19,7 @@ module data_selector (
 );
 
 
-// Using Memory Write Timing ( Access timing must be set a few clock later )
+// Using Memory Write Timing ( it must a few clock later )
 reg flag_already_start=1'b0;
 reg mem_write_finish_pulse=1'b0;
 always @( posedge CLK )
@@ -51,15 +51,39 @@ begin
             sr_out_rst <= 1'b0;
 end
         
+        
+// Without implement "State Machine", memory access should need to wait the finish timing of writing memories.
+// Timing of the Memory Access is shifted as Writing clock = Time(4 MHz*4 clock) = Time(100 MHz*100 clock).    
+// Inserting extra reset signal  when "Reset" is issueed. 
+//reg [7:0] rst_cnt = 8'h0;
+//reg rst = 1'b0;
+//always @( posedge CLK )
+//begin
+//    if ( RST ) begin
+//        rst <= 1'b1;
+//        rst_cnt <= 8'h0;
+//    end
+//    else if ( rst_cnt < 8'd100 ) begin
+//        rst <= 1'b1;
+//        rst_cnt <= rst_cnt + 8'h1;
+//    end
+//    else
+//        rst <= 1'b0;
+//end 
+
+// 4MHz 1 clock = 100MHz 25 clocks
+// 2MHz 1 clock = 100MHz 50 clocks
+//reg [4:0] ch_cnt  = 5'h0;
 
 always @( posedge CLK )
 begin
     if ( RST )
         ch_cnt <= 6'h0;
+    //else if ( rst == 1'b1 )   // Stop couting while internal reset is High .
     else if (sr_out_rst == 1'b1 )   
         ch_cnt <= 6'h0;
-    //else if ( ch_cnt == 5'd24 ) begin    // 100MHz 1clock == 4MHz 25 clock
-    else if ( ch_cnt == 6'd49 ) begin      // 100MHz 1clock == 2MHz 50 clock
+    //else if ( ch_cnt == 5'd24 ) begin
+    else if ( ch_cnt == 6'd49 ) begin
         ch_cnt <= 6'h0;
     end
     else
@@ -72,6 +96,7 @@ always @( posedge CLK )
 begin
     if ( RST )
         ad_cnt <= 6'h0;
+    //else if ( rst == 1'b1 )   // Stop couting while internal reset is High .
     else if ( sr_out_rst == 1'b1 )   
         ad_cnt <= 6'h0; 
     else if ( ch_cnt == 6'd49 ) begin
@@ -114,6 +139,7 @@ begin
     if ( RST ) begin
         event_number <= 16'h0;
     end
+//    else if ( ch_id == 6'h0 && ad_id == 6'h0 )
     else if ( sr_out_rst == 1'b1 )
         event_number <= event_number + 16'h1;
 end
@@ -168,13 +194,13 @@ end
 
 
 // For Row/Column Selectable
-(* mark_debug = "true" *) wire [3:0] col_sta_pre = ( (COL_START & 4'b1110) >> 1 ) + 4'd3;
-(* mark_debug = "true" *) wire [3:0] col_end_pre = ( (COL_END & 4'b1110) >> 1 ) + 4'd3;
+(* mark_debug = "true" *) wire [3:0] col_sta_pre = ( (COL_START & 4'b1110) >> 1 ) + 4'd5;
+(* mark_debug = "true" *) wire [3:0] col_end_pre = ( (COL_END & 4'b1110) >> 1 ) + 4'd5;
 
 (* mark_debug = "true" *) reg [3:0] col_sta_raw = 4'd0;
 (* mark_debug = "true" *) reg [3:0] col_end_raw = 4'd15;
-(* mark_debug = "true" *) reg [5:0] col_sta = 6'd3;
-(* mark_debug = "true" *) reg [5:0] col_end = 6'd10;
+(* mark_debug = "true" *) reg [5:0] col_sta = 6'd5;
+(* mark_debug = "true" *) reg [5:0] col_end = 6'd12;
 (* mark_debug = "true" *) reg [5:0] row_sta = 6'd0;
 (* mark_debug = "true" *) reg [5:0] row_end = 6'd47;
 
@@ -219,18 +245,22 @@ reg [31:0] data32 = 32'h0;
 always @( posedge CLK )
 begin
     case ( ch_id )
-        6'd1  : data32_pre <= event_header;                // multiplexer1
-        6'd2  : data32_pre <= { d_header, col_sta_raw, col_end_raw, 2'h0, ad_id };
-        6'd3  : data32_pre <= { d1_d02, d1_d01 };          // multiplexer2     
-        6'd4  : data32_pre <= { d1_d04, d1_d03 };                              
-        6'd5  : data32_pre <= { d2_d06, d2_d05 };          // multiplexer3     
-        6'd6  : data32_pre <= { d2_d08, d2_d07 };                              
-        6'd7  : data32_pre <= { d3_d10, d3_d09 };          // multiplexer4
-        6'd8  : data32_pre <= { d3_d12, d3_d11 };
-        6'd9  : data32_pre <= { d4_d14, d4_d13 };          // multiplexer5
-        6'd10 : data32_pre <= { d4_d16, d4_d15 };                              
-        6'd11 : data32_pre <= { d5_d_footer[15:12], row_sta, row_end, event_number};  // multiplexer6
-        6'd12 : data32_pre <= d5_event_footer;
+        6'd1  : data32_pre <= 32'd1936;        //hard code: frame length in bytes
+        6'd2  : data32_pre <= event_header;                // multiplexer1
+        6'd3  : data32_pre <= 32'h0;           //empty word saved for trigger count and sequence order
+        6'd4  : data32_pre <= { d_header, col_sta_raw, col_end_raw, 2'h0, ad_id };
+//        6'd2  : data32_pre <= { d_header, event_number };
+        6'd5  : data32_pre <= { d1_d02, d1_d01 };          // multiplexer2     // 0 <-> 3  : 0/2 + 3
+        6'd6  : data32_pre <= { d1_d04, d1_d03 };                              // 2 <-> 4  : 2/2 + 3
+        6'd7  : data32_pre <= { d2_d06, d2_d05 };          // multiplexer3     // 4 <-> 5  : 4/2 + 3
+        6'd8  : data32_pre <= { d2_d08, d2_d07 };                              // 6 <-> 6  : 6/2 + 3
+        6'd9  : data32_pre <= { d3_d10, d3_d09 };          // multiplexer4
+        6'd10 : data32_pre <= { d3_d12, d3_d11 };
+        6'd11 : data32_pre <= { d4_d14, d4_d13 };          // multiplexer5
+        6'd12 : data32_pre <= { d4_d16, d4_d15 };                              // 14<->10 : 14/2 + 3
+        6'd13 : data32_pre <= { d5_d_footer[15:12], row_sta, row_end, event_number};  // multiplexer6
+//        6'd11 : data32_pre <= { d5_d_footer, 10'h0, ad_id };  // multiplexer6
+        6'd14 : data32_pre <= d5_event_footer;
         default : data32_pre <= 32'h0;
     endcase
     
@@ -249,29 +279,29 @@ reg frame_end = 1'b0;
 always @( posedge CLK )
 begin
     if ( ad_id == row_sta ) begin
-        if ( ch_id == 6'd1 ) begin  // First word in this frame ( == Event Header )
+        if ( ch_id >= 6'd1 && ch_id<=6'd3 ) begin
             wr_en_pre <= 1'b1;
-            frame_end_pre <= 1'b0;  
+            frame_end_pre <= 1'b0;  // First word in this frame ( == Event Header )
         end
-        else if ( ch_id == 6'd2 || ( ch_id >= col_sta && ch_id <= col_end ) || ch_id == 6'd11 )
+        else if ( ch_id == 6'd4 || ( ch_id >= col_sta && ch_id <= col_end ) || ch_id == 6'd13 )
             wr_en_pre <= 1'b1;
         else 
             wr_en_pre <= 1'b0;
     end
     else if ( ad_id == row_end ) begin
-        if ( ch_id == 6'd2 || ( ch_id >= col_sta && ch_id <= col_end ) || ch_id == 6'd11 ) begin
+        if ( ch_id == 6'd4 || ( ch_id >= col_sta && ch_id <= col_end ) || ch_id == 6'd13 ) begin
             wr_en_pre <= 1'b1;
             frame_end_pre <= 1'b0;
         end
-        else if ( ch_id == 6'd12 ) begin  // Last word in this frame (== Event Footer)
+        else if ( ch_id == 6'd14 ) begin
             wr_en_pre <= 1'b1;
-            frame_end_pre <= 1'b1;    
+            frame_end_pre <= 1'b1;    // Last word in this frame (== Event Footer)
         end
         else
             wr_en_pre <= 1'b0;
     end
     else if ( ad_id > row_sta && ad_id < row_end ) begin
-        if ( ch_id == 6'd2 || ( ch_id >= col_sta && ch_id <= col_end ) || ch_id == 6'd11 )
+        if ( ch_id == 6'd4 || ( ch_id >= col_sta && ch_id <= col_end ) || ch_id == 6'd13 )
             wr_en_pre <= 1'b1;
         else
             wr_en_pre <= 1'b0;    
@@ -284,7 +314,20 @@ begin
 end
 
 // Event Type Check 
-wire sr_out_tag = ( d_header[11:10] == 2'b10 );   // Acutually, dummy SR_OUT is input to header, therefore, always 2'b10
+//reg sr_out_tag = 1'b0;
+//reg [1:0] test_sr_out_tag = 2'b00;
+//always @( posedge CLK )
+//begin
+//    test_sr_out_tag <= d_header[11:10];
+//    if ( d_header[11:10] == 2'b00 ) 
+//        sr_out_tag <= 1'b0;
+//    if ( d_header[11:10] == 2'b10 ) 
+//        sr_out_tag <= 1'b1;
+//end
+
+wire sr_out_tag = ( d_header[11:10] == 2'b10 );
+
+//wire wr_test = wr_en & sr_out_tag ;
 
 //assign FIFO_WR_EN = wr_en;
 assign FIFO_WR_EN = wr_en & sr_out_tag;

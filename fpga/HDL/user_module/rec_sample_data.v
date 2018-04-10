@@ -35,6 +35,33 @@ begin
     dff_srout_clk <= srout_clk;
 end
 
+
+// Clock Crossing by Using FIFO
+//wire [17:0] din, dout;
+//wire wr_en_High = 1'b1;
+//wire rd_en_High = 1'b1;
+//wire full, empty;
+//wire cnvclk_inv = ~CNVCLK;
+//assign din  = {1'b1, dffdff_srout_cnvclk, dff_data_cnvclk};
+// 
+//coregen_clk2M_crossing_fifo  clk2M_crossing_fifo (
+//        .wr_clk  (  cnvclk_inv ),    // input wire wr_clk
+//        .wr_clk  (  CNVCLK     ),    // input wire wr_clk
+//        .rd_clk  (  CLK        ),    // input wire rd_clk
+//        .din     (  din        ),    // input wire [17 : 0] din
+//        .wr_en   (  wr_en_High ),    // input wire wr_en
+//        .rd_en   (  rd_en_High ),    // input wire rd_en
+//        .dout    (  dout       ),    // output wire [17 : 0] dout
+//        .full    (  full       ),    // output wire full
+//        .empty   (  empty      )     // output wire empty
+//);
+//
+//wire [15:0] dff_data_clk;
+//wire dff_srout_clk;
+//assign dff_data_clk = dout[15:0];
+//assign dff_srout_clk = dout[16]; 
+
+
 assign DATA_OUT = dff_data_clk;
 assign SR_OUT_OUT = dff_srout_clk;
 

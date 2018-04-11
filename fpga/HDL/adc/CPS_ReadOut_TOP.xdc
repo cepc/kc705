@@ -76,3 +76,4 @@ set_property IOSTANDARD LVDS_25 [get_ports CNV_n]
 set_property PACKAGE_PIN D22 [get_ports CNV_p]
 set_property PACKAGE_PIN C22 [get_ports CNV_n]
 
+

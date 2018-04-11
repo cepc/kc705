@@ -11,23 +11,12 @@ module set_data (
 );
 
 // DFF to make timing edge flat  
-reg sr_out_dff, sr_out_dff1, sr_out_dff2, sr_out_dff3;
-reg [15:0] data_in_dff, data_in_dff1, data_in_dff2, data_in_dff3;
+reg sr_out_dff;
+reg [15:0] data_in_dff;
 always @( posedge CLK )
 begin
-    sr_out_dff   <= SR_OUT_IN;
-    sr_out_dff1  <= sr_out_dff;
-    if ( sr_out_dff==1'b1 && sr_out_dff1==1'b1 )
-        sr_out_dff2 <= 1'b0;
-    else
-        sr_out_dff2 <= sr_out_dff1;
-    
-    sr_out_dff3 <= sr_out_dff2;
-    
-    data_in_dff  <= DATA_IN;
-    data_in_dff1 <= data_in_dff;
-    data_in_dff2 <= data_in_dff1;
-    data_in_dff3 <= data_in_dff2;
+    sr_out_dff  <= SR_OUT_IN;
+    data_in_dff <= DATA_IN;
 end
 
 // Delay for 16bit-data: 48 clock 
@@ -35,8 +24,7 @@ wire [15:0] data_dff_out;
 delay_ff delay_data_inst (
     .CLK      (  CLK          ),
     .RST      (  RST          ),
-//    .DATA_IN  (  data_in_dff  ),
-    .DATA_IN  (  data_in_dff3 ),
+    .DATA_IN  (  data_in_dff  ),
     .DATA_OUT (  data_dff_out )
 );
 
@@ -51,8 +39,7 @@ begin
         cnt <= 6'h0;
         event_type <= 2'b00;  // Dummy Data: event_type = "00" 
     end
-//    else if ( sr_out_dff ) begin
-    else if ( sr_out_dff3 ) begin
+    else if ( sr_out_dff ) begin
         cnt <= 6'h0;
         nevt <= nevt + 4'h1;
         event_type <= 2'b10;  // Data accompanied with SR_OUT: event_type = "10"

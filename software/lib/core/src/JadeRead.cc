@@ -71,10 +71,8 @@ JadeRead::Read(size_t nframe,
     const std::chrono::milliseconds& timeout)
 {
   std::vector<JadeDataFrameSP> v_df;
-  std::cout << "v_df size" << v_df.size() << std::endl; 
   for (size_t i = 0; i < nframe; i++) {
     v_df.push_back(Read(timeout));
-    std::cout << "=================>  " << i << std::endl; 
   }
   return v_df;
 }
@@ -126,18 +124,12 @@ JadeDataFrameSP JadeRead::Read(const std::chrono::milliseconds& timeout)
       }
       continue;
     }
-    std::cout << "Head: size_filled: " << size_filled << std::endl; 
-    std::cout << "Head: size_pack: " << size_pack << std::endl; 
-    std::cout << "Head: size_buf: " << size_buf << std::endl; 
     size_filled += read_r;
-    std::cout << "Head: size_filled: " << size_filled << std::endl; 
     if (size_filled == sizeof(size_pack)) {
       size_pack = LE32TOH(*(reinterpret_cast<uint32_t*>(&m_buf[0])));
       size_buf = size_pack;
       m_buf.resize(size_buf);
     }
-    std::cout << "End: size_pack: " << size_pack << std::endl; 
-    std::cout << "End: size_buf: " << size_buf << std::endl; 
     can_time_out = false;
   }
   return JadeDataFrameSP(new JadeDataFrame(m_buf.substr(0, size_pack)));

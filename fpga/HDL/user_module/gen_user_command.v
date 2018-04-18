@@ -5,14 +5,16 @@ module gen_user_command (
     output wire [4:0] mem8_addr_port_b,
     output wire       mem8_access_en_port_b,
     output wire       mem8_w_enable_port_b,
-    input  wire       FIFO_OVER_FLOW_FLAG,
+    input  wire [2:0] RUN_STATUS,
+    input  wire [2:0] FIFO_STATUS,
     output wire [5:0] ROW_READ_START,
     output wire [5:0] ROW_READ_END,
     output wire [3:0] COLUMN_READ_START,
     output wire [3:0] COLUMN_READ_END,
     output wire [7:0] CHIP_ADDRESS,
-    output wire       INIT,
-    output wire       INIT_PULSE,
+    output wire [3:0] TIME_DELAY,
+    output wire       SET,
+    output wire       SET_PULSE,
     output wire       START,
     output wire       START_PULSE,
     output wire       STOP,
@@ -71,12 +73,12 @@ begin
     case ( ad_cnt )
         6'd0  :  mem_address_rden <= 5'd0;    // Memory Address 0  :  Slot for communication test  
         6'd1  :  mem_address_rden <= 5'd1;    // Memory Address 1  : "Reset" command    
-        6'd2  :  mem_address_rden <= 5'd2;    // Memory Address 2  : "Initilization" command         
+        6'd2  :  mem_address_rden <= 5'd2;    // Memory Address 2  : "Set(Parameter)" command         
         6'd3  :  mem_address_rden <= 5'd3;    // Memory Address 3  : "Start" command
         6'd4  :  mem_address_rden <= 5'd4;    // Memory Address 4  : "Stop"  command
         6'd5  :  mem_address_rden <= 5'd5;    // Memory Address 5  :     reserved
         6'd6  :  mem_address_rden <= 5'd6;    // Memory Address 6  :     reserved
-        6'd7  :  mem_address_rden <= 5'd7;    // Memory Address 7  :     reserved  ---> FIFO Overflow Flag
+        6'd7  :  mem_address_rden <= 5'd7;    // Memory Address 7  :  Running Status [2:0]
         
         6'd8  :  mem_address_rden <= 5'd8;    // Memory Address 8  : "Chip sector Address"       
         6'd9  :  mem_address_rden <= 5'd9;    // Memory Address 9  :     reserved
@@ -85,16 +87,17 @@ begin
         6'd12 :  mem_address_rden <= 5'd12;   // Memory Address 12 : "column start"
         6'd13 :  mem_address_rden <= 5'd13;   // Memory Address 13 : "column end"
         6'd14 :  mem_address_rden <= 5'd14;   // Memory Address 14 :     reserved
-        6'd15 :  mem_address_rden <= 5'd15;   // Memory Address 15 :     reserved
+        6'd15 :  mem_address_rden <= 5'd15;   // Memory Address 15 :  CNVCLK Timing Delay
 
-//        6'd16 :  mem_address_rden <= 5'd16;   // Memory Address 16 :     reserved
-//        6'd17 :  mem_address_rden <= 5'd17;   // Memory Address 17 :     reserved
-//        6'd18 :  mem_address_rden <= 5'd18;   // Memory Address 18 :     reserved
-//        6'd19 :  mem_address_rden <= 5'd19;   // Memory Address 19 :     reserved
-//        6'd20 :  mem_address_rden <= 5'd20;   // Memory Address 20 :     reserved
-//        6'd21 :  mem_address_rden <= 5'd21;   // Memory Address 21 :     reserved
-//        6'd22 :  mem_address_rden <= 5'd22;   // Memory Address 22 :     reserved
-//        6'd23 :  mem_address_rden <= 5'd23;   // Memory Address 23 :     reserved
+        6'd16 :  mem_address_rden <= 5'd16;   // Memory Address 16 :  FIFO Status  [2:0]
+        6'd17 :  mem_address_rden <= 5'd17;   // Memory Address 17 :     reserved
+        6'd18 :  mem_address_rden <= 5'd18;   // Memory Address 18 :     reserved
+        6'd19 :  mem_address_rden <= 5'd19;   // Memory Address 19 :     reserved
+        6'd20 :  mem_address_rden <= 5'd20;   // Memory Address 20 :     reserved
+        6'd21 :  mem_address_rden <= 5'd21;   // Memory Address 21 :     reserved
+        6'd22 :  mem_address_rden <= 5'd22;   // Memory Address 22 :     reserved
+        6'd23 :  mem_address_rden <= 5'd23;   // Memory Address 23 :     reserved
+
 //        6'd24 :  mem_address_rden <= 5'd24;   // Memory Address 24 :     reserved
 //        6'd25 :  mem_address_rden <= 5'd25;   // Memory Address 25 :     reserved
 //        6'd26 :  mem_address_rden <= 5'd26;   // Memory Address 26 :     reserved
@@ -111,7 +114,7 @@ end
 always @( posedge CLK )
 begin
     //if ( ad_cnt >= 6'd1 && ad_cnt <= 6'd31 )
-    if ( ad_cnt >= 6'd1 && ad_cnt <= 6'd15 )    // Read Enable 1-15 
+    if ( ad_cnt >= 6'd1 && ad_cnt <= 6'd23 )    // Read Enable 1-23 
         mem_access_rden <= 1'h1;
     else
         mem_access_rden <= 1'h0;
@@ -135,16 +138,18 @@ reg [5:0] row_end_reg       = 6'h0;
 reg [3:0] col_start_reg     = 4'h0;
 reg [3:0] col_end_reg       = 4'h0;
 reg [7:0] cmos_addr_reg     = 8'h0;
+reg [3:0] time_delay_reg    = 4'h0;
 
 always @( posedge CLK )
 begin
     if ( last_half ) begin
         case ( ad_cnt )
-            6'd8  :  cmos_addr_reg <= mem8_reg2[7:0];      // "chip address" 
-            6'd10 :  row_start_reg <= mem8_reg2[5:0];      // "row" start
-            6'd11 :  row_end_reg   <= mem8_reg2[5:0];      // "row" end
-            6'd12 :  col_start_reg <= mem8_reg2[3:0];      // "column" start
-            6'd13 :  col_end_reg   <= mem8_reg2[3:0];      // "column" end
+            6'd8  :  cmos_addr_reg  <= mem8_reg2[7:0];      // "chip address" 
+            6'd10 :  row_start_reg  <= mem8_reg2[5:0];      // "row" start
+            6'd11 :  row_end_reg    <= mem8_reg2[5:0];      // "row" end
+            6'd12 :  col_start_reg  <= mem8_reg2[3:0];      // "column" start
+            6'd13 :  col_end_reg    <= mem8_reg2[3:0];      // "column" end
+            6'd15 :  time_delay_reg <= mem8_reg2[3:0];      //  CNVCLK Timing Delay
             default : ;
         endcase
     end
@@ -155,7 +160,7 @@ assign ROW_READ_END      = row_end_reg ;
 assign COLUMN_READ_START = col_start_reg ;
 assign COLUMN_READ_END   = col_end_reg ;
 assign CHIP_ADDRESS      = cmos_addr_reg ;
-
+assign TIME_DELAY        = time_delay_reg ;
 
 
 
@@ -236,89 +241,91 @@ begin
 end
              
 
-////////////////////////////  INIT  ////////////////////////////
+////////////////////////////  SET (Parameter)  ////////////////////////////
     
-// Generate "Init" 
-reg gen_init  = 1'h0;
-reg init_flag = 1'h0;
+// Note : Originally this command was inteneded to use for initilization process,
+//        so that an abbreviation of "init" is used. Later the name is change to "set" 
+// Generate "Set" 
+reg gen_set  = 1'h0;
+reg set_flag = 1'h0;
 reg second_time = 1'h0;
 always @( posedge CLK )
 begin
     if ( ad_cnt == 6'd0 ) begin
-        gen_init <= 1'h0;
-        if ( init_flag == 1'h1 ) begin
+        gen_set <= 1'h0;
+        if ( set_flag == 1'h1 ) begin
             if ( second_time == 1'h0 ) begin
                 second_time <= 1'h1;
-                init_flag <= 1'h0;
+                set_flag <= 1'h0;
             end
             else begin
                 second_time <= 1'h0;
-                init_flag <= 1'h0;
+                set_flag <= 1'h0;
             end
         end
     end
     else if ( ad_cnt == 6'd2 ) begin
         if ( check && mem8_reg2==8'b00001010) begin
-            gen_init  <= 1'h1;   // Generate "Initilization" Pulse
-            init_flag <= 1'h1;   // "Init" flag ON
+            gen_set  <= 1'h1;   // Generate "SET" Pulse
+            set_flag <= 1'h1;   // "Set" flag ON
         end
         else
-            gen_init  <= 1'h0;
+            gen_set  <= 1'h0;
     end
 end
 
-reg [7:0] init_cnt = 8'h0;
-reg       init_reg = 1'h0;
-reg       init_on  = 1'h0;
+reg [7:0] set_cnt = 8'h0;
+reg       set_reg = 1'h0;
+reg       set_on  = 1'h0;
 always @( posedge CLK )
 begin
-    if ( gen_init )
+    if ( gen_set )
     begin
-        init_reg <= 1'h1;
-        init_cnt <= 8'h0;
-        init_on  <= 1'h1;
+        set_reg <= 1'h1;
+        set_cnt <= 8'h0;
+        set_on  <= 1'h1;
     end
     else 
     begin
-        if ( init_on )
+        if ( set_on )
         begin
-            init_cnt <= init_cnt + 8'h1;
+            set_cnt <= set_cnt + 8'h1;
  
-            if ( init_cnt==8'd3 ) // 4 clock cycles + 1 clock (gen_init) 
+            if ( set_cnt==8'd3 ) // 4 clock cycles + 1 clock (gen_set) 
             begin
-                init_reg <= 1'h0;
-                init_on  <= 1'h0;
+                set_reg <= 1'h0;
+                set_on  <= 1'h0;
             end
         end
     end
 end
 
-assign INIT        = (init_reg || gen_init);  
-assign INIT_PULSE  = gen_init;  
+assign SET        = (set_reg || gen_set);  
+assign SET_PULSE  = gen_set;  
 
 
-// Turn OFF "Init" 
-reg [7:0] mem8_out_reg_init     = 8'h0;
-reg       mem_access_wren_init  = 1'h0;
-reg [4:0] mem_address_wren_init = 5'h0;
-reg       wr_en_init            = 1'h0;
+// Turn OFF "Set" 
+reg [7:0] mem8_out_reg_set     = 8'h0;
+reg       mem_access_wren_set  = 1'h0;
+reg [4:0] mem_address_wren_set = 5'h0;
+reg       wr_en_set            = 1'h0;
 always @( posedge CLK )
 begin
-    if( init_flag == 1'h1 ) // High only when the init was issued.
+    if( set_flag == 1'h1 ) // High only when the set was issued.
     begin
         if( ad_cnt == 6'd35 ) begin
             if ( half ) begin
-                if ( second_time == 1'h1 ) begin        // "Init" pulse is generated two times !
-                    mem_access_wren_init  <= 1'h1;      //  at the "second" time, erase the init signal.
-                    mem_address_wren_init <= 5'd2;      // Address 2
-                    wr_en_init <= 1'h1;                 // Trun ON Write Enable
-                    mem8_out_reg_init <= 8'b00000000;   // Erase "reset" 
+                if ( second_time == 1'h1 ) begin       // "Set" pulse is generated two times !
+                    mem_access_wren_set  <= 1'h1;      //  at the "second" time, erase the set signal.
+                    mem_address_wren_set <= 5'd2;      //  Address 2
+                    wr_en_set <= 1'h1;                 //  Trun ON Write Enable
+                    mem8_out_reg_set <= 8'b00000000;   //  Erase "set" 
                 end
             end
             else begin
-                mem_access_wren_init  <= 1'h0;
-                mem_address_wren_init <= 5'h0;
-                wr_en_init <= 1'h0;                // Trun OFF Write Enable  
+                mem_access_wren_set  <= 1'h0;
+                mem_address_wren_set <= 5'h0;
+                wr_en_set <= 1'h0;                // Trun OFF Write Enable  
             end
         end
     end
@@ -479,36 +486,55 @@ begin
     end
 end
 
-/////////////////   FIFO Overflow  ///////////////////
-reg fifo_overflow_flag =1'h1;
+/////////////////   Running Status  ///////////////////
 
-reg [7:0] mem8_out_reg_overflow     = 8'h0;
-reg       mem_access_wren_overflow  = 1'h0;
-reg [4:0] mem_address_wren_overflow = 5'h0;
-reg       wr_en_overflow            = 1'h0;
+reg [7:0] mem8_out_reg_runstatus     = 8'h0;
+reg       mem_access_wren_runstatus  = 1'h0;
+reg [4:0] mem_address_wren_runstatus = 5'h0;
+reg       wr_en_runstatus            = 1'h0;
 always @( posedge CLK )
 begin
-//    if( fifo_overflow_flag == 1'h1 ) // High only when the stop was issued.
-//    begin
-        if( ad_cnt == 6'd41 ) begin
-            if ( half ) begin
-                mem_access_wren_overflow  <= 1'h1;
-                mem_address_wren_overflow <= 5'd7;      // Address 7  --- Temporary !!
-                wr_en_overflow <= 1'h1;                 // Trun ON Write Enable
-                mem8_out_reg_overflow <= FIFO_OVER_FLOW_FLAG;   // Write fifo overflow flag
-            end
-            else begin
-                mem_access_wren_overflow  <= 1'h0;
-                mem_address_wren_overflow <= 5'h0;
-                wr_en_overflow <= 1'h0;                // Trun OFF Write Enable  
-            end
+    if( ad_cnt == 6'd41 ) begin
+        if ( half ) begin
+            mem_access_wren_runstatus  <= 1'h1;
+            mem_address_wren_runstatus <= 5'd7;      // Address 7  
+            wr_en_runstatus <= 1'h1;                 // Trun ON Write Enable
+            mem8_out_reg_runstatus <= { 5'h0, RUN_STATUS };   // Write Running Status
         end
-//    end
+        else begin
+            mem_access_wren_runstatus  <= 1'h0;
+            mem_address_wren_runstatus <= 5'h0;
+            wr_en_runstatus <= 1'h0;                // Trun OFF Write Enable  
+        end
+    end
+end
+
+/////////////////   FIFO Status  ///////////////////
+
+reg [7:0] mem8_out_reg_fifostatus     = 8'h0;
+reg       mem_access_wren_fifostatus  = 1'h0;
+reg [4:0] mem_address_wren_fifostatus = 5'h0;
+reg       wr_en_fifostatus            = 1'h0;
+always @( posedge CLK )
+begin
+    if( ad_cnt == 6'd43 ) begin
+        if ( half ) begin
+            mem_access_wren_fifostatus  <= 1'h1;
+            mem_address_wren_fifostatus <= 5'd16;      // Address 16  
+            wr_en_fifostatus <= 1'h1;                 // Trun ON Write Enable
+            mem8_out_reg_fifostatus <= { 5'h0, FIFO_STATUS };   // Write Running Status
+        end
+        else begin
+            mem_access_wren_fifostatus  <= 1'h0;
+            mem_address_wren_fifostatus <= 5'h0;
+            wr_en_fifostatus <= 1'h0;                // Trun OFF Write Enable  
+        end
+    end
 end
 
 
 ///////////////////////////////////////////
-// Variables for memory writing: set "reset" & "init" & "start" & "stop" value as "0" 
+// Variables for memory writing: set "reset" & "set" & "start" & "stop" value as "0" 
 reg [7:0] mem8_out_reg     = 8'h0;
 reg       mem_access_wren  = 1'h0;
 reg [4:0] mem_address_wren = 5'h0;
@@ -522,11 +548,11 @@ begin
         wr_en            <= wr_en_rst;
         mem8_out_reg     <= mem8_out_reg_rst;
     end
-    else if ( ad_cnt == 6'd35 ) begin             // Erase Init
-        mem_access_wren  <= mem_access_wren_init;
-        mem_address_wren <= mem_address_wren_init;
-        wr_en            <= wr_en_init;
-        mem8_out_reg     <= mem8_out_reg_init;
+    else if ( ad_cnt == 6'd35 ) begin             // Erase Set
+        mem_access_wren  <= mem_access_wren_set;
+        mem_address_wren <= mem_address_wren_set;
+        wr_en            <= wr_en_set;
+        mem8_out_reg     <= mem8_out_reg_set;
     end
     else if ( ad_cnt == 6'd37 ) begin             // Erase Start
         mem_access_wren  <= mem_access_wren_start;
@@ -534,17 +560,23 @@ begin
         wr_en            <= wr_en_start;
         mem8_out_reg     <= mem8_out_reg_start;
     end
-    else if ( ad_cnt == 6'd39 ) begin             // Erase Start
+    else if ( ad_cnt == 6'd39 ) begin             // Erase Stop
         mem_access_wren  <= mem_access_wren_stop;
         mem_address_wren <= mem_address_wren_stop;
         wr_en            <= wr_en_stop;
         mem8_out_reg     <= mem8_out_reg_stop;
     end
-    else if ( ad_cnt == 6'd41 ) begin             // FIFO OverFlow Flag
-        mem_access_wren  <= mem_access_wren_overflow;
-        mem_address_wren <= mem_address_wren_overflow;
-        wr_en            <= wr_en_overflow;
-        mem8_out_reg     <= mem8_out_reg_overflow;
+    else if ( ad_cnt == 6'd41 ) begin             // Running Status
+        mem_access_wren  <= mem_access_wren_runstatus;
+        mem_address_wren <= mem_address_wren_runstatus;
+        wr_en            <= wr_en_runstatus;
+        mem8_out_reg     <= mem8_out_reg_runstatus;
+    end
+    else if ( ad_cnt == 6'd43 ) begin             // FIFO Status
+        mem_access_wren  <= mem_access_wren_fifostatus;
+        mem_address_wren <= mem_address_wren_fifostatus;
+        wr_en            <= wr_en_fifostatus;
+        mem8_out_reg     <= mem8_out_reg_fifostatus;
     end
     else begin
         mem8_out_reg     <= 8'h0;

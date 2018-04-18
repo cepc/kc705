@@ -35,6 +35,7 @@ set_property "top" "kc705" $obj
 set obj [get_filesets sources_1]
 set files [list \
  "[file normalize "$proj_dir/kc705.v"]"\
+ "[file normalize "$proj_dir/HDL/user_module/adj_cnvclk.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/d_ff.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/data_selector.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/delay_ff.v"]"\
@@ -43,13 +44,11 @@ set files [list \
  "[file normalize "$proj_dir/HDL/user_module/gen_user_command.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/rec_sample_data.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/recieve_adc_packet.v"]"\
- "[file normalize "$proj_dir/HDL/user_module/regen_ctrl_sig.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/set_chip_addr.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/set_data.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/state_control.v"]"\
  "[file normalize "$proj_dir/HDL/adc/CPS_ReadOut_TOP.edf"]"\
  "[file normalize "$proj_dir/HDL/adc/CPS_ReadOut_TOP_stub.v"]"\
- "[file normalize "$proj_dir/HDL/xillybus/verilog/src/xillydemo.v"]"\
  "[file normalize "$proj_dir/HDL/xillybus/verilog/src/xillybus.v"]"\
  "[file normalize "$proj_dir/HDL/xillybus/verilog/src/xillybus_core.v"]"\
  "[file normalize "$essentials_dir/$pcie.v"]"\
@@ -61,10 +60,8 @@ set files [list \
  "[file normalize "$proj_dir/IP_Core/mem2/coregen_buffer_mem16.xci"]"\
  "[file normalize "$proj_dir/IP_Core/mem3/coregen_mem8_chipaddr.xci"]"\
  "[file normalize "$proj_dir/IP_Core/fifo1/coregen_clk_crossing_fifo32.xci"]"\
- "[file normalize "$proj_dir/IP_Core/fifo2/coregen_clk2M_crossing_fifo.xci"]"\
  "[file normalize "$proj_dir/HDL/user_module/circle_buffer_read_write_ctrl.v"]"\
  "[file normalize "$proj_dir/HDL/user_module/tlu_handshake.v"]"\
- "[file normalize "$proj_dir/HDL/user_module/tlu_testbench.v"]"\
  "[file normalize "$proj_dir/IP_Core/blk_mem_32x48200/blk_mem_32x48200.xci"]"\
 ]
 add_files -norecurse -fileset $obj $files
@@ -94,7 +91,7 @@ if {[string equal [get_filesets constrs_1] ""]} {
 set obj [get_filesets constrs_1]
 add_files -fileset $obj -norecurse "[file normalize "$essentials_dir/xillydemo.xdc"]"
 add_files -fileset $obj -norecurse "[file normalize "$proj_dir/HDL/adc/CPS_ReadOut_TOP.xdc"]"
-add_files -fileset $obj -norecurse "[file normalize "$proj_dir/kc705.xdc"]"
+add_files -fileset $obj -norecurse "[file normalize "$proj_dir/Const/kc705.xdc"]"
 add_files -fileset $obj -norecurse "[file normalize "$proj_dir/Const/new/kc705.xdc"]"
 
 

@@ -1,19 +1,17 @@
 module recieve_adc_packet (
     input          CLK,     
-//    input          CLK2M,    
-    input          CLK2M_IN, 
+    input          CLK2M,    
     input          CLK2M_DIV,
-//    input          CNVCLK,
     input          CNVCLK_IN,
     input          SR_OUT,
     input          RST,  
-    //input          RST2M,
-    input          RST2M_IN,
+    input          RST2M,
     input          SET_PARAM,
     input   [5:0]  ROW_START,
     input   [5:0]  ROW_END,
     input   [3:0]  COL_START,
     input   [3:0]  COL_END,
+    input   [3:0]  TIME_DELAY,
     input  [15:0]  DATA01,
     input  [15:0]  DATA02,
     input  [15:0]  DATA03,
@@ -35,21 +33,23 @@ module recieve_adc_packet (
     output         WR_EN 
 );
 
-(* MARK_DEBUG="true" *)wire RST2M;
-(* MARK_DEBUG="true" *)wire CLK2M;
-(* MARK_DEBUG="true" *)wire CNVCLK;
-regenerate_ctrl_signal regen_ctrl_sig (
-    .CLK_IN     (  CLK       ),
-    .CLK2M_IN   (  CLK2M_IN  ),
-    .RST_IN     (  RST       ),
-    .CNVCLK_IN  (  CNVCLK_IN ),
-    .NSTEP1     (  ROW_START ),  // Very temporary !
-    .NSTEP2     (  ROW_END   ),  // Very temporary !
-    .CLK2M_OUT  (  CLK2M     ),
-    .RST2M_OUT  (  RST2M     ),
-    .CNVCLK_OUT (  CNVCLK    )
-);
  
+ //*****  Sample CNVCLK by 100MHz clock *****//
+ // This is as a result of trials to make the sampling timing etc. stable for each compilation. 2018 Feb.
+ // "CNVCLK" is delayed 3 clocks (100MHz) with TIME_DELAY=0 (default), and it WAS enough.
+ // Therefore, TIME_DELAY can be tested when almost every pixels in one column shows 3 peaks at CDS distribution
+ // and which can be considered due to timing difference within the firmware.
+ 
+(* MARK_DEBUG="true" *)wire CNVCLK;
+adjust_cnvclk_timing   sample_cnvclk (
+    .CLK_IN     (  CLK        ),
+    .CNVCLK_IN  (  CNVCLK_IN  ),
+    .DELAY      (  TIME_DELAY ),  // To investigate the effect of timing delay. Otherwise please set "0". 
+    .SET_PARAM  (  SET_PARAM  ),
+    .CNVCLK_OUT (  CNVCLK     )
+);
+//*****************************************//
+
 wire [15:0] sample_data01, sample_data02, sample_data03, sample_data04;
 wire [15:0] sample_data05, sample_data06, sample_data07, sample_data08;
 wire [15:0] sample_data09, sample_data10, sample_data11, sample_data12;
@@ -347,9 +347,7 @@ coregen_buffer_mem16 buffer_mem16_inst16 (
 // Control System 
 wire [31:0] sel_data_out;
 wire        sel_fifo_wren;
-wire SET = 1'b0;
 wire        frame_end;
-//data_selector #( .ROW_START(6'd0), .ROW_END(6'd47), .COLUMN_START(4'd0), .COLUMN_END(4'd15) )
 data_selector data_selector_inst ( 
     .CLK            (  CLK           ), 
     .RST            (  RST           ), 
@@ -357,8 +355,7 @@ data_selector data_selector_inst (
     .ROW_END        (  ROW_END       ),
     .COL_START      (  COL_START     ),
     .COL_END        (  COL_END       ),
-    .SET_PARAM      (  SET           ),    // No SET !!
-//    .SET_PARAM      (  SET_PARAM     ),
+    .SET_PARAM      (  SET_PARAM     ),
     .DATA_H         (  d_header_out  ),  
     .DATA_F         (  d_footer_out  ),  
     .DATA01         (  d01_out       ), 
@@ -377,8 +374,7 @@ data_selector data_selector_inst (
     .DATA14         (  d14_out       ), 
     .DATA15         (  d15_out       ), 
     .DATA16         (  d16_out       ),
-//    .MEM_RD_FLAG    (  flag01        ),
-    .MEM_RD_FLAG    (  flag05        ),    // Change Memory Read Timing Flag to 05 ! 02/07/2018 night
+    .MEM_RD_FLAG    (  flag01        ),
     .MEM_ADDR_OUT   (  mem_addr_read ), 
     .DATA_OUT       (  sel_data_out  ),
     .FRAME_END_FLAG (  frame_end     ),

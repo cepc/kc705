@@ -1,8 +1,8 @@
 module kc705 (
     input        CLKOUTN_n,
     input        CLKOUTN_p,
-    output       CNV_n,         // For 4 channel mother version
-    output       CNV_p,         // For 4 channel mother version
+    output       CNV_n,         
+    output       CNV_p,         
     output       SCK_n,
     output       SCK_p,
     input        SDO10_n, SDO11_n, SDO12_n, SDO13_n, SDO14_n, SDO15_n, SDO16_n, 
@@ -62,38 +62,10 @@ coregen_sysclk  sysclk_ins_test(
 (* mark_debug = "true" *) wire rst_pulse;
 (* mark_debug = "true" *) wire rst_command_pre; 
 (* mark_debug = "true" *) wire rst_pulse_pre;
-(* mark_debug = "true" *) wire init_command;
-(* mark_debug = "true" *) wire init_pulse;
+(* mark_debug = "true" *) wire set_command;
+(* mark_debug = "true" *) wire set_pulse;
 
 
-//*****************************************************//
-//*****  Temporal !!! Status Control              *****//
-//*****  Definitly replaced to be a State Machine *****//
-//*****  For the memoment, to control FIFO veto   *****//
-//*****************************************************//
-wire start_command;
-wire start_pulse;
-wire stop_command;
-wire stop_pulse;
-wire run_ctrl_wr_en;
-wire [1:0] run_status;
-wire frame_last_word;
-state_control state_control_ins (
-    .CLK           (  clk100M          ),  
-    .RST           (  rst_command_pre  ),
-    .RST_PULSE     (  rst_pulse_pre    ),
-    .INIT          (  init_command     ),
-    .INIT_PULSE    (  init_pulse       ),
-    .START         (  start_command    ),  
-    .START_PULSE   (  start_pulse      ),
-    .STOP          (  stop_command     ),
-    .STOP_PULSE    (  stop_pulse       ),
-    .FRAME_END     (  frame_last_word  ),
-    .STATE         (  run_status       ),
-    .FIFO_WR_EN    (  run_ctrl_wr_en   ),
-    .RST_SIG       (  rst_command      ),
-    .RST_SIG_PULSE (  rst_pulse        )
-);
 
 //**********************************************//
 //*****  Generate 2MHz/4MHz clock & reset  *****//
@@ -120,10 +92,10 @@ gen_user_clock gen_user_clock_ins (
 wire [15:0] data01, data02, data03, data04, data05, data06, data07, data08;
 wire [15:0] data09, data10, data11, data12, data13, data14, data15, data16;
 
-//SR_Top_out's falling edge symbolsize the last row of one frame
+//SR_Top_out's falling edge symbolsize the last row of one frame, -- Comment by Tao Jia 
 (* MARK_DEBUG="true" *)wire SR_Top_out;        
-// cnvclk is the clock(2MHz) we use to read the data, 
-// I suggest using the negedge of it to read the data
+// cnvclk is the clock(2MHz) we use to read the data, -- Comment by Tao Jia
+// I suggest using the negedge of it to read the data -- Comment by Tao Jia
 (* MARK_DEBUG="true" *)wire cnvclk;          
 (* MARK_DEBUG="true" *)wire [3:0] addr_to_cmos;
 
@@ -184,8 +156,8 @@ CPS_ReadOut_TOP CPS_ReadOut (
      .CLKOUTN_n     (  CLKOUTN_n    ), 
      .rst           (  rst          ), 
      .start         (  start        ),  
-     .CNV_p         (  CNV_p        ),    // For 2018 version
-     .CNV_n         (  CNV_n        ),    // For 2018 version
+     .CNV_p         (  CNV_p        ),    
+     .CNV_n         (  CNV_n        ),    
      .cnvclk        (  cnvclk       ), 
      .SCK_p         (  SCK_p        ), 
      .SCK_n         (  SCK_n        ), 
@@ -229,6 +201,8 @@ wire       user_r_read_32_empty;
 wire [31:0] user_r_read_32_data;
 wire        user_r_read_32_eof;
 wire        user_r_read_32_open;
+
+assign user_r_read_32_eof = 0;
 
 // Wires related to /dev/xillybus_read_8
 wire        user_r_read_8_rden;
@@ -381,101 +355,39 @@ coregen_user_mem8 user_mem8_inst (
 
 //assign user_r_mem_8_data_in = user_r_mem_8_data; 
 
-//****************************************//
-//*****  Generate Veto Logic Signal  *****//
-//****************************************//
 
-// Veto Logic to prevent further writing when reading from the FIFO
-(* mark_debug = "true" *) wire full_async_fifo;
-wire [14:0] rd_data_count;
-(* mark_debug = "true" *) wire [14:0] wr_data_count;
-
-(* mark_debug = "true" *) reg [9:0] veto_cnt = 10'h0;
-(* mark_debug = "true" *) reg fifo_write_veto_r = 0;
-always @( posedge clk100M )
-begin
-    if( rst_command ) begin
-        fifo_write_veto_r <= 1'b1;
-        veto_cnt <= 10'h0;
-    end
-    else if ( veto_cnt < 10'd450 )      // original 200 --> 200+50*5=450
-        veto_cnt <= veto_cnt + 1'h1;
-    else if (veto_cnt ==10'd450 ) begin  // original 200 --> 450
-        veto_cnt <= veto_cnt + 1'h1;
-        fifo_write_veto_r <= 1'b0;
-    end
-    else if ( full_async_fifo == 1 )
-        fifo_write_veto_r <= 1'b1;
-end
-wire fifo_write_veto = fifo_write_veto_r;
-
-
-//********************************************************//
-//*****  Asynchronous FIFO for temporal data storage *****//
-//********************************************************//
+//************************************************************************//
+//*****  Recieve 16ch ADC with 2MHz, Output 32-bit data with 100MHz  *****//
+//************************************************************************//
 
 wire rden_High = 1'b1; // For Simulation test
 (* mark_debug = "true" *) wire [31:0] adc_fifo_out32;
 (* mark_debug = "true" *) wire adcdata_wren;
 
 
-// Generate Dummy Data -- Total 8 channel : Only for simulation purpose
-wire [15:0] data01_start, data02_start, data03_start, data04_start;
-wire [15:0] data05_start, data06_start, data07_start, data08_start;
-wire sr_out01_start, sr_out02_start, sr_out03_start, sr_out04_start;
-wire sr_out05_start, sr_out06_start, sr_out07_start, sr_out08_start;
-
-gen_simple_data   top_dummy_data_inst_data01( .CLK ( clk_div ), .RST ( rst2M ), 
-.DATA_OUT( data01_start ), .SR_OUT( sr_out01_start ) );
-gen_simple_data   top_dummy_data_inst_data02( .CLK ( clk_div ), .RST ( rst2M ), 
-.DATA_OUT( data02_start ), .SR_OUT( sr_out02_start ) );
-gen_simple_data   top_dummy_data_inst_data03( .CLK ( clk_div ), .RST ( rst2M ), 
-.DATA_OUT( data03_start ), .SR_OUT( sr_out03_start ) );
-gen_simple_data   top_dummy_data_inst_data04( .CLK ( clk_div ), .RST ( rst2M ), 
-.DATA_OUT( data04_start ), .SR_OUT( sr_out04_start ) );
-
-gen_simple_data   top_dummy_data_inst_data05( .CLK ( clk_div ), .RST ( rst2M ), 
-.DATA_OUT( data05_start ), .SR_OUT( sr_out05_start ) );
-gen_simple_data   top_dummy_data_inst_data06( .CLK ( clk_div ), .RST ( rst2M ), 
-.DATA_OUT( data06_start ), .SR_OUT( sr_out06_start ) );
-gen_simple_data   top_dummy_data_inst_data07( .CLK ( clk_div ), .RST ( rst2M ), 
-.DATA_OUT( data07_start ), .SR_OUT( sr_out07_start ) );
-gen_simple_data   top_dummy_data_inst_data08( .CLK ( clk_div ), .RST ( rst2M ), 
-.DATA_OUT( data08_start ), .SR_OUT( sr_out08_start ) );
-
-// For test
+// Pass the settings : 
 wire [5:0] row_read_start;
 wire [5:0] row_read_end;
 wire [3:0] column_read_start;
 wire [3:0] column_read_end;
+wire [3:0] timing_delay;
 
 wire [15:0] tmp_data_out;
-wire tmp_wren;
+wire frame_last_word;
 recieve_adc_packet rec_adc_packet_ins (
     .CLK            (  clk100M          ),
-//    .CLK2M          (  clk2M            ),
-    .CLK2M_IN       (  clk2M            ),
+    .CLK2M          (  clk2M            ),
     .CLK2M_DIV      (  clk_div          ),
-//    .CNVCLK         (  cnvclk           ),
     .CNVCLK_IN      (  cnvclk           ),
-//    .SR_OUT    (  sr_out01_start   ),
     .SR_OUT         (  SR_Top_out       ),
     .RST            (  rst_command      ),
-    .RST2M_IN          (  rst2M            ),
-//    .RST2M          (  rst2M            ),
-//    .DATA01    (  data01_start     ),
-//    .DATA02    (  data02_start     ),
-//    .DATA03    (  data03_start     ),
-//    .DATA04    (  data04_start     ),
-//    .DATA05    (  data05_start     ),
-//    .DATA06    (  data06_start     ),
-//    .DATA07    (  data07_start     ),
-//    .DATA08    (  data08_start     ),
-    .SET_PARAM      (  init_command     ),
+    .RST2M          (  rst2M            ),
+    .SET_PARAM      (  set_command      ),
     .ROW_START      (  row_read_start   ),
     .ROW_END        (  row_read_end     ),
     .COL_START      (  column_read_start),
     .COL_END        (  column_read_end  ),
+    .TIME_DELAY     (  timing_delay     ),
     .DATA01         (  data01           ),
     .DATA02         (  data02           ),
     .DATA03         (  data03           ),
@@ -497,12 +409,22 @@ recieve_adc_packet rec_adc_packet_ins (
     .WR_EN          (  adcdata_wren     )
 );      
 
-(*mark_debug = "true"*) wire circle_buffer_wren = ( !fifo_write_veto && adcdata_wren && run_ctrl_wr_en );
+//********************************************************//
+//*****  Asynchronous FIFO for temporal data storage *****//
+//********************************************************//
+(* mark_debug = "true" *) wire full_async_fifo;
+(* mark_debug = "true" *) wire prog_full;
+(* mark_debug = "true" *) wire [14:0] rd_data_count;
+(* mark_debug = "true" *) wire [14:0] wr_data_count;
+(* mark_debug = "true" *) wire run_ctrl_wr_en;
+
+(*mark_debug = "true"*) wire circle_buffer_wren = ( adcdata_wren && run_ctrl_wr_en );
 (*mark_debug = "true"*) wire adc_fifo_wren;
 (*mark_debug = "true"*) wire [15:0] circle_buffer_addra, circle_buffer_addrb;
 (*mark_debug = "true"*) wire [31:0] circle_buffer_out32, adc_fifo_din;
 (*mark_debug = "true"*) wire [15:0] trigger_cnt;
 (*mark_debug = "true"*) wire trigger_valid,trigger_cnt_valid;
+
 
 circle_buffer_read_write_ctrl circle_buffer_ctrl_ins (
     .CLK          (  clk100M             ),
@@ -528,8 +450,6 @@ blk_mem_32x48200 circle_buffer_ins (
     .doutb (  circle_buffer_out32 )
 );
 
-//wire almost_full_flag;
-
 coregen_clk_crossing_fifo32 clk_crossing_fifo32_ins (
   .rst           (  rst_command          ),  // input wire rst
   .wr_clk        (  clk100M              ),  // input wire wr_clk
@@ -539,10 +459,10 @@ coregen_clk_crossing_fifo32 clk_crossing_fifo32_ins (
   .rd_en         (  user_r_read_32_rden  ),  // input wire rd_en
   .dout          (  user_r_read_32_data  ),  // output wire [31 : 0] dout
   .full          (  full_async_fifo      ),  // output wire full
-  .almost_full   (                       ),  // output wire almost_full
   .empty         (  user_r_read_32_empty ),  // output wire empty
   .rd_data_count (  rd_data_count        ),  // output wire [14 : 0] rd_data_count
-  .wr_data_count (  wr_data_count        )   // output wire [14 : 0] wr_data_count
+  .wr_data_count (  wr_data_count        ),  // output wire [14 : 0] wr_data_count
+  .prog_full     (  prog_full            )   // output wire prog_full
 );
      
 //**************************************************************//
@@ -555,7 +475,7 @@ set_chip_addr set_chip_addr_ins(
     .CLK           (  clk100M      ),
     .CLK_IPCORE    (  clk200M      ),
     .RST           (  rst_command  ),
-    .SET           (  init_command ),
+    .SET           (  set_command  ),
     .CHIP_ADDR_IN  (  addr_command ),
     .CHIP_ADDR_OUT (  addr_to_cmos )
 );
@@ -564,6 +484,13 @@ set_chip_addr set_chip_addr_ins(
 //**************************************//
 //*****  Command Signal Generator  *****//
 //**************************************//
+wire start_command;
+wire start_pulse;
+wire stop_command;
+wire stop_pulse;
+
+wire [2:0] run_status;
+wire [2:0] fifo_status;
 gen_user_command gen_user_command_ins (
     .CLK                    (  clk100M           ),
     .mem8_in_port_b         (  mem8_port_b_rdata ),
@@ -571,14 +498,16 @@ gen_user_command gen_user_command_ins (
     .mem8_addr_port_b       (  mem8_port_b_addr  ),
     .mem8_access_en_port_b  (  mem8_port_b_rd_en ),
     .mem8_w_enable_port_b   (  mem8_port_b_wr_en ),
-    .FIFO_OVER_FLOW_FLAG    (  full_async_fifo   ),
+    .RUN_STATUS             (  run_status        ),
+    .FIFO_STATUS            (  fifo_status       ),
     .ROW_READ_START         (  row_read_start    ),
     .ROW_READ_END           (  row_read_end      ),
     .COLUMN_READ_START      (  column_read_start ),
     .COLUMN_READ_END        (  column_read_end   ),
     .CHIP_ADDRESS           (  addr_command      ),
-    .INIT                   (  init_command      ),
-    .INIT_PULSE             (  init_pulse        ),
+    .TIME_DELAY             (  timing_delay      ),
+    .SET                    (  set_command       ),
+    .SET_PULSE              (  set_pulse         ),
     .START                  (  start_command     ),
     .START_PULSE            (  start_pulse       ),
     .STOP                   (  stop_command      ),
@@ -586,6 +515,37 @@ gen_user_command gen_user_command_ins (
     .RST                    (  rst_command_pre   ),
     .RST_PULSE              (  rst_pulse_pre     )
 );
+
+//*****************************//
+//*****  Status Control   *****//
+//***************** ***********//
+
+wire fifo_empty = ( wr_data_count == 15'h0 );  // judge fifo empty or not
+wire buffer_switch = 1'b0; // No Buffer switch (for 1.3) 
+wire trigger_pulse = 1'b0; // No Trigger setting (for v1.3) 
+state_control state_control_ins (
+    .CLK            (  clk100M          ),  
+    .RST            (  rst_command_pre  ),
+    .RST_PULSE      (  rst_pulse_pre    ),
+    .SET            (  set_command      ),
+    .SET_PULSE      (  set_pulse        ),
+    .START          (  start_command    ),  
+    .START_PULSE    (  start_pulse      ),
+    .STOP           (  stop_command     ),
+    .STOP_PULSE     (  stop_pulse       ),
+    .FIFO_EMPTY     (  fifo_empty       ),
+    .FIFO_PROG_FULL (  prog_full        ),
+    .FIFO_FULL      (  full_async_fifo  ),
+    .FRAME_END      (  frame_last_word  ),
+    .BUFFER_SWITCH  (  buffer_switch    ),
+    .TRIG_PULSE     (  trigger_pulse    ),
+    .RUN_STATUS     (  run_status       ),
+    .FIFO_STATUS    (  fifo_status      ),
+    .FIFO_WR_EN     (  run_ctrl_wr_en   ),
+    .RST_SIG        (  rst_command      ),
+    .RST_SIG_PULSE  (  rst_pulse        )
+);
+
 
 ///////////////////////////TLU Module/////////////////////////
 tlu_handshake tlu_handshake_inst (

@@ -50,36 +50,12 @@ begin
     else
             sr_out_rst <= 1'b0;
 end
-        
-        
-// Without implement "State Machine", memory access should need to wait the finish timing of writing memories.
-// Timing of the Memory Access is shifted as Writing clock = Time(4 MHz*4 clock) = Time(100 MHz*100 clock).    
-// Inserting extra reset signal  when "Reset" is issueed. 
-//reg [7:0] rst_cnt = 8'h0;
-//reg rst = 1'b0;
-//always @( posedge CLK )
-//begin
-//    if ( RST ) begin
-//        rst <= 1'b1;
-//        rst_cnt <= 8'h0;
-//    end
-//    else if ( rst_cnt < 8'd100 ) begin
-//        rst <= 1'b1;
-//        rst_cnt <= rst_cnt + 8'h1;
-//    end
-//    else
-//        rst <= 1'b0;
-//end 
 
-// 4MHz 1 clock = 100MHz 25 clocks
-// 2MHz 1 clock = 100MHz 50 clocks
-//reg [4:0] ch_cnt  = 5'h0;
 
 always @( posedge CLK )
 begin
     if ( RST )
         ch_cnt <= 6'h0;
-    //else if ( rst == 1'b1 )   // Stop couting while internal reset is High .
     else if (sr_out_rst == 1'b1 )   
         ch_cnt <= 6'h0;
     //else if ( ch_cnt == 5'd24 ) begin
@@ -96,7 +72,6 @@ always @( posedge CLK )
 begin
     if ( RST )
         ad_cnt <= 6'h0;
-    //else if ( rst == 1'b1 )   // Stop couting while internal reset is High .
     else if ( sr_out_rst == 1'b1 )   
         ad_cnt <= 6'h0; 
     else if ( ch_cnt == 6'd49 ) begin
@@ -139,7 +114,6 @@ begin
     if ( RST ) begin
         event_number <= 16'h0;
     end
-//    else if ( ch_id == 6'h0 && ad_id == 6'h0 )
     else if ( sr_out_rst == 1'b1 )
         event_number <= event_number + 16'h1;
 end
@@ -249,7 +223,6 @@ begin
         6'd2  : data32_pre <= event_header;                // multiplexer1
         6'd3  : data32_pre <= 32'h0;           //empty word saved for trigger count and sequence order
         6'd4  : data32_pre <= { d_header, col_sta_raw, col_end_raw, 2'h0, ad_id };
-//        6'd2  : data32_pre <= { d_header, event_number };
         6'd5  : data32_pre <= { d1_d02, d1_d01 };          // multiplexer2     // 0 <-> 3  : 0/2 + 3
         6'd6  : data32_pre <= { d1_d04, d1_d03 };                              // 2 <-> 4  : 2/2 + 3
         6'd7  : data32_pre <= { d2_d06, d2_d05 };          // multiplexer3     // 4 <-> 5  : 4/2 + 3
@@ -259,7 +232,6 @@ begin
         6'd11 : data32_pre <= { d4_d14, d4_d13 };          // multiplexer5
         6'd12 : data32_pre <= { d4_d16, d4_d15 };                              // 14<->10 : 14/2 + 3
         6'd13 : data32_pre <= { d5_d_footer[15:12], row_sta, row_end, event_number};  // multiplexer6
-//        6'd11 : data32_pre <= { d5_d_footer, 10'h0, ad_id };  // multiplexer6
         6'd14 : data32_pre <= d5_event_footer;
         default : data32_pre <= 32'h0;
     endcase
@@ -313,19 +285,9 @@ begin
     frame_end <= frame_end_pre;
 end
 
-// Event Type Check 
-//reg sr_out_tag = 1'b0;
-//reg [1:0] test_sr_out_tag = 2'b00;
-//always @( posedge CLK )
-//begin
-//    test_sr_out_tag <= d_header[11:10];
-//    if ( d_header[11:10] == 2'b00 ) 
-//        sr_out_tag <= 1'b0;
-//    if ( d_header[11:10] == 2'b10 ) 
-//        sr_out_tag <= 1'b1;
-//end
 
-wire sr_out_tag = ( d_header[11:10] == 2'b10 );
+// Event Type Check 
+wire sr_out_tag = ( d_header[11:10] == 2'b10 ); // Acutually, dummy SR_OUT is input to header, therefore, always 2'b10
 
 //wire wr_test = wr_en & sr_out_tag ;
 

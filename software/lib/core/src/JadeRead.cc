@@ -63,11 +63,20 @@ void JadeRead::Reset(){
 std::vector<JadeDataFrameSP>
 JadeRead::Read(size_t nframe,
 	       const std::chrono::milliseconds &timeout){
-  size_t size_buf = FRAME_SIZE * nframe;
-  m_buf.resize(size_buf);
   std::vector<JadeDataFrameSP> v_df;
-  v_df.reserve(nframe);
+  for(size_t i = 0; i<nframe; i++){
+    v_df.push_back(Read(timeout));
+  } 
+  return v_df;
+}
 
+JadeDataFrameSP JadeRead::Read(const std::chrono::milliseconds &timeout){
+  uint32_t size_pack;
+  size_pack = sizeof(size_pack);
+  size_t size_buf = size_pack;
+  if(m_buf.size() < size_buf){
+    m_buf.resize(size_buf);
+  }
   size_t size_filled = 0;
   std::chrono::system_clock::time_point tp_timeout;
   bool can_time_out = false;
@@ -91,7 +100,6 @@ JadeRead::Read(size_t nframe,
       std::cerr<<"JadeRead: reading error\n";
       throw;
     }
-
     if(read_r == 0){
       std::cout<<"read_r==0"<<std::endl;
       if(!can_time_out){
@@ -108,12 +116,11 @@ JadeRead::Read(size_t nframe,
       continue;
     }
     size_filled += read_r;
+    if(size_filled == sizeof(size_pack)){
+      size_pack = LE32TOH(*(reinterpret_cast<uint32_t*>(&m_buf[0])));
+      size_buf = size_pack;
+    }
     can_time_out = false;
   }
-  size_t sub_beg = 0;
-  while(sub_beg + FRAME_SIZE <=  size_filled){
-    v_df.emplace_back(new JadeDataFrame(m_buf.substr(sub_beg, FRAME_SIZE)));
-    sub_beg += FRAME_SIZE;
-  }  
-  return v_df;
+  return JadeDataFrameSP(new JadeDataFrame(m_buf.substr(0, size_pack)));
 }

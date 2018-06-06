@@ -6,13 +6,16 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <map>
+#include <algorithm>
+#include <functional>
 
 class DLLEXPORT JadeDataFrame{
  public:
   JadeDataFrame(const std::string &data);
   JadeDataFrame(std::string &&data);
   JadeDataFrame(size_t nraw);
-  JadeDataFrame() = delete;
+  JadeDataFrame();
   virtual ~JadeDataFrame();
   virtual void Decode();
   std::string& RawDataString();
@@ -29,6 +32,9 @@ class DLLEXPORT JadeDataFrame{
   uint32_t GetMatrixSizeX() const;
   uint32_t GetMatrixSizeY() const;
   void Print(std::ostream& os, size_t ws = 0) const;
+  std::vector<int16_t> GetFrameCDS();
+  JadeDataFrame operator-(JadeDataFrame &df);
+
  private:
   bool m_is_decoded;
   std::string m_data_raw;
@@ -40,6 +46,7 @@ class DLLEXPORT JadeDataFrame{
   uint16_t m_n_x;
   uint16_t m_n_y;
   std::vector<int16_t> m_data;
+  std::vector<int16_t> m_cds_frame_adc;
 };
 
 using JadeDataFrameSP = std::shared_ptr<JadeDataFrame>;

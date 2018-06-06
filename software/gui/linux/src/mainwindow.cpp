@@ -146,13 +146,13 @@ void MainWindow::Init_Online_Image()
   ui->Canvas_Plot->getCanvas()->Divide(1, 2);
   ui->Canvas_Plot->getCanvas()->cd(1);
 
-  h1f = new TH1F("h1f", "Test random numbers", 4000, -2000, 2000);
+  h1f = new TH1F("h1f", "ADC Hist", 4000, -2000, 2000);
   h1f->SetFillColor(kViolet + 2);
   h1f->SetFillStyle(3001);
   h1f->Draw();
 
   ui->Canvas_Plot->getCanvas()->cd(2);
-  h2f = new TH2F("h2f", "Test random numbers", 48, 0, 48, 16, 0, 16);
+  h2f = new TH2F("h2f", "ADC MAP", m_nx, 0, m_nx, m_ny, 0, m_ny);
   h2f->SetFillColor(kViolet + 2);
   h2f->SetFillStyle(3001);
   h2f->Draw();

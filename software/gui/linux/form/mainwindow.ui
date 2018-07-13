@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1192</width>
-    <height>848</height>
+    <height>882</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -84,14 +84,14 @@
             <item row="3" column="0">
              <widget class="QLabel" name="label_26">
               <property name="text">
-               <string>File Name:</string>
+               <string>Config Path:</string>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="LineEdit_Online_FileName">
+             <widget class="QLineEdit" name="LineEdit_Online_cfName">
               <property name="text">
-               <string>test</string>
+               <string>sample_gui.json</string>
               </property>
              </widget>
             </item>

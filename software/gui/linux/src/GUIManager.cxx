@@ -3,14 +3,7 @@
 using namespace std::chrono_literals;
 
 GUIManager::GUIManager()
-    : m_opt_data_input("//./xillybus_read_32")
-    , m_opt_reg("//./xillybus_mem_8")
-    , m_opt_time_run("60")
-    , m_opt_ev_print("10000")
-    , m_opt_chip_address(1)
-    , m_opt_nfiles(1)
-    , m_col(0)
-    , m_row(0)
+    : m_opt_config_file("sample_gui.json")
 {
   m_man = new JadeManager(JadeOption("{}"));
 }
@@ -30,60 +23,87 @@ std::string GUIManager::get_now_str()
 
 void GUIManager::start_run()
 {
-  std::cout << "=========start at " << get_now_str() << "=======" << std::endl;
   m_man->DeviceConnect();
   m_man->DeviceControl("STOP");
   std::this_thread::sleep_for(1s);
+  std::cout << "=========start at " << get_now_str() << "=======" << std::endl;
+  m_man->DeviceControl("START");
+  std::cout << "=========" << std::endl;
   m_man->StartDataTaking();
+  std::cout << "=========" << std::endl;
   emit IsRunning();
 }
 
 void GUIManager::stop_run()
 {
   emit IsStop();
+  std::cout << "=========" << std::endl;
   m_man->StopDataTaking();
+  std::cout << "=========" << std::endl;
   m_man->DeviceControl("STOP");
   std::this_thread::sleep_for(1s);
-  m_man->DeviceDisconnect();
   std::cout << "=========exit at " << get_now_str() << "=======" << std::endl;
+  m_man->DeviceDisconnect();
 }
 
 void GUIManager::config()
 {
-  size_t time_run = get_run_time();
-  size_t ev_print = get_ev_print();
+  std::ifstream ifs(m_opt_config_file);
+  if (!ifs.good()) {
+    std::cerr << "Unable to open configrue file in PATH: " << m_opt_config_file << "\n";
+    throw;
+  }
 
-  std::time_t time_now = std::time(nullptr);
-  char time_buff[13];
-  time_buff[12] = 0;
-  std::strftime(time_buff, sizeof(time_buff),
-      "%y%m%d%H%M%S", std::localtime(&time_now));
-  std::string time_str(time_buff);
-  std::string data_output_path = m_opt_data_output;
+  std::string config_str;
+  config_str.assign((std::istreambuf_iterator<char>(ifs)),
+      (std::istreambuf_iterator<char>()));
 
-  std::cout << "{opt_data_input:" << m_opt_data_input << "}" << std::endl;
-  std::cout << "{opt_reg:" << m_opt_reg << "}" << std::endl;
-  std::cout << "{data_output_path:" << data_output_path << "}" << std::endl;
-  std::cout << "{time_run:" << time_run << "}" << std::endl;
-  std::cout << "{ev_print:" << ev_print << "}" << std::endl;
-  std::cout << "{chip adress: CHIPA" << m_opt_chip_address << "}" << std::endl;
+  JadeOption conf(config_str);
+  JadeOption conf_core = conf.GetSubOption("JadeCore");
 
-  m_man->SetRegCtrl(std::make_shared<JadeRegCtrl>(JadeOption("{\"PATH\":\"" + m_opt_reg + "\"}")));
-  m_man->SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\"" + m_opt_data_input + "\"}")));
-  m_man->SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
-  m_man->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\"" + data_output_path + "\"}")));
-  m_monitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":" + m_opt_ev_print + ",\"CURRENT_TIME\":\"" + time_str + "\",\"COLUMN\":" + std::to_string(m_col) + ",\"ROW\":" + std::to_string(m_row) + ",\"ADC_THREASHOLD\":" + std::to_string(m_thr) + "}"));
-  m_man->SetMonitor(std::dynamic_pointer_cast<JadeMonitor>(m_monitor));
+  JadeOption conf_man = conf_core.GetSubOption("JadeManager");
+  JadeOption conf_man_para = conf_man.GetSubOption("parameter");
+  JadeOption conf_ctrl = conf_core.GetSubOption("JadeRegCtrl");
+  JadeOption conf_ctrl_para = conf_ctrl.GetSubOption("parameter");
+  JadeOption conf_read = conf_core.GetSubOption("JadeRead");
+  JadeOption conf_read_para = conf_read.GetSubOption("parameter");
+  JadeOption conf_flt = conf_core.GetSubOption("JadeFilter");
+  JadeOption conf_flt_para = conf_flt.GetSubOption("parameter");
+  JadeOption conf_wrt = conf_core.GetSubOption("JadeWrite");
+  JadeOption conf_wrt_para = conf_wrt.GetSubOption("parameter");
+  JadeOption conf_mnt = conf_core.GetSubOption("JadeMonitor");
+  JadeOption conf_mnt_para = conf_mnt.GetSubOption("parameter");
 
-  std::string cmd = "CHIPA" + std::to_string(m_opt_chip_address);
+  std::cout << conf_man_para.DumpString() << std::endl;
+  std::cout << conf_ctrl_para.DumpString() << std::endl;
+  std::cout << conf_read_para.DumpString() << std::endl;
+  std::cout << conf_flt_para.DumpString() << std::endl;
+  std::cout << conf_wrt_para.DumpString() << std::endl;
+  std::cout << conf_mnt_para.DumpString() << std::endl;
+
+  JadeRegCtrlSP pctrl = std::make_shared<JadeRegCtrl>(conf_ctrl_para);
+  JadeReadSP pread = std::make_shared<JadeRead>(conf_read_para);
+  JadeFilterSP pflt = std::make_shared<JadeFilter>(conf_flt_para);
+  JadeWriteSP pwrt = std::make_shared<JadeWrite>(conf_wrt_para);
+  m_mnt = std::make_shared<GUIMonitor>(conf_mnt_para);
+
+  size_t nsec = conf_man_para.GetIntValue("SecPerLoop");
+  size_t nloop = conf_man_para.GetIntValue("N_Loops");
+  std::string chip_address = conf_man_para.GetStringValue("ChipAddress");
+
+  m_man->SetRegCtrl(pctrl);
+  m_man->SetReader(pread);
+  m_man->SetFilter(pflt);
+  m_man->SetWriter(pwrt);
+  m_man->SetMonitor(std::dynamic_pointer_cast<JadeMonitor>(m_mnt));
   m_man->DeviceConnect();
-  m_man->DeviceControl(cmd);
+  m_man->DeviceControl(chip_address);
   m_man->DeviceControl("SET");
-  std::this_thread::sleep_for(200ms);
+  std::cout << "Select address: " << chip_address << std::endl;
   m_man->DeviceDisconnect();
 }
 
 std::shared_ptr<GUIMonitor> GUIManager::get_monitor()
 {
-  return m_monitor;
+  return m_mnt;
 }

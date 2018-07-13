@@ -83,24 +83,8 @@ void MainWindow::Btn_Online_Choose_Clicked()
 
 void MainWindow::Btn_Online_Config_Clicked()
 {
-  QString qinfile = ui->LineEdit_Online_InName->text();
-  m_GUIManager->set_input_data_path(qinfile.toStdString());
-
-  QString qoutfile = ui->LineEdit_Online_FilePath->text() + "/" + ui->LineEdit_Online_FileName->text();
-  m_GUIManager->set_output_data_path(qoutfile.toStdString());
-
-  QString qregfile = ui->LineEdit_Online_RegName->text();
-  m_GUIManager->set_register_data_path(qregfile.toStdString());
-
-  m_timer_run->setInterval(int(ui->SpinBox_Online_TimeRun->value()));
-  m_GUIManager->set_run_time(std::to_string(ui->SpinBox_Online_TimeRun->value()));
-
-  m_timer->setInterval(int(1e6 / ui->SpinBox_Online_evDisplay->value()));
-  m_GUIManager->set_ev_print(std::to_string(ui->SpinBox_Online_SampleEvents->value()));
-  m_GUIManager->set_chip_address(ui->SpinBox_Online_ChipAddress->value());
-  m_GUIManager->set_nfiles(ui->SpinBox_Online_NFiles->value());
-  m_GUIManager->set_channel(ui->SpinBox_Online_Col->value(), ui->SpinBox_Online_Row->value());
-  m_GUIManager->set_adc_threshold(ui->SpinBox_Online_ADCThreshold->value());
+  QString qinfile = ui->LineEdit_Online_cfName->text();
+  m_GUIManager->set_config_path(qinfile.toStdString());
 
   m_GUIManager->config();
 }

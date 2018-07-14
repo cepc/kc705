@@ -28,7 +28,6 @@ class GUIMonitor : public JadeMonitor {
   int m_col;
   int m_row;
   int m_thr; //*
-  std::string m_curr_time;
   JadeDataFrameSP m_df;
   JadeDataFrameSP m_u_df;
   std::mutex m_mx_get;

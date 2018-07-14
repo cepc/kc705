@@ -14,13 +14,12 @@ GUIMonitor::GUIMonitor(const JadeOption& options)
     , m_thr(0) //*
 {
   m_ev_get = m_opt.GetIntValue("PRINT_EVENT_N");
-  m_curr_time = m_opt.GetStringValue("CURRENT_TIME");
   m_col = m_opt.GetIntValue("COLUMN");
   m_row = m_opt.GetIntValue("ROW");
   m_thr = m_opt.GetIntValue("ADC_THREASHOLD");
 
-  m_adc_map = std::shared_ptr<TH2F>(new TH2F(Form("ADC map %s", m_curr_time), "ADC map", m_nx, 0, m_nx, m_ny, 0, m_ny));
-  m_adc_hist = std::shared_ptr<TH1F>(new TH1F(Form("ADC %s", m_curr_time), "ADC", 2000, -1000, 1000));
+  m_adc_map = std::shared_ptr<TH2F>(new TH2F("ADC_map", "ADC map", m_nx, 0, m_nx, m_ny, 0, m_ny));
+  m_adc_hist = std::shared_ptr<TH1F>(new TH1F("ADC", "ADC", 2000, -1000, 1000));
 }
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)

@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget* parent)
   connect(m_GUIManager, SIGNAL(IsStop()), m_timer, SLOT(stop()));
 
   m_timer_run = new QTimer(this);
+  qDebug() << "Time Run: " << int(ui->SpinBox_Online_TimeRun->value());
   m_timer_run->setInterval(int(ui->SpinBox_Online_TimeRun->value()));
   connect(m_timer_run, SIGNAL(timeout()), this, SLOT(Btn_Online_StopRun_Clicked()));
   connect(m_GUIManager, SIGNAL(IsRunning()), m_timer_run, SLOT(start()));
@@ -83,6 +84,9 @@ void MainWindow::Btn_Online_Choose_Clicked()
 
 void MainWindow::Btn_Online_Config_Clicked()
 {
+  qDebug() << "Time Run: " << int(ui->SpinBox_Online_TimeRun->value());
+  m_timer_run->setInterval(int(ui->SpinBox_Online_TimeRun->value()));
+
   QString qinfile = ui->LineEdit_Online_cfName->text();
   m_GUIManager->set_config_path(qinfile.toStdString());
 

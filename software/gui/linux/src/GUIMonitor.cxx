@@ -26,7 +26,7 @@ GUIMonitor::GUIMonitor(const JadeOption& options)
 void GUIMonitor::Monitor(JadeDataFrameSP df)
 {
   if (m_ev_get != 0 && m_ev_num % m_ev_get < 10) {
-    //df->Print(std::cout);
+    df->Print(std::cout);
     std::unique_lock<std::mutex> lk_in(m_mx_set);
     m_df = df;
     lk_in.unlock();
@@ -36,14 +36,11 @@ void GUIMonitor::Monitor(JadeDataFrameSP df)
       return;
     }
 
-    auto tr = new TRandom();
     auto cds_adc = m_df->GetFrameCDS();
     for (size_t iy = 0; iy < m_ny; iy++)
       for (size_t ix = 0; ix < m_nx; ix++) {
         auto pos = ix + m_nx * iy;
-        auto adc_value = cds_adc.at(pos);
-        auto ran_value = static_cast<int>(tr->Gaus(0, 300));
-        auto value = adc_value + ran_value;
+        auto value = cds_adc.at(pos);
         if (std::abs(value) > m_thr) {
           m_adc_map->Fill(ix, iy);
         }

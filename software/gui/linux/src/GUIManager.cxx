@@ -71,7 +71,7 @@ void GUIManager::config()
   JadeOption conf_flt_para = conf_flt.GetSubOption("parameter");
   JadeOption conf_wrt = conf_core.GetSubOption("JadeWrite");
   JadeOption conf_wrt_para = conf_wrt.GetSubOption("parameter");
-  JadeOption conf_mnt = conf_core.GetSubOption("JadeMonitor");
+  JadeOption conf_mnt = conf_core.GetSubOption("GUIMonitor");
   JadeOption conf_mnt_para = conf_mnt.GetSubOption("parameter");
 
   std::cout << conf_man_para.DumpString() << std::endl;

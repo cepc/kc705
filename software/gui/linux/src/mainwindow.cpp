@@ -134,7 +134,7 @@ void MainWindow::Init_Online_Image()
   ui->Canvas_Plot->getCanvas()->Divide(1, 2);
   ui->Canvas_Plot->getCanvas()->cd(1);
 
-  h1f = new TH1F("h1f", "ADC Hist", 4000, -2000, 2000);
+  h1f = new TH1F("h1f", "ADC Hist", 2000, -10000, 10000);
   h1f->SetFillColor(kViolet + 2);
   h1f->SetFillStyle(3001);
   h1f->Draw();

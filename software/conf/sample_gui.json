@@ -12,14 +12,14 @@
     "JadeRead":{
       "type":"default",
       "parameter":{
-        "PATH":"/tmp/test_pipe"
+        "PATH":"/dev/xillybus_read_32"
       }
     },
     "JadeWrite":{
       "type":"default",
       "parameter":{
-        "PATH":"/home/chenlj/Documents/Code/kc705/build/test",
-        "DISABLE_FILE_WRITE":false
+        "PATH":"/home/cepcdaq/Documents/data/test",
+        "DISABLE_FILE_WRITE":true
       }
     },
     "JadeFilter":{
@@ -32,15 +32,15 @@
       "type":"default",
       "parameter":{
         "PRINT_EVENT_N":40000,
-        "COLUMN": 1,
-        "ROW": 1,
-        "ADC_THREASHOLD": 500
+        "COLUMN": 10,
+        "ROW": 26,
+        "ADC_THREASHOLD": 200
       }
     },
     "JadeRegCtrl":{
       "type":"default",
       "parameter":{
-        "PATH":"/tmp/test_reg",
+        "PATH":"/dev/xillybus_mem_8",
         "command_list":{
           "RESET":{
             "address":1,

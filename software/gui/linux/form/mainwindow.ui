@@ -49,7 +49,7 @@
             <item row="7" column="1">
              <widget class="QLineEdit" name="LineEdit_Online_RegName">
               <property name="text">
-               <string>/tmp/test_reg</string>
+               <string>/dev/xillybus_mem_8</string>
               </property>
              </widget>
             </item>
@@ -91,14 +91,14 @@
             <item row="3" column="1">
              <widget class="QLineEdit" name="LineEdit_Online_cfName">
               <property name="text">
-               <string>sample_gui.json</string>
+               <string>/home/cepcdaq/JadePix/kc705/software/conf/sample_gui.json</string>
               </property>
              </widget>
             </item>
             <item row="5" column="1">
              <widget class="QLineEdit" name="LineEdit_Online_InName">
               <property name="text">
-               <string>/tmp/test_pipe</string>
+               <string>/dev/xillybus_read_32</string>
               </property>
              </widget>
             </item>
@@ -141,7 +141,7 @@
                <number>999999999</number>
               </property>
               <property name="value">
-               <number>60</number>
+               <number>10000</number>
               </property>
               <property name="displayIntegerBase">
                <number>10</number>
@@ -217,7 +217,7 @@
                <number>999999999</number>
               </property>
               <property name="value">
-               <number>1000</number>
+               <number>10000</number>
               </property>
               <property name="displayIntegerBase">
                <number>10</number>
@@ -497,7 +497,7 @@
      <x>0</x>
      <y>0</y>
      <width>1192</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

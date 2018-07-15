@@ -19,7 +19,7 @@ GUIMonitor::GUIMonitor(const JadeOption& options)
   m_thr = m_opt.GetIntValue("ADC_THREASHOLD");
 
   m_adc_map = std::shared_ptr<TH2F>(new TH2F("ADC_map", "ADC map", m_nx, 0, m_nx, m_ny, 0, m_ny));
-  m_adc_hist = std::shared_ptr<TH1F>(new TH1F("ADC", "ADC", 2000, -1000, 1000));
+  m_adc_hist = std::shared_ptr<TH1F>(new TH1F("ADC", "ADC", 2000, -10000, 10000));
 }
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)
@@ -41,7 +41,7 @@ void GUIMonitor::Monitor(JadeDataFrameSP df)
         auto pos = ix + m_nx * iy;
         auto value = cds_adc.at(pos);
         if (std::abs(value) > m_thr) {
-          m_adc_map->Fill(ix, iy);
+          m_adc_map->Fill(m_nx-ix, m_ny-iy);
         }
         if (ix == m_col && iy == m_row) {
           m_adc_hist->Fill(value);

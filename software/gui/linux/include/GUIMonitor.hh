@@ -27,6 +27,7 @@ class GUIMonitor : public JadeMonitor {
   size_t m_ev_num;
   int m_col;
   int m_row;
+  int m_nbins;
   int m_thr; //*
   JadeDataFrameSP m_df;
   JadeDataFrameSP m_u_df;

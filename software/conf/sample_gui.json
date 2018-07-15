@@ -32,9 +32,10 @@
       "type":"default",
       "parameter":{
         "PRINT_EVENT_N":40000,
-        "COLUMN": 10,
-        "ROW": 26,
-        "ADC_THREASHOLD": 200
+        "COLUMN": 8,
+        "ROW": 33,
+        "NBINS": 20000,
+        "ADC_THREASHOLD": 500
       }
     },
     "JadeRegCtrl":{

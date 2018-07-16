@@ -124,26 +124,33 @@ void MainWindow::Init_Online_Image()
   // Handle the "Draw Histogram" button clicked() event.
 
   static TH1F* h1f = 0;
-  static TH2F* h2f = 0;
+  static TH2F* h2f1 = 0;
+  static TH2F* h2f2 = 0;
 
   ui->Canvas_Plot->getCanvas()->Clear();
   ui->Canvas_Plot->getCanvas()->cd();
   ui->Canvas_Plot->getCanvas()->SetBorderMode(0);
   ui->Canvas_Plot->getCanvas()->SetFillColor(0);
   ui->Canvas_Plot->getCanvas()->SetGrid();
-  ui->Canvas_Plot->getCanvas()->Divide(1, 2);
-  ui->Canvas_Plot->getCanvas()->cd(1);
+  ui->Canvas_Plot->getCanvas()->Divide(3, 1);
 
+  ui->Canvas_Plot->getCanvas()->cd(1);
   h1f = new TH1F("h1f", "ADC Hist", 2000, -10000, 10000);
   h1f->SetFillColor(kViolet + 2);
   h1f->SetFillStyle(3001);
   h1f->Draw();
 
   ui->Canvas_Plot->getCanvas()->cd(2);
-  h2f = new TH2F("h2f", "ADC MAP", m_nx, 0, m_nx, m_ny, 0, m_ny);
-  h2f->SetFillColor(kViolet + 2);
-  h2f->SetFillStyle(3001);
-  h2f->Draw();
+  h2f1 = new TH2F("h2f1", "ADC_Counts", m_nx, 0, m_nx, m_ny, 0, m_ny);
+  h2f1->SetFillColor(kViolet + 2);
+  h2f1->SetFillStyle(3001);
+  h2f1->Draw();
+
+  ui->Canvas_Plot->getCanvas()->cd(3);
+  h2f2 = new TH2F("h2f2", "ADC_MAP", m_nx, 0, m_nx, m_ny, 0, m_ny);
+  h2f2->SetFillColor(kViolet + 2);
+  h2f2->SetFillStyle(3001);
+  h2f2->Draw();
 
   ui->Canvas_Plot->getCanvas()->Modified();
   ui->Canvas_Plot->getCanvas()->Update();
@@ -160,8 +167,13 @@ void MainWindow::Update_Online_Image()
     h1f->Draw();
 
     ui->Canvas_Plot->getCanvas()->cd(2);
-    auto hist2D = (TH2F*)m_GUIManager->get_monitor()->GetADCMap()->Clone("ADC MAP");
-    hist2D->Draw("COLZ");
+    auto hist2D1 = (TH2F*)m_GUIManager->get_monitor()->GetADCCounts()->Clone("ADC_Counts");
+    hist2D1->Draw("COLZ");
+
+    ui->Canvas_Plot->getCanvas()->cd(3);
+    auto hist2D2 = (TH2F*)m_GUIManager->get_monitor()->GetADCMap()->Clone("ADC_MAP");
+    hist2D2->Draw("COLZ");
+
     ui->Canvas_Plot->getCanvas()->Modified();
     ui->Canvas_Plot->getCanvas()->Update();
   }

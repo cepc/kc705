@@ -155,7 +155,7 @@ void MainWindow::Init_Online_Image()
   for (int i = 0; i < 4; i++)
     for (int j = 0; j < 4; j++) {
       pad1D[i][j]->cd();
-      auto h1f_clone = (TH1F*)h1f1->Clone(Form("%h1f_%i_%i", i, j));
+      auto h1f_clone = (TH1F*)h1f1->Clone(Form("h1f_%i_%i", i, j));
       h1f_clone->Draw();
     }
 

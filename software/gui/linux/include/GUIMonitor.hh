@@ -19,6 +19,7 @@ class GUIMonitor : public JadeMonitor {
   void Monitor(JadeDataFrameSP df);
   void Reset();
   std::shared_ptr<TH2F> GetADCMap();
+  std::shared_ptr<TH2F> GetADCCounts();
   std::shared_ptr<TH1F> GetADCHist();
 
   private:
@@ -36,6 +37,8 @@ class GUIMonitor : public JadeMonitor {
   uint32_t m_nx;
   uint32_t m_ny;
 
+  std::shared_ptr<TH2F> m_adc_counts;
+  std::shared_ptr<TH2F> m_adc_counts_clone;
   std::shared_ptr<TH2F> m_adc_map;
   std::shared_ptr<TH2F> m_adc_map_clone;
   std::shared_ptr<TH1F> m_adc_hist;

@@ -22,7 +22,9 @@ GUIMonitor::GUIMonitor(const JadeOption& options)
 
   m_adc_counts = std::shared_ptr<TH2F>(new TH2F("ADC_counts", "ADC_counts", m_nx, 0, m_nx, m_ny, 0, m_ny));
   m_adc_map = std::shared_ptr<TH2F>(new TH2F("ADC_map", "ADC_map", m_nx, 0, m_nx, m_ny, 0, m_ny));
-  m_adc_hist = std::shared_ptr<TH1F>(new TH1F("ADC", "ADC", 2 * m_nbins, -1 * m_nbins, m_nbins));
+  for (int i = 0; i < m_nx; i++) {
+    m_adc_hist.push_back(std::shared_ptr<TH1F>(new TH1F(Form("ADC_COL_%i", i), Form("ADC_COL_%i", i), 2 * m_nbins, -1 * m_nbins, m_nbins)));
+  }
 }
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)
@@ -47,10 +49,9 @@ void GUIMonitor::Monitor(JadeDataFrameSP df)
         m_adc_map->Fill(m_nx - ix, m_ny - iy, value);
         if (std::abs(value) > m_thr) {
           m_adc_counts->Fill(m_nx - ix, m_ny - iy);
-          std::cout << value << std::endl;
         }
-        if (m_nx - ix == m_col && m_ny - iy == m_row) {
-          m_adc_hist->Fill(value);
+        if (m_nx - ix == m_row) {
+          m_adc_hist[ix]->Fill(value);
         }
       }
 
@@ -77,7 +78,7 @@ std::shared_ptr<TH2F> GUIMonitor::GetADCCounts()
   return m_adc_counts_clone;
 }
 
-std::shared_ptr<TH1F> GUIMonitor::GetADCHist()
+std::vector<std::shared_ptr<TH1F> > GUIMonitor::GetADCHist()
 {
   return m_adc_hist_clone;
 }

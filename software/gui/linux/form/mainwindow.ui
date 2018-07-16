@@ -29,8 +29,8 @@
          <widget class="QRootCanvas" name="Canvas_Plot" native="true">
           <property name="minimumSize">
            <size>
-            <width>800</width>
-            <height>600</height>
+            <width>1200</width>
+            <height>800</height>
            </size>
           </property>
          </widget>
@@ -49,7 +49,7 @@
             <item row="7" column="1">
              <widget class="QLineEdit" name="LineEdit_Online_RegName">
               <property name="text">
-               <string>/dev/xillybus_mem_8</string>
+               <string>/tmp/tmp_reg</string>
               </property>
              </widget>
             </item>
@@ -91,14 +91,14 @@
             <item row="3" column="1">
              <widget class="QLineEdit" name="LineEdit_Online_cfName">
               <property name="text">
-               <string>/home/cepcdaq/JadePix/kc705/software/conf/sample_gui.json</string>
+               <string>/home/chenlj/Documents/Code/kc705/software/conf/fedora/sample_gui.json</string>
               </property>
              </widget>
             </item>
             <item row="5" column="1">
              <widget class="QLineEdit" name="LineEdit_Online_InName">
               <property name="text">
-               <string>/dev/xillybus_read_32</string>
+               <string>/tmp/tmp_pipe</string>
               </property>
              </widget>
             </item>
@@ -497,7 +497,7 @@
      <x>0</x>
      <y>0</y>
      <width>1192</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

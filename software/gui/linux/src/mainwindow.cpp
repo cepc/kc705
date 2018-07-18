@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget* parent)
   connect(ui->Btn_Draw_Histogram, SIGNAL(clicked()), this, SLOT(Init_Online_Image()));
 
   m_timer = new QTimer(this);
+  qDebug() << "Event Display: " << int(ui->SpinBox_Online_evDisplay->value());
   m_timer->setInterval(int(1e6 / ui->SpinBox_Online_evDisplay->value()));
   connect(m_timer, SIGNAL(timeout()), this, SLOT(Update_Online_Image()));
   connect(m_GUIManager, SIGNAL(IsRunning()), m_timer, SLOT(start()));
@@ -86,6 +87,9 @@ void MainWindow::Btn_Online_Config_Clicked()
 {
   qDebug() << "Time Run: " << int(ui->SpinBox_Online_TimeRun->value());
   m_timer_run->setInterval(int(ui->SpinBox_Online_TimeRun->value()));
+
+  qDebug() << "Event Display: " << int(ui->SpinBox_Online_evDisplay->value());
+  m_timer->setInterval(int(1e6 / ui->SpinBox_Online_evDisplay->value()));
 
   QString qinfile = ui->LineEdit_Online_cfName->text();
   m_GUIManager->set_config_path(qinfile.toStdString());

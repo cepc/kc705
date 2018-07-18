@@ -33,10 +33,12 @@ class DLLEXPORT JadeDataFrame{
   uint32_t GetMatrixSizeY() const;
   void Print(std::ostream& os, size_t ws = 0) const;
   std::vector<int16_t> GetFrameCDS();
+  bool GetCDSStatus();
   JadeDataFrame operator-(JadeDataFrame &df);
 
  private:
   bool m_is_decoded;
+  bool m_is_cds;
   std::string m_data_raw;
   std::string m_description;
   std::chrono::system_clock::time_point m_ts;

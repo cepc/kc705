@@ -29,29 +29,38 @@ GUIMonitor::GUIMonitor(const JadeOption& options)
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)
 {
-  if (m_ev_get != 0 && m_ev_num % m_ev_get < 50) {
-    //df->Print(std::cout);
-    std::unique_lock<std::mutex> lk_in(m_mx_set);
-    m_df = df;
-    lk_in.unlock();
+  if (m_ev_get != 0 && m_ev_num % m_ev_get == 0) {
+    df->Print(std::cout);
+  }
+  std::unique_lock<std::mutex> lk_in(m_mx_get);
+  m_df = df;
+  lk_in.unlock();
 
-    if ((m_ev_num) == 0) {
-      m_ev_num++;
+  if ((m_ev_num) == 0) {
+    m_ev_num++;
+    return;
+  }
+
+  TRandom rdm;
+  auto factor = rdm.Uniform(1);
+  if ((m_ev_get * factor * 0.5) < (m_ev_num % m_ev_get) < (m_ev_get * factor)) {
+
+    if (!m_df->GetCDSStatus()) {
       return;
     }
-
     auto cds_adc = m_df->GetFrameCDS();
+
     m_adc_map->Reset();
     for (size_t iy = 0; iy < m_ny; iy++)
       for (size_t ix = 0; ix < m_nx; ix++) {
         auto pos = ix + m_nx * iy;
         auto value = cds_adc.at(pos);
-        m_adc_map->Fill(m_nx - ix, m_ny - iy, value);
+        m_adc_map->SetBinContent(m_nx - ix, m_ny - iy, value);
         if (std::abs(value) > m_thr) {
           m_adc_counts->Fill(m_nx - ix, m_ny - iy);
         }
-        if (m_nx - ix == m_row) {
-          m_adc_hist[ix]->Fill(value);
+        if (m_ny - iy == m_col) {
+          m_adc_hist[m_nx - ix - 1]->Fill(value);
         }
       }
 
@@ -78,7 +87,7 @@ std::shared_ptr<TH2F> GUIMonitor::GetADCCounts()
   return m_adc_counts_clone;
 }
 
-std::vector<std::shared_ptr<TH1F> > GUIMonitor::GetADCHist()
+std::vector<std::shared_ptr<TH1F>> GUIMonitor::GetADCHist()
 {
   return m_adc_hist_clone;
 }

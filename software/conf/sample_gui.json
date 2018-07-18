@@ -33,9 +33,9 @@
       "parameter":{
         "PRINT_EVENT_N":40000,
         "COLUMN": 8,
-        "ROW": 33,
-        "NBINS": 20000,
-        "ADC_THREASHOLD": 500
+        "ROW": 8,
+        "NBINS": 500,
+        "ADC_THREASHOLD": 100
       }
     },
     "JadeRegCtrl":{

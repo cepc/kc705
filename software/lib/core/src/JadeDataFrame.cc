@@ -7,6 +7,7 @@
 JadeDataFrame::JadeDataFrame(std::string&& data)
     : m_data_raw(std::move(data))
     , m_is_decoded(false)
+    , m_is_cds(false)
     , m_offset_x(0)
     , m_offset_y(0)
     , m_n_x(0)
@@ -18,6 +19,7 @@ JadeDataFrame::JadeDataFrame(std::string&& data)
 JadeDataFrame::JadeDataFrame(const std::string& data)
     : m_data_raw(data)
     , m_is_decoded(false)
+    , m_is_cds(false)
     , m_offset_x(0)
     , m_offset_y(0)
     , m_n_x(0)
@@ -28,6 +30,7 @@ JadeDataFrame::JadeDataFrame(const std::string& data)
 
 JadeDataFrame::JadeDataFrame(size_t nraw)
     : m_is_decoded(false)
+    , m_is_cds(false)
     , m_offset_x(0)
     , m_offset_y(0)
     , m_n_x(0)
@@ -95,6 +98,11 @@ uint32_t JadeDataFrame::GetMatrixSizeY() const
 std::vector<int16_t> JadeDataFrame::GetFrameCDS()
 {
   return m_cds_frame_adc;
+}
+
+bool JadeDataFrame::GetCDSStatus()
+{
+  return m_is_cds;
 }
 
 void JadeDataFrame::Decode()
@@ -208,5 +216,6 @@ JadeDataFrame JadeDataFrame::operator-(JadeDataFrame& df)
 {
   m_cds_frame_adc.resize(m_n_x * m_n_y, 0);
   std::transform(df.m_data.begin(), df.m_data.end(), this->m_data.begin(), this->m_cds_frame_adc.begin(), std::minus<int16_t>());
+  m_is_cds = true;
   return *this;
 }

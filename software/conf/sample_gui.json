@@ -6,7 +6,7 @@
       "parameter":{
         "SecPerLoop": 1,
         "N_Loops": 1,
-        "ChipAddress": "CHIPA1"
+        "ChipAddress": "CHIPA2"
       }
     },
     "JadeRead":{
@@ -32,10 +32,10 @@
       "type":"default",
       "parameter":{
         "PRINT_EVENT_N":40000,
-        "COLUMN": 8,
+        "COLUMN": 42,
         "ROW": 8,
-        "NBINS": 500,
-        "ADC_THREASHOLD": 100
+        "NBINS": 10000,
+        "ADC_THREASHOLD": 1000
       }
     },
     "JadeRegCtrl":{

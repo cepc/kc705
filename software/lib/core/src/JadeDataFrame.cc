@@ -172,6 +172,13 @@ int16_t JadeDataFrame::GetHitValue(size_t x, size_t y) const
   return val;
 }
 
+int16_t JadeDataFrame::GetCDSValue(size_t x, size_t y) const
+{
+  size_t pos = (x - m_offset_x) + m_n_x * (y - m_offset_y);
+  int16_t val = m_cds_frame_adc.at(pos);
+  return val;
+}
+
 std::vector<int16_t> JadeDataFrame::GetFrameData() const
 {
   return m_data;
@@ -212,10 +219,29 @@ void JadeDataFrame::Print(std::ostream& os, size_t ws) const
   os << std::string(ws, ' ') << "}\n";
 }
 
-JadeDataFrame JadeDataFrame::operator-(JadeDataFrame& df)
+void JadeDataFrame::PrintCDS(std::ostream& os, size_t ws) const
+{
+  if (m_is_cds) {
+    os << std::string(ws, ' ') << "{ name:JadeDataFrame,\n";
+    if (m_n_x != 0 && m_n_y != 0) {
+      os << std::string(ws + 2, ' ') << "CDS:[\n";
+      for (size_t iy = 0; iy < m_n_y; iy++) {
+        os << std::string(ws + 4, ' ') << "{row_y:" << iy + m_offset_y
+           << ",value:[" << GetCDSValue(m_offset_x, m_offset_y);
+        for (size_t ix = 1; ix < m_n_x; ix++) {
+          os << "," << GetCDSValue(ix + m_offset_x, iy + m_offset_y);
+        }
+        os << "]}\n";
+      }
+      os << std::string(ws + 2, ' ') << "]\n";
+    }
+  }
+  os << std::string(ws, ' ') << "}\n";
+}
+
+void JadeDataFrame::CDS(JadeDataFrame& df)
 {
   m_cds_frame_adc.resize(m_n_x * m_n_y, 0);
-  std::transform(df.m_data.begin(), df.m_data.end(), this->m_data.begin(), this->m_cds_frame_adc.begin(), std::minus<int16_t>());
+  std::transform(df.m_data.begin(), df.m_data.end(), m_data.begin(), m_cds_frame_adc.begin(), std::minus<int16_t>());
   m_is_cds = true;
-  return *this;
 }

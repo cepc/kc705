@@ -167,6 +167,7 @@ void MainWindow::Init_Online_Image()
   h2f1 = new TH2F("h2f1", "ADC_Counts", m_ny, 0, m_ny, m_nx, 0, m_nx);
   h2f1->SetFillColor(kViolet + 2);
   h2f1->SetFillStyle(3001);
+  pad2D1->SetLogz(1);
   h2f1->Draw();
 
   pad2D2->cd();
@@ -209,6 +210,7 @@ void MainWindow::Update_Online_Image()
 
     pad2D1->cd();
     auto hist2D1 = (TH2F*)m_GUIManager->get_monitor()->GetADCCounts()->Clone("ADC_Counts");
+    pad2D1->SetLogz(1);
     hist2D1->Draw("COLZ");
 
     pad2D2->cd();

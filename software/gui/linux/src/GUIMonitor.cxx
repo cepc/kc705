@@ -13,8 +13,13 @@ GUIMonitor::GUIMonitor(const JadeOption& options)
     , m_row(0)
     , m_nbins(10000)
     , m_thr(0) //*
+    , m_last_df({ 0 })
+    , m_enbale_print_events(false)
+    , m_monitor_percent(0.5)
 {
   m_ev_get = m_opt.GetIntValue("PRINT_EVENT_N");
+  m_enbale_print_events = m_opt.GetIntValue("ENABLE_PRINT_EVENTS");
+  m_monitor_percent = m_opt.GetFloatValue("MONITOR_PERCENT");
   m_col = m_opt.GetIntValue("COLUMN");
   m_row = m_opt.GetIntValue("ROW");
   m_thr = m_opt.GetIntValue("ADC_THREASHOLD");
@@ -29,32 +34,37 @@ GUIMonitor::GUIMonitor(const JadeOption& options)
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)
 {
-  if (m_ev_get != 0 && m_ev_num % m_ev_get == 0) {
-    df->Print(std::cout);
+  if (m_ev_num == 0) {
+    m_last_df = df;
+  } else {
+    df->CDS(*m_last_df);
+    m_last_df = df;
   }
-  std::unique_lock<std::mutex> lk_in(m_mx_get);
+
+  if (m_enbale_print_events && m_ev_get != 0 && m_ev_num % m_ev_get == 0) {
+    df->Print(std::cout);
+    df->PrintCDS(std::cout);
+  }
+
   m_df = df;
-  lk_in.unlock();
 
   if ((m_ev_num) == 0) {
     m_ev_num++;
     return;
   }
 
+  if (!m_df->GetCDSStatus()) {
+    return;
+  }
+
   TRandom rdm;
   auto factor = rdm.Uniform(1);
-  if ((m_ev_get * factor * 0.5) < (m_ev_num % m_ev_get) < (m_ev_get * factor)) {
-
-    if (!m_df->GetCDSStatus()) {
-      return;
-    }
-    auto cds_adc = m_df->GetFrameCDS();
+  if ((m_ev_num % m_ev_get) < (m_ev_get * factor * m_monitor_percent)) {
 
     m_adc_map->Reset();
     for (size_t iy = 0; iy < m_ny; iy++)
       for (size_t ix = 0; ix < m_nx; ix++) {
-        auto pos = ix + m_nx * iy;
-        auto value = cds_adc.at(pos);
+        auto value = m_df->GetCDSValue(ix, iy);
         m_adc_map->SetBinContent(m_nx - ix, m_ny - iy, value);
         if (std::abs(value) > m_thr) {
           m_adc_counts->Fill(m_nx - ix, m_ny - iy);

@@ -32,7 +32,7 @@
       "type":"default",
       "parameter":{
         "PRINT_EVENT_N":40000,
-        "COLUMN": 42,
+        "COLUMN": 20,
         "ROW": 8,
         "NBINS": 10000,
         "ADC_THREASHOLD": 1000

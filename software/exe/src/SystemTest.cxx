@@ -81,6 +81,7 @@ int main(int argc, char **argv){
   size_t nsec = conf_man_para.GetIntValue("SecPerLoop");
   size_t nloop = conf_man_para.GetIntValue("N_Loops");
   std::string chip_address = conf_man_para.GetStringValue("ChipAddress"); 
+  std::string delay = conf_man_para.GetStringValue("DELAY"); 
 
   pman.SetRegCtrl(pctrl);
   pman.SetReader(pread);
@@ -89,8 +90,10 @@ int main(int argc, char **argv){
   pman.SetMonitor(pmnt);
   pman.DeviceConnect();  
   pman.DeviceControl(chip_address);
+  pman.DeviceControl(delay);
   pman.DeviceControl("SET");
   std::cout << "Select address: " << chip_address << std::endl;
+  std::cout << "DELAY: " << delay << std::endl;
   pman.DeviceDisconnect();
 
   for(size_t i=0; i< nloop; i++){

@@ -14,8 +14,6 @@ class DLLEXPORT JadeFilter {
 
   private:
   JadeOption m_opt;
-  JadeDataFrameSP m_last_df;
-  size_t m_ev_n;
 };
 
 using JadeFilterSP = std::shared_ptr<JadeFilter>;

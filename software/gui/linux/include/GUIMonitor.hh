@@ -31,11 +31,12 @@ class GUIMonitor : public JadeMonitor {
   int m_nbins;
   int m_thr; //*
   JadeDataFrameSP m_df;
-  JadeDataFrameSP m_u_df;
+  JadeDataFrameSP m_last_df;
   std::mutex m_mx_get;
   uint32_t m_nx;
   uint32_t m_ny;
-
+  bool m_enbale_print_events;
+  float m_monitor_percent;
   std::shared_ptr<TH2F> m_adc_counts;
   std::shared_ptr<TH2F> m_adc_counts_clone;
   std::shared_ptr<TH2F> m_adc_map;

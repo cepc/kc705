@@ -211,12 +211,11 @@ void MainWindow::Update_Online_Image()
     pad2D1->cd();
     auto hist2D1 = (TH2F*)m_GUIManager->get_monitor()->GetADCCounts()->Clone("ADC_Counts");
     pad2D1->SetLogz(1);
-    hist2D1->Draw("LEGO2");
+    hist2D1->Draw("COLZ");
 
     pad2D2->cd();
-    //auto hist2D2 = (TH2F*)m_GUIManager->get_monitor()->GetADCMap()->Clone("ADC_MAP");
-    //hist2D2->Draw("COLZ");
-    hist2D1->Draw("COLZ");
+    auto hist2D2 = (TH2F*)m_GUIManager->get_monitor()->GetADCMap()->Clone("ADC_MAP");
+    hist2D2->Draw("COLZ");
 
     ui->Canvas_Plot->getCanvas()->Modified();
     ui->Canvas_Plot->getCanvas()->Update();

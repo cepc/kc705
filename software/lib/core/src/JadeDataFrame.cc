@@ -212,10 +212,9 @@ void JadeDataFrame::Print(std::ostream& os, size_t ws) const
   os << std::string(ws, ' ') << "}\n";
 }
 
-JadeDataFrame JadeDataFrame::operator-(JadeDataFrame& df)
+void JadeDataFrame::CDS(JadeDataFrame& df)
 {
   m_cds_frame_adc.resize(m_n_x * m_n_y, 0);
-  std::transform(df.m_data.begin(), df.m_data.end(), this->m_data.begin(), this->m_cds_frame_adc.begin(), std::minus<int16_t>());
+  std::transform(df.m_data.begin(), df.m_data.end(), m_data.begin(), m_cds_frame_adc.begin(), std::minus<int16_t>());
   m_is_cds = true;
-  return *this;
 }

@@ -40,14 +40,15 @@ void GUIMonitor::Monitor(JadeDataFrameSP df)
     m_ev_num++;
     return;
   }
+  
+  if (!m_df->GetCDSStatus()) {
+    return;
+  }
 
   TRandom rdm;
   auto factor = rdm.Uniform(1);
   if ((m_ev_get * factor * 0.5) < (m_ev_num % m_ev_get) < (m_ev_get * factor)) {
 
-    if (!m_df->GetCDSStatus()) {
-      return;
-    }
     auto cds_adc = m_df->GetFrameCDS();
 
     m_adc_map->Reset();
@@ -87,7 +88,7 @@ std::shared_ptr<TH2F> GUIMonitor::GetADCCounts()
   return m_adc_counts_clone;
 }
 
-std::vector<std::shared_ptr<TH1F>> GUIMonitor::GetADCHist()
+std::vector<std::shared_ptr<TH1F> > GUIMonitor::GetADCHist()
 {
   return m_adc_hist_clone;
 }

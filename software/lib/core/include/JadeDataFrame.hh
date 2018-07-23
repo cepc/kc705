@@ -34,7 +34,7 @@ class DLLEXPORT JadeDataFrame{
   void Print(std::ostream& os, size_t ws = 0) const;
   std::vector<int16_t> GetFrameCDS();
   bool GetCDSStatus();
-  JadeDataFrame operator-(JadeDataFrame &df);
+  void CDS(JadeDataFrame& df);
 
  private:
   bool m_is_decoded;

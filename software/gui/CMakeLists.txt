@@ -1,0 +1,10 @@
+option(JADE_BUILD_GUI "JADE_GUI_BUILD" OFF)
+if(NOT JADE_BUILD_GUI)
+  return()
+endif()
+
+if(WIN32)
+  add_subdirectory(windows)
+else()
+  add_subdirectory(linux)
+endif()

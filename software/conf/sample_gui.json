@@ -1,0 +1,125 @@
+{
+  "System":"JadeCore",
+  "JadeCore":{
+    "JadeManager":{
+      "type":"default",
+      "parameter":{
+        "SecPerLoop": 1,
+        "N_Loops": 1,
+        "ChipAddress": "CHIPA2"
+      }
+    },
+    "JadeRead":{
+      "type":"default",
+      "parameter":{
+        "PATH":"/dev/xillybus_read_32"
+      }
+    },
+    "JadeWrite":{
+      "type":"default",
+      "parameter":{
+        "PATH":"/home/cepcdaq/Documents/data/test",
+        "DISABLE_FILE_WRITE":true
+      }
+    },
+    "JadeFilter":{
+      "type":"default",
+      "parameter":{
+        "something": "somthing"
+      }
+    },
+    "GUIMonitor":{
+      "type":"default",
+      "parameter":{
+        "PRINT_EVENT_N":40000,
+        "ENABLE_PRINT_EVENTS":false,
+        "MONITOR_PERCENT":0.5,
+        "COLUMN": 20,
+        "ROW": 8,
+        "NBINS": 10000,
+        "ADC_THREASHOLD": 1000
+      }
+    },
+    "JadeRegCtrl":{
+      "type":"default",
+      "parameter":{
+        "PATH":"/dev/xillybus_mem_8",
+        "command_list":{
+          "RESET":{
+            "address":1,
+            "default_val":15
+          },
+          "SET":{
+            "address":2,
+            "default_val":10
+          },
+          "START":{
+            "address":3,
+            "default_val":15
+          },
+          "STOP":{
+            "address":4,
+            "default_val":15
+          },
+          "CHIPA1":{
+            "address":8,
+            "default_val":0
+          },
+          "CHIPA2":{
+            "address":8,
+            "default_val":1
+          },
+          "CHIPA3":{
+            "address":8,
+            "default_val":2
+          },
+          "CHIPA4":{
+            "address":8,
+            "default_val":3
+          },
+          "CHIPA5":{
+            "address":8,
+            "default_val":4
+          },
+          "CHIPA6":{
+            "address":8,
+            "default_val":5
+          },
+          "CHIPA7":{
+            "address":8,
+            "default_val":6
+          },
+          "CHIPA8":{
+            "address":8,
+            "default_val":7
+          },
+          "CHIPA9":{
+            "address":8,
+            "default_val":8
+          },
+          "CHIPA10":{
+            "address":8,
+            "default_val":9
+          }
+        },
+        "status_list":{
+          "FIFO_MODE":{
+            "address":16,
+            "value_list":{
+              "NOT_FULL":0,
+              "FULL":1
+            }
+          },
+          "RUN_MODE":{
+            "address":16,
+            "value_list":{
+              "STOPPED":0,
+              "STARTED":1
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

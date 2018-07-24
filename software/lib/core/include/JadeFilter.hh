@@ -1,17 +1,18 @@
 #ifndef JADE_JADEFILTER_HH
 #define JADE_JADEFILTER_HH
 
-#include "JadeSystem.hh"
-#include "JadeOption.hh"
 #include "JadeDataFrame.hh"
+#include "JadeOption.hh"
+#include "JadeSystem.hh"
 
-class DLLEXPORT JadeFilter{
-public:
-  JadeFilter(const JadeOption &opt);
+class DLLEXPORT JadeFilter {
+  public:
+  JadeFilter(const JadeOption& opt);
   virtual ~JadeFilter();
   virtual void Reset();
   virtual JadeDataFrameSP Filter(JadeDataFrameSP df);
-private:
+
+  private:
   JadeOption m_opt;
 };
 

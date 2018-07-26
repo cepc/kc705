@@ -1,4 +1,4 @@
-#include "JadeManager.hh"
+#include "JadeCore.hh"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -72,22 +72,17 @@ int main(int argc, char **argv){
   std::cout<<conf_wrt_para.DumpString()<<std::endl;
   std::cout<<conf_mnt_para.DumpString()<<std::endl;
   JadeManager pman(conf_man_para);
-  JadeRegCtrlSP pctrl = std::make_shared<JadeRegCtrl>(conf_ctrl_para);
-  JadeReadSP pread = std::make_shared<JadeRead>(conf_read_para);
-  JadeFilterSP pflt = std::make_shared<JadeFilter>(conf_flt_para);
-  JadeWriteSP pwrt = std::make_shared<JadeWrite>(conf_wrt_para);
-  JadeMonitorSP pmnt = std::make_shared<JadeMonitor>(conf_mnt_para);
 
   size_t nsec = conf_man_para.GetIntValue("SecPerLoop");
   size_t nloop = conf_man_para.GetIntValue("N_Loops");
   std::string chip_address = conf_man_para.GetStringValue("ChipAddress"); 
 
-  pman.SetRegCtrl(pctrl);
-  pman.SetReader(pread);
-  pman.SetFilter(pflt);
-  pman.SetWriter(pwrt);
-  pman.SetMonitor(pmnt);
-  pman.DeviceConnect();  
+  pman.SetRegCtrl(conf_ctrl_para);
+  pman.SetReader(conf_read_para);
+  pman.SetFilter(conf_flt_para);
+  pman.SetWriter(conf_wrt_para);
+  pman.SetMonitor(conf_mnt_para);
+  pman.DeviceConnect();
   pman.DeviceControl(chip_address);
   pman.DeviceControl("SET");
   std::cout << "Select address: " << chip_address << std::endl;

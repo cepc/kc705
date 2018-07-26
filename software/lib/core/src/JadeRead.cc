@@ -1,4 +1,6 @@
 #include "JadeRead.hh"
+#include "JadeUtils.hh"
+
 
 #ifdef _WIN32
 #include <io.h>
@@ -9,6 +11,19 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+using _base_c_ = JadeRead;
+using _index_c_ = JadeRead;
+
+template class DLLEXPORT JadeFactory<_base_c_>;
+template DLLEXPORT
+std::unordered_map<std::type_index, typename JadeFactory<_base_c_>::UP (*)(const JadeOption&)>&
+JadeFactory<_base_c_>::Instance<const JadeOption&>();
+
+namespace{
+  auto _loading_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(_index_c_)));
+  auto _loading_ = JadeFactory<_base_c_>::Register<_base_c_, const JadeOption&>(typeid(_index_c_));
+}
 
 #define FRAME_SIZE (4 + 48 * (4 + 16 * 2 + 4) + 4)
 

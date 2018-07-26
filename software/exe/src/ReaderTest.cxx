@@ -1,4 +1,5 @@
-#include "JadeManager.hh"
+#include "JadeCore.hh"
+
 #include <iostream>
 #include <sstream>
 #include <fstream>

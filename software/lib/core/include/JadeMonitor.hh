@@ -2,8 +2,21 @@
 #define JADE_JADEMONITOR_HH
 
 #include "JadeSystem.hh"
+#include "JadeFactory.hh"
 #include "JadeDataFrame.hh"
 #include "JadeOption.hh"
+
+
+class JadeMonitor;
+using JadeMonitorSP = JadeFactory<JadeMonitor>::SP;
+using JadeMonitorUP = JadeFactory<JadeMonitor>::UP;
+
+#ifndef JADE_DLL_EXPORT
+extern template class DLLEXPORT JadeFactory<JadeMonitor>;
+extern template DLLEXPORT
+std::unordered_map<std::type_index, typename JadeFactory<JadeMonitor>::UP (*)(const JadeOption&)>&
+JadeFactory<JadeMonitor>::Instance<const JadeOption&>();
+#endif
 
 class DLLEXPORT JadeMonitor{
  public:
@@ -19,6 +32,5 @@ class DLLEXPORT JadeMonitor{
   size_t m_last_df_n;
 };
 
-using JadeMonitorSP = std::shared_ptr<JadeMonitor>;
 
 #endif

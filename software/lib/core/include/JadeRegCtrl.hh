@@ -2,10 +2,22 @@
 #define JADE_JADEREGCTRL_HH
 
 #include "JadeSystem.hh"
+#include "JadeFactory.hh"
 #include "JadeOption.hh"
 
 #include <string>
 #include <map>
+
+class JadeRegCtrl;
+using JadeRegCtrlSP = JadeFactory<JadeRegCtrl>::SP;
+using JadeRegCtrlUP = JadeFactory<JadeRegCtrl>::UP;
+
+#ifndef JADE_DLL_EXPORT
+extern template class DLLEXPORT JadeFactory<JadeRegCtrl>;
+extern template DLLEXPORT
+std::unordered_map<std::type_index, typename JadeFactory<JadeRegCtrl>::UP (*)(const JadeOption&)>&
+JadeFactory<JadeRegCtrl>::Instance<const JadeOption&>();
+#endif
 
 class DLLEXPORT JadeRegCtrl{
  public:
@@ -25,7 +37,5 @@ class DLLEXPORT JadeRegCtrl{
   bool m_is_fd_read;
   bool m_is_fd_write;
 };
-
-using JadeRegCtrlSP = std::shared_ptr<JadeRegCtrl>;
 
 #endif 

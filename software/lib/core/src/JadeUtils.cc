@@ -2,23 +2,31 @@
 
 #include <iostream>
 
-std::unordered_map<std::string, std::type_index> JadeUtils::s_um_name_typeindex;
+std::unordered_map<std::string, std::type_index>& JadeUtils::TypeIndexMap(){
+  static std::unordered_map<std::string, std::type_index> s_um_name_typeindex;
+  return s_um_name_typeindex;
+}
 
-const std::type_index JadeUtils::GetTypeIndex(const std::string& name){
-  return s_um_name_typeindex.at(name);
+std::type_index JadeUtils::GetTypeIndex(const std::string& name){
+  return TypeIndexMap().at(name);
 }
 
 bool JadeUtils::SetTypeIndex(const std::string& name, const std::type_index& index){
-  if(s_um_name_typeindex.count(name)) {
+  if(TypeIndexMap().count(name)) {
     std::cerr<<"JadeUtil:: ERROR, name "
              << name
              << " have been registered by "
-             << s_um_name_typeindex.at(name).name()<<"\n";
+             << TypeIndexMap().at(name).name()<<"\n";
     return false;
   }
-  s_um_name_typeindex.insert({name, index});
-  return true;
-  
+  TypeIndexMap().count(name);
+  TypeIndexMap().insert({name, index});
+  return true;  
+}
+
+bool JadeUtils::SetTypeIndex(const std::type_index& index){
+  std::string demangled_name = NameDemangle(index.name());
+  return SetTypeIndex(demangled_name, index);
 }
 
 extern "C" {
@@ -35,7 +43,6 @@ char* __unDName(char* buffer,
                 malloc_func_t memget,
                 free_func_t memfree,
                 unsigned short int flags);
-
 }
 
 std::string JadeUtils::NameDemangle(const std::string& mang) {
@@ -61,4 +68,13 @@ std::string JadeUtils::NameDemangle(const std::string& mang) {
   } else {
     return mang;
   }  
+}
+
+void JadeUtils::PrintTypeIndexMap(){
+  auto& um_name_typeindex = TypeIndexMap();
+  std::cout<<"\n\n===list of type index===\n";
+  for(auto &item: um_name_typeindex){
+    std::cout<<item.first<<" = "<<item.second.name()<<"\n";
+  }
+  std::cout<<"\n\n"<<std::endl;
 }

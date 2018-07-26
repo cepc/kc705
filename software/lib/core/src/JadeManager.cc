@@ -1,4 +1,19 @@
 #include "JadeManager.hh"
+#include "JadeFactory.hh"
+#include "JadeUtils.hh"
+
+using _base_c_ = JadeManager;
+using _index_c_ = JadeManager;
+
+template class DLLEXPORT JadeFactory<_base_c_>;
+template DLLEXPORT
+std::unordered_map<std::type_index, typename JadeFactory<_base_c_>::UP (*)(const JadeOption&)>&
+JadeFactory<_base_c_>::Instance<const JadeOption&>();
+
+namespace{
+  auto _loading_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(_index_c_)));
+  auto _loading_ = JadeFactory<_base_c_>::Register<_base_c_, const JadeOption&>(typeid(_index_c_));
+}
 
 using namespace std::chrono_literals;
 
@@ -10,24 +25,29 @@ JadeManager::~JadeManager(){
   Reset();
 }
 
-void JadeManager::SetRegCtrl(JadeRegCtrlSP ctrl){
-  m_ctrl = ctrl;
+void JadeManager::SetRegCtrl(const JadeOption& opt){
+  m_ctrl.reset();
+  m_ctrl = std::make_shared<JadeRegCtrl>(opt);
 }
 
-void JadeManager::SetReader(JadeReadSP rd){
-  m_rd = rd;
+void JadeManager::SetReader(const JadeOption& opt){
+  m_rd.reset();
+  m_rd = std::make_shared<JadeRead>(opt);
 }
 
-void JadeManager::SetWriter(JadeWriteSP wrt){
-  m_wrt = wrt;
+void JadeManager::SetWriter(const JadeOption& opt){
+  m_wrt.reset();
+  m_wrt = std::make_shared<JadeWrite>(opt);
 }
 
-void JadeManager::SetFilter(JadeFilterSP flt){
-  m_flt = flt;
+void JadeManager::SetFilter(const JadeOption& opt){
+  m_wrt.reset();
+  m_flt = std::make_shared<JadeFilter>(opt);
 }
 
-void JadeManager::SetMonitor(JadeMonitorSP mnt){
-  m_mnt = mnt;
+void JadeManager::SetMonitor(const JadeOption& opt){
+  m_mnt.reset();
+  m_mnt = std::make_shared<JadeMonitor>(opt);
 }
 
 uint64_t JadeManager::AsyncReading(){
@@ -159,10 +179,6 @@ void JadeManager::StartDataTaking(){
   }
   
   m_wrt->Open();
-  // while(DeviceStatus("RUN_MODE") != "STARTED"){
-  //   ;
-  // }
-  //m_ctrl->SendCommand("START");
    
   m_is_running = true;
   m_fut_async_rd = std::async(std::launch::async,
@@ -179,11 +195,6 @@ void JadeManager::StartDataTaking(){
 }
 
 void JadeManager::StopDataTaking(){
-  //DeviceControl("STOP");
-  // while(DeviceStatus("RUN_MODE") != "STOPPED"){
-  //   ;
-  // }
-  //std::this_thread::sleep_for(std::chrono::milliseconds(500));//TOBE REMOVEd
   
   m_is_running = false;
   if(m_fut_async_rd.valid())
@@ -232,14 +243,10 @@ void JadeManager::Reset(){
 void JadeManager::DeviceConnect(){
   m_rd->Open();
   m_ctrl->Open();
-  //m_ctrl->SendCommand("STOP");
-  //std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 void JadeManager::DeviceDisconnect(){
   m_rd->Close();
-  //m_ctrl->SendCommand("STOP");
-  //std::this_thread::sleep_for(std::chrono::milliseconds(500));
   m_ctrl->Close();
 }
 

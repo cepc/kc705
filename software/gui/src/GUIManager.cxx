@@ -22,7 +22,7 @@ void GUIManager::start_run(){
   m_man->DeviceConnect();
   m_man->DeviceControl("STOP");
   std::this_thread::sleep_for(1s);
-  m_man->StartDataTaking(); 
+  m_man->StartDataTaking();
   emit IsRunning();
 }
 
@@ -54,12 +54,11 @@ void GUIManager::config(){
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
   std::cout<< "{chip adress: CHIPA"<<m_opt_chip_address<<"}"<<std::endl;
 
-  m_man->SetRegCtrl(std::make_shared<JadeRegCtrl>(JadeOption("{\"PATH\":\""+m_opt_reg+"\"}")));
-  m_man->SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\""+m_opt_data_input+"\"}")));
-  m_man->SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
-  m_man->SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+data_output_path+"\"}")));
-  m_monitor = std::make_shared<GUIMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+m_opt_ev_print+",\"CURRENT_TIME\":\""+time_str+"\",\"COLUMN\":"+std::to_string(m_col)+",\"ROW\":"+std::to_string(m_row)+",\"ADC_THREASHOLD\":"+std::to_string(m_thr)+"}"));
-  m_man->SetMonitor(std::dynamic_pointer_cast<JadeMonitor>(m_monitor));
+  m_man->SetRegCtrl(JadeOption("{\"PATH\":\""+m_opt_reg+"\"}"));
+  m_man->SetReader(JadeOption("{\"PATH\":\""+m_opt_data_input+"\"}"));
+  m_man->SetFilter(JadeOption("{}"));
+  m_man->SetWriter(JadeOption("{\"PATH\":\""+data_output_path+"\"}"));
+  m_man->SetMonitor(JadeOption("{\"PRINT_EVENT_N\":"+m_opt_ev_print+",\"CURRENT_TIME\":\""+time_str+"\",\"COLUMN\":"+std::to_string(m_col)+",\"ROW\":"+std::to_string(m_row)+",\"ADC_THREASHOLD\":"+std::to_string(m_thr)+"}"));
 
   std::string cmd = "CHIPA" + std::to_string(m_opt_chip_address);
   m_man->DeviceConnect();
@@ -67,8 +66,15 @@ void GUIManager::config(){
   m_man->DeviceControl("SET");
   std::this_thread::sleep_for(200ms);
   m_man->DeviceDisconnect();
+
 }
 
-std::shared_ptr<GUIMonitor>GUIManager::get_monitor(){
-  return m_monitor; 
+std::shared_ptr<GUIMonitor> GUIManager::get_monitor(){
+  JadeMonitorSP mon = m_man->GetMonitor();
+  auto guimon = std::dynamic_pointer_cast<GUIMonitor>(mon);
+  if( ! guimon ){
+    std::cerr<<"GUIManager: WARNING, the returned monitor is not GUI devivation "<<std::endl;
+    return nullptr;
+  }
+  return guimon;
 }

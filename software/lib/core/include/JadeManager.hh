@@ -2,6 +2,8 @@
 #define JADE_JADEMANAGER_HH
 
 #include "JadeSystem.hh"
+#include "JadeFactory.hh"
+#include "JadeUtils.hh"
 #include "JadeOption.hh"
 #include "JadeDataFrame.hh"
 #include "JadeRead.hh"
@@ -16,24 +18,41 @@
 #include <future>
 #include <condition_variable>
 
+class JadeManager;
+
+#ifndef JADE_DLL_EXPORT
+extern template class DLLEXPORT JadeFactory<JadeManager>;
+extern template DLLEXPORT
+std::unordered_map<std::type_index, typename JadeFactory<JadeManager>::UP (*)(const JadeOption&)>&
+JadeFactory<JadeManager>::Instance<const JadeOption&>();
+#endif
+
 class DLLEXPORT JadeManager{
  public:
   JadeManager(const JadeOption &opt);
   virtual ~JadeManager();
   void Reset();
 
-  void SetRegCtrl(JadeRegCtrlSP ctrl);
-  void SetReader(JadeReadSP rd);
-  void SetWriter(JadeWriteSP wrt);
-  void SetFilter(JadeFilterSP flt);
-  void SetMonitor(JadeMonitorSP mnt);
+  void SetRegCtrl(const JadeOption& opt);
+  void SetReader(const JadeOption& opt);
+  void SetWriter(const JadeOption& opt);
+  void SetFilter(const JadeOption& opt);
+  void SetMonitor(const JadeOption& opt);
+
+  JadeRegCtrlSP GetRegCtrl() { return m_ctrl; };
+  JadeReadSP GetReader() { return m_rd; };
+  JadeWriteSP GetWriter() { return m_wrt; };
+  JadeFilterSP GetFilter() { return m_flt; };
+  JadeMonitorSP GetMonitor() { return m_mnt; };
   
   void StartDataTaking();
   void StopDataTaking();
   void DeviceConnect();
   void DeviceDisconnect();
+  
   void DeviceControl(const std::string &cmd);
   std::string DeviceStatus(const std::string &type);
+  
  private:
   uint64_t AsyncReading();
   uint64_t AsyncFiltering();

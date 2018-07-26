@@ -1,4 +1,4 @@
-#include "JadeManager.hh"
+#include "JadeCore.hh"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -70,11 +70,11 @@ int main(int argc, char **argv){
   std::cout<< "{ev_print:"<<ev_print<<"}"<<std::endl;
 
   JadeManager pman(JadeOption("{}"));
-  pman.SetRegCtrl(std::make_shared<JadeRegCtrl>(JadeOption("{\"PATH\":\""+opt_reg+"\"}")));
-  pman.SetReader(std::make_shared<JadeRead>(JadeOption("{\"PATH\":\""+opt_data_input+"\"}")));
-  pman.SetFilter(std::make_shared<JadeFilter>(JadeOption("{}")));
-  pman.SetWriter(std::make_shared<JadeWrite>(JadeOption("{\"PATH\":\""+opt_data_output+"\"}")));
-  pman.SetMonitor(std::make_shared<JadeMonitor>(JadeOption("{\"PRINT_EVENT_N\":"+opt_ev_print+"}")));
+  pman.SetRegCtrl(JadeOption("{\"PATH\":\""+opt_reg+"\"}"));
+  pman.SetReader(JadeOption("{\"PATH\":\""+opt_data_input+"\"}"));
+  pman.SetFilter(JadeOption("{}"));
+  pman.SetWriter(JadeOption("{\"PATH\":\""+opt_data_output+"\"}"));
+  pman.SetMonitor(JadeOption("{\"PRINT_EVENT_N\":"+opt_ev_print+"}"));
   for(int i=0; i< 3; i++){
     std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl;
     pman.DeviceConnect();

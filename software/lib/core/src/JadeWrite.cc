@@ -1,6 +1,20 @@
 #include "JadeWrite.hh"
 #include <ctime>
 
+#include "JadeUtils.hh"
+
+using _base_c_ = JadeWrite;
+using _index_c_ = JadeWrite;
+
+template class DLLEXPORT JadeFactory<_base_c_>;
+template DLLEXPORT
+std::unordered_map<std::type_index, typename JadeFactory<_base_c_>::UP (*)(const JadeOption&)>&
+JadeFactory<_base_c_>::Instance<const JadeOption&>();
+
+namespace{
+  auto _loading_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(_index_c_)));
+  auto _loading_ = JadeFactory<_base_c_>::Register<_base_c_, const JadeOption&>(typeid(_index_c_));
+}
 
 JadeWrite::JadeWrite(const JadeOption &opt)
   :m_opt(opt), m_fd(0), m_disable_file_write(false){
@@ -8,6 +22,18 @@ JadeWrite::JadeWrite(const JadeOption &opt)
 
 JadeWrite::~JadeWrite(){
   Reset();
+}
+
+JadeWriteSP JadeWrite::Make(const std::string& name, const JadeOption& opt){  
+  try{
+    std::type_index index = JadeUtils::GetTypeIndex(name);
+    JadeWriteSP wrt =  JadeFactory<JadeWrite>::MakeUnique<const JadeOption&>(index, opt);
+    return wrt;
+  }
+  catch(...){
+    std::cout<<"TODO"<<std::endl;
+    return nullptr;
+  }
 }
 
 void JadeWrite::Open(){

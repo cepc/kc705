@@ -4,6 +4,8 @@
 #include "JadeSystem.hh"
 #include "JadeFactory.hh"
 #include "JadeOption.hh"
+#include "JadePost.hh"
+
 #include "JadeDataFrame.hh"
 
 #include <string>
@@ -22,17 +24,19 @@ std::unordered_map<std::type_index, typename JadeFactory<JadeRead>::UP (*)(const
 JadeFactory<JadeRead>::Instance<const JadeOption&>();
 #endif
 
-class DLLEXPORT JadeRead{
+class DLLEXPORT JadeRead: public JadePost{
  public:
   JadeRead(const JadeOption &opt);
   virtual ~JadeRead();
+  static JadeReadSP Make(const std::string&name, const JadeOption &opt);
   virtual void Open();
   virtual void Close();
   virtual void Reset();
   virtual std::vector<JadeDataFrameSP> Read(size_t nframe,
 					    const std::chrono::milliseconds &timeout);
   virtual JadeDataFrameSP Read(const std::chrono::milliseconds &timeout);
-
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+ 
  private:
   JadeOption m_opt;
   int m_fd;

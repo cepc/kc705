@@ -19,6 +19,8 @@
 #include <condition_variable>
 
 class JadeManager;
+using JadeManagerSP = JadeFactory<JadeManager>::SP;
+using JadeManagerUP = JadeFactory<JadeManager>::UP;
 
 #ifndef JADE_DLL_EXPORT
 extern template class DLLEXPORT JadeFactory<JadeManager>;
@@ -27,18 +29,18 @@ std::unordered_map<std::type_index, typename JadeFactory<JadeManager>::UP (*)(co
 JadeFactory<JadeManager>::Instance<const JadeOption&>();
 #endif
 
-class DLLEXPORT JadeManager{
+class DLLEXPORT JadeManager: public JadePost{
  public:
   JadeManager(const JadeOption &opt);
   virtual ~JadeManager();
+  static JadeManagerSP Make(const std::string& name, const JadeOption& opt);
   void Reset();
 
-  void SetRegCtrl(const JadeOption& opt);
-  void SetReader(const JadeOption& opt);
-  void SetWriter(const JadeOption& opt);
-  void SetFilter(const JadeOption& opt);
-  void SetMonitor(const JadeOption& opt);
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
 
+
+  
+  //TODO: weak_ptr
   JadeRegCtrlSP GetRegCtrl() { return m_ctrl; };
   JadeReadSP GetReader() { return m_rd; };
   JadeWriteSP GetWriter() { return m_wrt; };

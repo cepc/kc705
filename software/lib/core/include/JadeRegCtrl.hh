@@ -4,6 +4,8 @@
 #include "JadeSystem.hh"
 #include "JadeFactory.hh"
 #include "JadeOption.hh"
+#include "JadePost.hh"
+
 
 #include <string>
 #include <map>
@@ -19,10 +21,12 @@ std::unordered_map<std::type_index, typename JadeFactory<JadeRegCtrl>::UP (*)(co
 JadeFactory<JadeRegCtrl>::Instance<const JadeOption&>();
 #endif
 
-class DLLEXPORT JadeRegCtrl{
+
+class DLLEXPORT JadeRegCtrl: public JadePost{
  public:
   JadeRegCtrl(const JadeOption &opt);
   virtual ~JadeRegCtrl();
+  static JadeRegCtrlSP Make(const std::string& name, const JadeOption &opt);
   virtual void Open();
   virtual void Close();
   virtual void Reset();
@@ -31,11 +35,13 @@ class DLLEXPORT JadeRegCtrl{
   void SendCommand(const std::string &cmd);
   void SendCommand(const std::string &cmd, uint8_t val);
   std::string GetStatus(const std::string &cmd);
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
  private:
   JadeOption m_opt;
   int m_fd;
   bool m_is_fd_read;
   bool m_is_fd_write;
 };
+
 
 #endif 

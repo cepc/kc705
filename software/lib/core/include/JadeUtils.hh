@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <map>
 #include <string>
+#include <chrono>
 
 class JadeUtils{
 public:
@@ -14,6 +15,10 @@ public:
   static std::string NameDemangle( const std::string&  man);
   static std::unordered_map<std::string, std::type_index>& TypeIndexMap();
   static void PrintTypeIndexMap();
+  static std::string LoadFileToString(const std::string &path);
+  static std::string GetNowStr();
+  static std::string GetBinaryPath();
+  static bool LoadBinary(const std::string& file);
 };
 
 #endif

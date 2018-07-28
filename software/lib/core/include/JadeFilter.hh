@@ -4,6 +4,7 @@
 #include "JadeSystem.hh"
 #include "JadeFactory.hh"
 #include "JadeOption.hh"
+#include "JadePost.hh"
 #include "JadeDataFrame.hh"
 
 class JadeFilter;
@@ -18,13 +19,15 @@ JadeFactory<JadeFilter>::Instance<const JadeOption&>();
 #endif
 
 
-class DLLEXPORT JadeFilter{
+class DLLEXPORT JadeFilter: public JadePost{
 public:
   JadeFilter(const JadeOption &opt);
   virtual ~JadeFilter();
+  static JadeFilterSP Make(const std::string& name, const JadeOption& opt);
   virtual void Reset();
   virtual JadeDataFrameSP Filter(JadeDataFrameSP df);
-private:
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+ private:
   JadeOption m_opt;
 };
 

@@ -12,42 +12,46 @@ JadeFactory<_base_c_>::Instance<const JadeOption&>();
 
 namespace{
   auto _loading_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(_index_c_)));
-  auto _loading_ = JadeFactory<_base_c_>::Register<_base_c_, const JadeOption&>(typeid(_index_c_));
+  auto _loading_ = JadeFactory<_base_c_>::Register<_index_c_, const JadeOption&>(typeid(_index_c_));
 }
 
 using namespace std::chrono_literals;
 
 JadeManager::JadeManager(const JadeOption &opt)
-  : m_is_running(false), m_opt(opt){
+  : m_is_running(false), m_opt(opt){  
+  
+  if(opt.GetIntValue("version") < 2){
+    std::cerr<<"JadeManager: ERROR version missmatch with json configure file\n";
+    throw;
+  }
+      
+  auto rd_opt = opt.GetSubOption("JadeRead");
+  m_rd = JadeRead::Make(rd_opt.GetStringValue("type"), rd_opt.GetSubOption("parameter"));  
+  auto ctrl_opt = opt.GetSubOption("JadeRegCtrl");
+  m_ctrl = JadeRegCtrl::Make(ctrl_opt.GetStringValue("type"), ctrl_opt.GetSubOption("parameter"));
+  auto wrt_opt = opt.GetSubOption("JadeWrite");
+  m_wrt = JadeWrite::Make(wrt_opt.GetStringValue("type"), wrt_opt.GetSubOption("parameter"));
+  auto flt_opt = opt.GetSubOption("JadeFilter");
+  m_flt = JadeFilter::Make(flt_opt.GetStringValue("type"), flt_opt.GetSubOption("parameter"));
+  auto mnt_opt = opt.GetSubOption("JadeMonitor");
+  m_mnt = JadeMonitor::Make(mnt_opt.GetStringValue("type"), mnt_opt.GetSubOption("parameter"));
+  
 }
 
 JadeManager::~JadeManager(){
   Reset();
 }
 
-void JadeManager::SetRegCtrl(const JadeOption& opt){
-  m_ctrl.reset();
-  m_ctrl = std::make_shared<JadeRegCtrl>(opt);
-}
-
-void JadeManager::SetReader(const JadeOption& opt){
-  m_rd.reset();
-  m_rd = std::make_shared<JadeRead>(opt);
-}
-
-void JadeManager::SetWriter(const JadeOption& opt){
-  m_wrt.reset();
-  m_wrt = std::make_shared<JadeWrite>(opt);
-}
-
-void JadeManager::SetFilter(const JadeOption& opt){
-  m_wrt.reset();
-  m_flt = std::make_shared<JadeFilter>(opt);
-}
-
-void JadeManager::SetMonitor(const JadeOption& opt){
-  m_mnt.reset();
-  m_mnt = std::make_shared<JadeMonitor>(opt);
+JadeManagerSP JadeManager::Make(const std::string& name, const JadeOption& opt){  
+  try{
+    std::type_index index = JadeUtils::GetTypeIndex(name);
+    JadeManagerSP wrt =  JadeFactory<JadeManager>::MakeUnique<const JadeOption&>(index, opt);
+    return wrt;
+  }
+  catch(...){
+    std::cout<<"TODO"<<std::endl;
+    return nullptr;
+  }
 }
 
 uint64_t JadeManager::AsyncReading(){
@@ -256,4 +260,22 @@ void JadeManager::DeviceControl(const std::string &cmd){
 
 std::string JadeManager::DeviceStatus(const std::string &type){
   return m_ctrl->GetStatus(type);
+}
+
+JadeOption JadeManager::Post(const std::string &url, const JadeOption &opt){    
+  if(url == "/reload_opt"){
+    m_opt = opt;
+    return "{\"status\":ture}";
+  }
+  
+  if(url == "/reset"){
+    Reset();
+    return "{\"status\":true}";
+  }
+
+  static const std::string url_base_class("/JadePost/");
+  if( ! url.compare(0, url_base_class.size(), url_base_class) ){
+    return JadePost::Post(url.substr(url_base_class.size()-1), opt);
+  }
+  return JadePost::Post(url, opt);
 }

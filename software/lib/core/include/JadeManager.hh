@@ -34,10 +34,20 @@ class DLLEXPORT JadeManager: public JadePost{
   JadeManager(const JadeOption &opt);
   virtual ~JadeManager();
   static JadeManagerSP Make(const std::string& name, const JadeOption& opt);
-  void Reset();
-
   JadeOption Post(const std::string &url, const JadeOption &opt) override;
 
+  //do the system initialize: 
+  virtual void Init();
+  //start data taking: open file, start device, start threads     
+  virtual void StartDataTaking();
+  //stop data taking: stop threads, stop device, close file
+  virtual void StopDataTaking();
+  //generic control function, return information by string
+  virtual std::string SendCommand(const std::string &cmd, const std::string &para){return "";};
+  //generic control function, return information by string, no parameter version
+  virtual std::string SendCommand(const std::string &cmd) final{
+    return SendCommand(cmd, "");
+  }
 
   
   //TODO: weak_ptr
@@ -47,14 +57,11 @@ class DLLEXPORT JadeManager: public JadePost{
   JadeFilterSP GetFilter() { return m_flt; };
   JadeMonitorSP GetMonitor() { return m_mnt; };
   
-  void StartDataTaking();
-  void StopDataTaking();
-  void DeviceConnect();
-  void DeviceDisconnect();
   
-  void DeviceControl(const std::string &cmd);
-  std::string DeviceStatus(const std::string &type);
-  
+  void MakeComponent();
+  void RemoveComponent();
+  void StartThread();
+  void StopThread();
  private:
   uint64_t AsyncReading();
   uint64_t AsyncFiltering();

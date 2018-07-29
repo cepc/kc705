@@ -11,6 +11,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <thread>
+
 using _base_c_ = JadeRead;
 using _index_c_ = JadeRead;
 
@@ -24,19 +26,12 @@ namespace{
   auto _loading_ = JadeFactory<_base_c_>::Register<_index_c_, const JadeOption&>(typeid(_index_c_));
 }
 
-#define FRAME_SIZE (4 + 48 * (4 + 16 * 2 + 4) + 4)
 
-JadeRead::JadeRead(const JadeOption& opt)
-    : m_opt(opt)
-    , m_fd(0)
-{
+JadeRead::JadeRead(const JadeOption& opt){
 }
 
-JadeRead::~JadeRead()
-{
-  Reset();
+JadeRead::~JadeRead(){
 }
-
 
 JadeReadSP JadeRead::Make(const std::string& name, const JadeOption& opt){  
   try{
@@ -50,8 +45,55 @@ JadeReadSP JadeRead::Make(const std::string& name, const JadeOption& opt){
   }
 }
 
-void JadeRead::Open()
-{
+JadeOption JadeRead::Post(const std::string &url, const JadeOption &opt){
+  return JadePost::Post(url, opt);
+}
+
+std::vector<JadeDataFrameSP> JadeRead::Read(size_t nframe,
+                                            const std::chrono::milliseconds &timeout){
+  std::this_thread::sleep_for(timeout);
+  return {};
+}
+
+JadeDataFrameSP JadeRead::Read(const std::chrono::milliseconds &timeout){
+  std::this_thread::sleep_for(timeout);
+  return nullptr;
+}
+
+//+++++++++++++++++++++++++++++++++++++++++
+//TestRead.hh
+
+class TestRead: public JadeRead{
+public:
+  TestRead(const JadeOption &opt);
+  ~TestRead() override {};
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+
+  std::vector<JadeDataFrameSP> Read(size_t nframe,
+                                    const std::chrono::milliseconds &timeout) override;
+  JadeDataFrameSP Read(const std::chrono::milliseconds &timeout) override;
+  void Open() override;
+  void Close() override;
+private:
+  JadeOption m_opt;
+  int m_fd;
+  std::string m_buf;
+};
+
+//+++++++++++++++++++++++++++++++++++++++++
+//TestRead.cc
+namespace{
+  auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(TestRead)));
+  auto _test_ = JadeFactory<JadeRead>::Register<TestRead, const JadeOption&>(typeid(TestRead));
+}
+
+
+TestRead::TestRead(const JadeOption& opt)
+  : m_opt(opt), m_fd(0), JadeRead(opt){
+}
+
+
+void TestRead::Open(){
   if (m_fd) {
     m_buf.clear();
 #ifdef _WIN32
@@ -75,8 +117,7 @@ void JadeRead::Open()
   }
 }
 
-void JadeRead::Close()
-{
+void TestRead::Close(){
   m_buf.clear();
   if (m_fd) {
 #ifdef _WIN32
@@ -88,13 +129,8 @@ void JadeRead::Close()
   }
 }
 
-void JadeRead::Reset()
-{
-  Close();
-}
-
 std::vector<JadeDataFrameSP>
-JadeRead::Read(size_t nframe,
+TestRead::Read(size_t nframe,
     const std::chrono::milliseconds& timeout)
 {
   std::vector<JadeDataFrameSP> v_df;
@@ -104,7 +140,8 @@ JadeRead::Read(size_t nframe,
   return v_df;
 }
 
-JadeDataFrameSP JadeRead::Read(const std::chrono::milliseconds& timeout)
+
+JadeDataFrameSP TestRead::Read(const std::chrono::milliseconds& timeout)
 {
   uint32_t size_pack;
   size_pack = sizeof(size_pack);
@@ -162,22 +199,20 @@ JadeDataFrameSP JadeRead::Read(const std::chrono::milliseconds& timeout)
   return JadeDataFrameSP(new JadeDataFrame(m_buf.substr(0, size_pack)));
 }
 
-
-
-JadeOption JadeRead::Post(const std::string &url, const JadeOption &opt){    
-    if(url == "/reload_opt"){
-    m_opt = opt;
+JadeOption TestRead::Post(const std::string &url, const JadeOption &opt){    
+  if(url == "/open"){
+    Open();
     return "{\"status\":ture}";
   }
-
-  if(url == "/reset"){
-    Reset();
+  
+  if(url == "/close"){
+    Close();
     return "{\"status\":true}";
   }
 
-  static const std::string url_base_class("/JadePost/");
+  static const std::string url_base_class("/JadeRead/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
-    return JadePost::Post(url.substr(url_base_class.size()-1), opt);
+    return JadeRead::Post(url.substr(url_base_class.size()-1), opt);
   }
   return JadePost::Post(url, opt);
 }

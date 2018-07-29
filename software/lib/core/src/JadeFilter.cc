@@ -16,9 +16,10 @@ namespace{
 
 using namespace std::chrono_literals;
 
-JadeFilter::JadeFilter(const JadeOption &opt)
-  :m_opt(opt){
-  
+JadeFilter::JadeFilter(const JadeOption &opt){
+}
+
+JadeFilter::~JadeFilter(){  
 }
 
 JadeFilterSP JadeFilter::Make(const std::string& name, const JadeOption& opt){  
@@ -33,27 +34,48 @@ JadeFilterSP JadeFilter::Make(const std::string& name, const JadeOption& opt){
   }
 }
 
-JadeFilter::~JadeFilter(){
-  
-}
-
-void JadeFilter::Reset(){
-  
-}
-
 JadeDataFrameSP JadeFilter::Filter(JadeDataFrameSP df){
   return df;
 }
 
-JadeOption JadeFilter::Post(const std::string &url, const JadeOption &opt){    
-  if(url == "/Reset"){
-    Reset();
+JadeOption JadeFilter::Post(const std::string &url, const JadeOption &opt){
+  return JadePost::Post(url, opt);
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++
+//TestFilter.hh
+class TestFilter: public JadeFilter{
+ public:
+  TestFilter(const JadeOption &opt);
+  ~TestFilter() override {};
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+  JadeDataFrameSP Filter(JadeDataFrameSP df) override;
+};
+
+//+++++++++++++++++++++++++++++++++++++++++
+//TestFilter.cc
+namespace{
+  auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(TestFilter)));
+  auto _test_ = JadeFactory<JadeFilter>::Register<TestFilter, const JadeOption&>(typeid(TestFilter));
+}
+
+TestFilter::TestFilter(const JadeOption &opt)
+  :JadeFilter(opt){
+}
+
+JadeDataFrameSP TestFilter::Filter(JadeDataFrameSP df){
+  return df;
+}
+
+JadeOption TestFilter::Post(const std::string &url, const JadeOption &opt){
+  if(url == "/testurl"){
+    std::cout<<"TestFilter: INFO, url<"<<url<<"> opt<"<<opt.DumpString()<<">\n"<<std::endl;
     return "{\"status\":true}";
   }
 
-  static const std::string url_base_class("/JadePost/");
+  static const std::string url_base_class("/JadeFilter/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
-    return JadePost::Post(url.substr(url_base_class.size()-1), opt);
+    return JadeFilter::Post(url.substr(url_base_class.size()-1), opt);
   }
   return JadePost::Post(url, opt);
 }

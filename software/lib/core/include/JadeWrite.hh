@@ -19,7 +19,6 @@ class JadeWrite;
 using JadeWriteSP = JadeFactory<JadeWrite>::SP;
 using JadeWriteUP = JadeFactory<JadeWrite>::UP;
 
-
 #ifndef JADE_DLL_EXPORT
 extern template class DLLEXPORT JadeFactory<JadeWrite>;
 extern template DLLEXPORT
@@ -31,21 +30,16 @@ JadeFactory<JadeWrite>::Instance<const JadeOption&>();
 class DLLEXPORT JadeWrite: public JadePost{
  public:
   JadeWrite(const JadeOption &opt);
-  virtual ~JadeWrite();
-  static JadeWriteSP Make(const std::string& name, const JadeOption& opt);
-  
-  virtual void Open();
-  virtual void Close();
-  virtual void Reset();
-  void Write(JadeDataFrameSP df);
-
+  ~JadeWrite() override;
+  static JadeWriteSP Make(const std::string& name, const JadeOption& opt);  
   JadeOption Post(const std::string &url, const JadeOption &opt) override;
 
- private:
-  FILE* m_fd;
-  std::string m_path;
-  JadeOption m_opt;
-  bool m_disable_file_write;
+  //open file for written 
+  virtual void Open() {};
+  //close file
+  virtual void Close() {};
+  //write data to the current openning file
+  virtual void Write(JadeDataFrameSP df);
 };
 
 

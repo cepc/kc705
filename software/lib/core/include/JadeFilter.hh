@@ -22,13 +22,14 @@ JadeFactory<JadeFilter>::Instance<const JadeOption&>();
 class DLLEXPORT JadeFilter: public JadePost{
 public:
   JadeFilter(const JadeOption &opt);
-  virtual ~JadeFilter();
+  ~JadeFilter() override;
   static JadeFilterSP Make(const std::string& name, const JadeOption& opt);
-  virtual void Reset();
-  virtual JadeDataFrameSP Filter(JadeDataFrameSP df);
   JadeOption Post(const std::string &url, const JadeOption &opt) override;
- private:
-  JadeOption m_opt;
+
+  //reset inner state if it's not a stateless filter, do it before start a new datataking.
+  virtual void Reset() {};
+  //return nullptr if the data can not pass the filter
+  virtual JadeDataFrameSP Filter(JadeDataFrameSP df);
 };
 
 #endif

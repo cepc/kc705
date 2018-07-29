@@ -22,7 +22,6 @@ JadeOption::JadeOption(const std::string& str){
   }
 }
 
-
 JadeOption::JadeOption(const char* ch){
   std::string str(ch);
   size_t found = str.find_first_not_of(" \t\r\n");

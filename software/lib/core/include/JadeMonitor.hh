@@ -22,18 +22,21 @@ JadeFactory<JadeMonitor>::Instance<const JadeOption&>();
 class DLLEXPORT JadeMonitor: public JadePost{
  public:
   JadeMonitor(const JadeOption& opt);
-  virtual ~JadeMonitor();
+  ~JadeMonitor() override;
   static JadeMonitorSP Make(const std::string& name, const JadeOption& opt);
-  virtual void Reset();
-  virtual void Monitor(JadeDataFrameSP df);
   JadeOption Post(const std::string &url, const JadeOption &opt) override;
-  
- private:
-  JadeOption m_opt;
-  size_t m_ev_print;
-  size_t m_ev_n;
-  bool m_enable_print_discon;
-  size_t m_last_df_n;
+
+  //reset inner state, do it before start a new datataking.
+  virtual void Reset(){};
+  //put data into monitor
+  virtual void Monitor(JadeDataFrameSP df);
+  //the control panel of monitor, return information by string
+  virtual std::string SendCommand(const std::string &cmd, const std::string &para){return "";};
+
+  //the control panel of monitor, return information by string, no parameter version
+  virtual std::string SendCommand(const std::string &cmd) final{
+    return SendCommand(cmd, "");
+  }
 };
 
 #endif

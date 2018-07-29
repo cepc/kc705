@@ -23,23 +23,13 @@ JadeManager::JadeManager(const JadeOption &opt)
   if(opt.GetIntValue("version") < 2){
     std::cerr<<"JadeManager: ERROR version missmatch with json configure file\n";
     throw;
-  }
-      
-  auto rd_opt = opt.GetSubOption("JadeRead");
-  m_rd = JadeRead::Make(rd_opt.GetStringValue("type"), rd_opt.GetSubOption("parameter"));  
-  auto ctrl_opt = opt.GetSubOption("JadeRegCtrl");
-  m_ctrl = JadeRegCtrl::Make(ctrl_opt.GetStringValue("type"), ctrl_opt.GetSubOption("parameter"));
-  auto wrt_opt = opt.GetSubOption("JadeWrite");
-  m_wrt = JadeWrite::Make(wrt_opt.GetStringValue("type"), wrt_opt.GetSubOption("parameter"));
-  auto flt_opt = opt.GetSubOption("JadeFilter");
-  m_flt = JadeFilter::Make(flt_opt.GetStringValue("type"), flt_opt.GetSubOption("parameter"));
-  auto mnt_opt = opt.GetSubOption("JadeMonitor");
-  m_mnt = JadeMonitor::Make(mnt_opt.GetStringValue("type"), mnt_opt.GetSubOption("parameter"));
-  
+  }  
 }
 
+
+
 JadeManager::~JadeManager(){
-  Reset();
+  StopThread();
 }
 
 JadeManagerSP JadeManager::Make(const std::string& name, const JadeOption& opt){  
@@ -52,6 +42,58 @@ JadeManagerSP JadeManager::Make(const std::string& name, const JadeOption& opt){
     std::cout<<"TODO"<<std::endl;
     return nullptr;
   }
+}
+
+void JadeManager::MakeComponent(){
+  auto rd_opt = m_opt.GetSubOption("JadeRead");
+  m_rd = JadeRead::Make(rd_opt.GetStringValue("type"), rd_opt.GetSubOption("parameter"));
+  AddSubPost(m_rd);
+  
+  auto ctrl_opt = m_opt.GetSubOption("JadeRegCtrl");
+  m_ctrl = JadeRegCtrl::Make(ctrl_opt.GetStringValue("type"), ctrl_opt.GetSubOption("parameter"));
+  AddSubPost(m_ctrl);
+  
+  auto wrt_opt = m_opt.GetSubOption("JadeWrite");
+  m_wrt = JadeWrite::Make(wrt_opt.GetStringValue("type"), wrt_opt.GetSubOption("parameter"));
+  AddSubPost(m_wrt);
+  
+  auto flt_opt = m_opt.GetSubOption("JadeFilter");
+  m_flt = JadeFilter::Make(flt_opt.GetStringValue("type"), flt_opt.GetSubOption("parameter"));
+  AddSubPost(m_flt);
+
+  auto mnt_opt = m_opt.GetSubOption("JadeMonitor");
+  m_mnt = JadeMonitor::Make(mnt_opt.GetStringValue("type"), mnt_opt.GetSubOption("parameter"));
+  AddSubPost(m_mnt);
+}
+
+void JadeManager::RemoveComponent(){
+  m_ctrl.reset();
+  m_rd.reset();
+  m_flt.reset();
+  m_wrt.reset();
+  m_mnt.reset();
+  //TODO: report if someone holds the any instances of released shared_ptr.
+}
+
+
+void JadeManager::Init(){
+  MakeComponent();  
+}
+
+void JadeManager::StartDataTaking(){
+  m_rd->Open();
+  m_ctrl->Open();
+  m_wrt->Open();
+  m_flt->Reset();
+  m_mnt->Reset();
+  StartThread();
+}
+
+void JadeManager::StopDataTaking(){
+  StopThread();
+  m_rd->Close();
+  m_ctrl->Close();
+  m_wrt->Close();
 }
 
 uint64_t JadeManager::AsyncReading(){
@@ -176,14 +218,12 @@ uint64_t JadeManager::AsyncMonitoring(){
   return n_df;
 }
 
-void JadeManager::StartDataTaking(){
+void JadeManager::StartThread(){
   if(!m_rd || !m_flt || !m_wrt || !m_mnt || !m_ctrl) {
     std::cerr<<"JadeManager: m_rd, m_flt, m_wrt, m_mnt or m_ctrl is not set"<<std::endl;
     throw;
   }
   
-  m_wrt->Open();
-   
   m_is_running = true;
   m_fut_async_rd = std::async(std::launch::async,
 			      &JadeManager::AsyncReading, this);
@@ -198,84 +238,102 @@ void JadeManager::StartDataTaking(){
 			       &JadeManager::AsyncMonitoring, this);
 }
 
-void JadeManager::StopDataTaking(){
-  
+void JadeManager::StopThread(){
   m_is_running = false;
   if(m_fut_async_rd.valid())
     m_fut_async_rd.get();
-  std::cout<<">>>>>>>>>>>>>>>>>>end of rd"<<std::endl; 
-  if(m_fut_async_flt.valid())
-    m_fut_async_flt.get();
-  std::cout<<">>>>>>>>>>>>>>>>>>end of flt"<<std::endl;
-  if(m_fut_async_wrt.valid())
-    m_fut_async_wrt.get();
-  std::cout<<">>>>>>>>>>>>>>>>>>end of wrt"<<std::endl;
-  if(m_fut_async_mnt.valid())
-    m_fut_async_mnt.get();
-  std::cout<<">>>>>>>>>>>>>>>>>>end of mnt"<<std::endl;
-  m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
-  m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
-  m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
-  m_wrt->Close();
-}
-
-void JadeManager::Reset(){
-  m_is_running = false;
-  if(m_fut_async_rd.valid())
-    m_fut_async_rd.get();
-  if(m_fut_async_flt.valid())
-    m_fut_async_flt.get();
-  if(m_fut_async_wrt.valid())
-    m_fut_async_wrt.get();
-  if(m_fut_async_mnt.valid())
-    m_fut_async_mnt.get();
-  m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
-  m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
-  m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
-  if(m_ctrl)
-    m_ctrl->Reset();
-  if(m_rd)
-    m_rd->Reset();
-  if(m_flt)
-    m_flt->Reset();
-  if(m_wrt)
-    m_wrt->Reset();
-  if(m_mnt)
-    m_mnt->Reset();
-}
-
-void JadeManager::DeviceConnect(){
-  m_rd->Open();
-  m_ctrl->Open();
-}
-
-void JadeManager::DeviceDisconnect(){
-  m_rd->Close();
-  m_ctrl->Close();
-}
-
-void JadeManager::DeviceControl(const std::string &cmd){
-  m_ctrl->SendCommand(cmd);
-}
-
-std::string JadeManager::DeviceStatus(const std::string &type){
-  return m_ctrl->GetStatus(type);
-}
-
-JadeOption JadeManager::Post(const std::string &url, const JadeOption &opt){    
-  if(url == "/reload_opt"){
-    m_opt = opt;
-    return "{\"status\":ture}";
-  }
   
-  if(url == "/reset"){
-    Reset();
-    return "{\"status\":true}";
-  }
+  if(m_fut_async_flt.valid())
+    m_fut_async_flt.get();
+  
+  if(m_fut_async_wrt.valid())
+    m_fut_async_wrt.get();
+  
+  if(m_fut_async_mnt.valid())
+    m_fut_async_mnt.get();
 
-  static const std::string url_base_class("/JadePost/");
+  m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
+  m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
+  m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
+}
+
+JadeOption JadeManager::Post(const std::string &url, const JadeOption &opt){
+  return JadePost::Post(url, opt);
+}
+
+//+++++++++++++++++++++++++++++++++
+class TestManager: public JadeManager{
+ public:
+  TestManager(const JadeOption &opt);
+  ~TestManager() override {};
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+  void Init() override;
+  void StartDataTaking() override;
+  void StopDataTaking() override;
+
+  JadeRegCtrlSP m_ctrl;
+  JadeReadSP m_rd;
+  JadeFilterSP m_flt;
+  JadeWriteSP m_wrt;
+  JadeMonitorSP m_mnt;
+  JadeOption m_opt;
+};
+
+TestManager::TestManager(const JadeOption &opt):
+  JadeManager(opt), m_opt(opt){
+}
+  
+JadeOption TestManager::Post(const std::string &url, const JadeOption &opt){
+  static const std::string url_base_class("/JadeManager/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
-    return JadePost::Post(url.substr(url_base_class.size()-1), opt);
+    return JadeManager::Post(url.substr(url_base_class.size()-1), opt);
   }
   return JadePost::Post(url, opt);
 }
+
+void TestManager::Init(){
+  MakeComponent();
+
+  m_ctrl = GetRegCtrl();
+  m_rd = GetReader();
+  m_flt = GetFilter();
+  m_wrt = GetWriter();
+  m_mnt = GetMonitor();
+
+  //hardware specific
+  m_ctrl->Open();
+  m_ctrl->SendCommand("CHIPA1");
+  m_ctrl->SendCommand("SET");
+  m_ctrl->Close();
+}
+
+void TestManager::StartDataTaking(){  
+  m_rd->Open();
+  m_ctrl->Open();
+  m_wrt->Open();
+  m_flt->Reset();
+  m_mnt->Reset();
+
+  //hardware specific
+  m_ctrl->SendCommand("STOP");
+  std::this_thread::sleep_for(1s);
+  m_ctrl->SendCommand("START");
+
+  //Can threads start before the device's startup? 
+  StartThread();
+}
+
+void TestManager::StopDataTaking(){
+  //hardware specific  
+  m_ctrl->SendCommand("STOP");  
+
+  //Can threads terminate before the device's shutdown? 
+  StopThread();
+  m_rd->Close();
+  m_ctrl->Close();
+  m_wrt->Close();
+}
+
+// std::string JadeManager::DeviceStatus(const std::string &type){
+//   return m_ctrl->SendCommand("status", type);
+// }

@@ -16,6 +16,7 @@
 
 #include <thread>
 #include <algorithm>
+#include <sstream>
 
 using _base_c_ = JadeRegCtrl;
 using _index_c_ = JadeRegCtrl;
@@ -30,14 +31,11 @@ namespace{
   auto _loading_ = JadeFactory<_base_c_>::Register<_index_c_, const JadeOption&>(typeid(_index_c_));
 }
 
-JadeRegCtrl::JadeRegCtrl(const JadeOption &opt)
-  :m_opt(opt), m_fd(0), m_is_fd_read(false), m_is_fd_write(false){
+JadeRegCtrl::JadeRegCtrl(const JadeOption &opt){
 }
 
 JadeRegCtrl::~JadeRegCtrl(){
-  Reset();
 }
-
 
 JadeRegCtrlSP JadeRegCtrl::Make(const std::string& name, const JadeOption& opt){  
   try{
@@ -51,7 +49,47 @@ JadeRegCtrlSP JadeRegCtrl::Make(const std::string& name, const JadeOption& opt){
   }
 }
 
-void JadeRegCtrl::Open(){
+JadeOption JadeRegCtrl::Post(const std::string &url, const JadeOption &opt){
+  return JadePost::Post(url, opt);
+}
+
+
+//+++++++++++++++++++++++++++++++++++++++++
+//TestRegCtrl.hh
+
+class TestRegCtrl: public JadeRegCtrl{
+public:
+  TestRegCtrl(const JadeOption &opt);
+  ~TestRegCtrl() override {};
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+
+  void Open() override;
+  void Close() override;
+  std::string SendCommand(const std::string &cmd, const std::string &para) override;
+private:
+  void WriteByte(uint16_t addr, uint8_t val);
+  uint8_t ReadByte(uint16_t addr);
+  std::string GetStatus(const std::string &cmd);
+
+private:
+  JadeOption m_opt;
+  int m_fd;
+  bool m_is_fd_read;
+  bool m_is_fd_write;
+};
+
+//+++++++++++++++++++++++++++++++++++++++++
+//TestRegCtrl.cc
+namespace{
+  auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(TestRegCtrl)));
+  auto _test_ = JadeFactory<JadeRegCtrl>::Register<TestRegCtrl, const JadeOption&>(typeid(TestRegCtrl));
+}
+
+TestRegCtrl::TestRegCtrl(const JadeOption &opt)
+  :m_opt(opt), m_fd(0), m_is_fd_read(false), m_is_fd_write(false), JadeRegCtrl(opt){
+}
+
+void TestRegCtrl::Open(){
   std::string path = m_opt.GetStringValue("PATH");
   if(m_fd){
     close(m_fd);
@@ -86,7 +124,7 @@ void JadeRegCtrl::Open(){
   m_is_fd_write = true;
 }
 
-void JadeRegCtrl::Close(){
+void TestRegCtrl::Close(){
   if(m_fd){
     close(m_fd);
     m_fd = 0;
@@ -95,11 +133,7 @@ void JadeRegCtrl::Close(){
   }
 }
 
-void JadeRegCtrl::Reset(){
-  Close();
-}
-
-void JadeRegCtrl::WriteByte(uint16_t addr, uint8_t val){
+void TestRegCtrl::WriteByte(uint16_t addr, uint8_t val){
   if(!m_fd || !m_is_fd_write){
     if(m_fd){
       close(m_fd);
@@ -141,7 +175,7 @@ void JadeRegCtrl::WriteByte(uint16_t addr, uint8_t val){
   }
 }
 
-uint8_t JadeRegCtrl::ReadByte(uint16_t addr){
+uint8_t TestRegCtrl::ReadByte(uint16_t addr){
   if(!m_fd || !m_is_fd_read){
     if(m_fd){
       close(m_fd);
@@ -186,20 +220,30 @@ uint8_t JadeRegCtrl::ReadByte(uint16_t addr){
   return val;
 }
 
-void JadeRegCtrl::SendCommand(const std::string &cmd){
-  JadeOption cmd_opt =  m_opt.GetSubOption("command_list").GetSubOption(cmd);
-  uint16_t addr = cmd_opt.GetIntValue("address");
-  uint8_t default_val = cmd_opt.GetIntValue("default_val");
-  WriteByte(addr, default_val);
+std::string TestRegCtrl::SendCommand(const std::string &cmd, const std::string &para){
+  if(cmd == "status"){
+    return GetStatus(para);
+  }
+  if(para.empty()){
+    JadeOption cmd_opt =  m_opt.GetSubOption("command_list").GetSubOption(cmd);
+    uint16_t addr = cmd_opt.GetIntValue("address");
+    uint8_t default_val = cmd_opt.GetIntValue("default_val");
+    WriteByte(addr, default_val);
+    return "";
+  }
+  else{
+    std::stringstream ss;
+    uint16_t val;
+    ss<<para;
+    ss>>val;
+    JadeOption cmd_opt =  m_opt.GetSubOption("command_list").GetSubOption(cmd);
+    uint16_t addr = cmd_opt.GetIntValue("address");
+    WriteByte(addr, val);
+    return "";
+  }
 }
 
-void JadeRegCtrl::SendCommand(const std::string &cmd, uint8_t val){
-  JadeOption cmd_opt =  m_opt.GetSubOption("command_list").GetSubOption(cmd);
-  uint16_t addr = cmd_opt.GetIntValue("address");
-  WriteByte(addr, val);
-}
-
-std::string JadeRegCtrl::GetStatus(const std::string &type){
+std::string TestRegCtrl::GetStatus(const std::string &type){
   JadeOption type_opt = m_opt.GetSubOption("status_list").GetSubOption(type);
   JadeOption value_list_opt = type_opt.GetSubOption("value_list");
   std::map<std::string, JadeOption> opt_map = type_opt.GetSubMap();
@@ -215,22 +259,27 @@ std::string JadeRegCtrl::GetStatus(const std::string &type){
   return str_status;
 }
 
+JadeOption TestRegCtrl::Post(const std::string &url, const JadeOption &opt){
+  if(url == "/get_status"){
+    std::string st = GetStatus(opt.GetStringValue("type"));
+    return JadeUtils::FormatString("{\"status\":ture, \"get_status\": %s}", st );
+  }
 
-JadeOption JadeRegCtrl::Post(const std::string &url, const JadeOption &opt){    
-    if(url == "/reload_opt"){
+  if(url == "/open"){
+    Open();
+    m_opt = opt;
+    return "{\"status\":ture}";
+  }
+  
+  if(url == "/close"){
     Close();
     m_opt = opt;
     return "{\"status\":ture}";
   }
-
-  if(url == "/reset"){
-    Reset();
-    return "{\"status\":true}";
-  }
-
-  static const std::string url_base_class("/JadePost/");
+    
+  static const std::string url_base_class("/JadeRegCtrl/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
-    return JadePost::Post(url.substr(url_base_class.size()-1), opt);
+    return JadeRegCtrl::Post(url.substr(url_base_class.size()-1), opt);
   }
   return JadePost::Post(url, opt);
 }

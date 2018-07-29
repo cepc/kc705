@@ -25,23 +25,20 @@ JadeFactory<JadeRegCtrl>::Instance<const JadeOption&>();
 class DLLEXPORT JadeRegCtrl: public JadePost{
  public:
   JadeRegCtrl(const JadeOption &opt);
-  virtual ~JadeRegCtrl();
+  ~JadeRegCtrl() override;
   static JadeRegCtrlSP Make(const std::string& name, const JadeOption &opt);
-  virtual void Open();
-  virtual void Close();
-  virtual void Reset();
-  virtual void WriteByte(uint16_t addr, uint8_t val);
-  virtual uint8_t ReadByte(uint16_t addr);
-  void SendCommand(const std::string &cmd);
-  void SendCommand(const std::string &cmd, uint8_t val);
-  std::string GetStatus(const std::string &cmd);
   JadeOption Post(const std::string &url, const JadeOption &opt) override;
- private:
-  JadeOption m_opt;
-  int m_fd;
-  bool m_is_fd_read;
-  bool m_is_fd_write;
-};
 
+  //open controller device;
+  virtual void Open() {};
+  //close device;
+  virtual void Close() {};
+  //send command with parameter to current openning controller device  
+  virtual std::string SendCommand(const std::string &cmd, const std::string &para) {return "";};
+
+  virtual std::string SendCommand(const std::string &cmd) final{
+    return SendCommand(cmd, "");
+  }
+};
 
 #endif 

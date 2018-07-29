@@ -261,7 +261,8 @@ JadeOption JadeManager::Post(const std::string &url, const JadeOption &opt){
   return JadePost::Post(url, opt);
 }
 
-//+++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++
+//TestManager.hh
 class TestManager: public JadeManager{
  public:
   TestManager(const JadeOption &opt);
@@ -278,6 +279,13 @@ class TestManager: public JadeManager{
   JadeMonitorSP m_mnt;
   JadeOption m_opt;
 };
+
+//+++++++++++++++++++++++++++++++++++++++++
+//TestManager.cc
+namespace{
+  auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(TestManager)));
+  auto _test_ = JadeFactory<JadeManager>::Register<TestManager, const JadeOption&>(typeid(TestManager));
+}
 
 TestManager::TestManager(const JadeOption &opt):
   JadeManager(opt), m_opt(opt){
@@ -302,8 +310,9 @@ void TestManager::Init(){
 
   //hardware specific
   m_ctrl->Open();
-  m_ctrl->SendCommand("CHIPA1");
+  m_ctrl->SendCommand("CHIPA1"); //TODO: get it from m_opt
   m_ctrl->SendCommand("SET");
+  std::this_thread::sleep_for(200ms);
   m_ctrl->Close();
 }
 

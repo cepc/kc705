@@ -41,6 +41,7 @@ int main(int argc, char **argv){
   std::cout<<opt_man.DumpString()<<std::endl;
   JadeManagerSP pman = JadeManager::Make(man_type, opt_man_para);
   
+  
   JadeOption opt_sys_test = opt_conf.GetSubOption("SystemTest");
   size_t nsec = opt_sys_test.GetIntValue("SecPerLoop");
   size_t nloop = opt_sys_test.GetIntValue("N_Loops");

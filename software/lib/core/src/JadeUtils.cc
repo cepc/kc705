@@ -162,3 +162,19 @@ bool JadeUtils::LoadBinary(const std::string& file){
     return false;
   }
 }
+
+int base64_atob( const std::string &in_str, std::string &out_str );
+int base64_btoa(const std::string &in_str, std::string &out_str, int linesize);
+
+std::string JadeUtils::Base64_btoa(const std::string &bin){
+  std::string base64;
+  encode_string(bin, base64, 0);
+  return base64;
+}
+
+std::string JadeUtils::Base64_atob(const std::string &base64){
+  std::string bin;
+  decode_string(base64, bin);
+  return bin;
+}
+

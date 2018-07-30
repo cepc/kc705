@@ -5,6 +5,7 @@
 #include "JadeFactory.hh"
 #include "JadeOption.hh"
 #include "JadePost.hh"
+#include "JadeUtils.hh"
 
 #include "JadeDataFrame.hh"
 

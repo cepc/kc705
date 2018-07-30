@@ -6,6 +6,7 @@
 #include "JadePost.hh"
 #include "JadeDataFrame.hh"
 #include "JadeOption.hh"
+#include "JadeUtils.hh"
 
 #include <string>
 #include <chrono>

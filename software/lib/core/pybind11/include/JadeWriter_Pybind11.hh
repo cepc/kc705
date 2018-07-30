@@ -2,11 +2,11 @@
 #define JADE_JADEWRITE_PYBIND11_HH
 
 #include "pybind11/pybind11.h"
-#include "JadeWrite.hh"
+#include "JadeWriter.hh"
 
-class PyJadeWrite: public JadeWrite{
+class PyJadeWriter: public JadeWriter{
 public:
-  using JadeWrite::JadeWrite;
+  using JadeWriter::JadeWriter;
   static void InitPybind11(pybind11::module &m);  
 };
 

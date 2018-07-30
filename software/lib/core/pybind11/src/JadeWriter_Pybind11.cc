@@ -1,6 +1,6 @@
-#include "JadeWrite_Pybind11.hh"
+#include "JadeWriter_Pybind11.hh"
 
-void PyJadeWrite::InitPybind11(pybind11::module &m){
-  pybind11::class_<JadeWrite, PyJadeWrite, std::shared_ptr<JadeWrite>>
-    classdef(m, "JadeWrite");
+void PyJadeWriter::InitPybind11(pybind11::module &m){
+  pybind11::class_<JadeWriter, PyJadeWriter, std::shared_ptr<JadeWriter>>
+    classdef(m, "JadeWriter");
 }

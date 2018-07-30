@@ -10,6 +10,7 @@
 using namespace std::chrono_literals;
 
 int main(int argc, char **argv){
+  
   std::cout<<"options: -c <config_file>"<<std::endl;
   std::string config_file = "sample_summer.json";
   

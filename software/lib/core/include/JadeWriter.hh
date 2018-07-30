@@ -15,23 +15,22 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-class JadeWrite;
-using JadeWriteSP = JadeFactory<JadeWrite>::SP;
-using JadeWriteUP = JadeFactory<JadeWrite>::UP;
+class JadeWriter;
+using JadeWriterSP = JadeFactory<JadeWriter>::SP;
+using JadeWriterUP = JadeFactory<JadeWriter>::UP;
 
 #ifndef JADE_DLL_EXPORT
-extern template class DLLEXPORT JadeFactory<JadeWrite>;
+extern template class DLLEXPORT JadeFactory<JadeWriter>;
 extern template DLLEXPORT
-std::unordered_map<std::type_index, typename JadeFactory<JadeWrite>::UP (*)(const JadeOption&)>&
-JadeFactory<JadeWrite>::Instance<const JadeOption&>();
+std::unordered_map<std::type_index, typename JadeFactory<JadeWriter>::UP (*)(const JadeOption&)>&
+JadeFactory<JadeWriter>::Instance<const JadeOption&>();
 #endif
 
-
-class DLLEXPORT JadeWrite: public JadePost{
+class DLLEXPORT JadeWriter: public JadePost{
  public:
-  JadeWrite(const JadeOption &opt);
-  ~JadeWrite() override;
-  static JadeWriteSP Make(const std::string& name, const JadeOption& opt);  
+  JadeWriter(const JadeOption &opt);
+  ~JadeWriter() override;
+  static JadeWriterSP Make(const std::string& name, const JadeOption& opt);  
   JadeOption Post(const std::string &url, const JadeOption &opt) override;
 
   //open file for written 

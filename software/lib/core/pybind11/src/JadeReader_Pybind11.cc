@@ -1,6 +1,6 @@
-#include "JadeRead_Pybind11.hh"
+#include "JadeReader_Pybind11.hh"
 
-void PyJadeRead::InitPybind11(pybind11::module &m){
-  pybind11::class_<JadeRead, PyJadeRead, std::shared_ptr<JadeRead>>
-    classdef(m, "JadeRead");
+void PyJadeReader::InitPybind11(pybind11::module &m){
+  pybind11::class_<JadeReader, PyJadeReader, std::shared_ptr<JadeReader>>
+    classdef(m, "JadeReader");
 }

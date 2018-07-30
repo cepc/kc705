@@ -55,10 +55,10 @@ int main(int argc, char **argv){
   
   JadeOption conf_ctrl = conf_core.GetSubOption("JadeRegCtrl");
   JadeOption conf_ctrl_para = conf_ctrl.GetSubOption("parameter");
-  JadeOption conf_read = conf_core.GetSubOption("JadeRead");
+  JadeOption conf_read = conf_core.GetSubOption("JadeReader");
   JadeOption conf_read_para = conf_read.GetSubOption("parameter");
 
-  JadeRead rd(conf_read_para);
+  JadeReader rd(conf_read_para);
   rd.Open();
   JadeRegCtrl ctrl(conf_ctrl_para);
   ctrl.Open();

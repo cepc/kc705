@@ -13,22 +13,22 @@
 #include <mutex>
 #include <queue>
 
-class JadeRead;
-using JadeReadSP = JadeFactory<JadeRead>::SP;
-using JadeReadUP = JadeFactory<JadeRead>::UP;
+class JadeReader;
+using JadeReaderSP = JadeFactory<JadeReader>::SP;
+using JadeReaderUP = JadeFactory<JadeReader>::UP;
 
 #ifndef JADE_DLL_EXPORT
-extern template class DLLEXPORT JadeFactory<JadeRead>;
+extern template class DLLEXPORT JadeFactory<JadeReader>;
 extern template DLLEXPORT
-std::unordered_map<std::type_index, typename JadeFactory<JadeRead>::UP (*)(const JadeOption&)>&
-JadeFactory<JadeRead>::Instance<const JadeOption&>();
+std::unordered_map<std::type_index, typename JadeFactory<JadeReader>::UP (*)(const JadeOption&)>&
+JadeFactory<JadeReader>::Instance<const JadeOption&>();
 #endif
 
-class DLLEXPORT JadeRead: public JadePost{
+class DLLEXPORT JadeReader: public JadePost{
  public:
-  JadeRead(const JadeOption &opt);
-  ~JadeRead() override;
-  static JadeReadSP Make(const std::string&name, const JadeOption &opt);
+  JadeReader(const JadeOption &opt);
+  ~JadeReader() override;
+  static JadeReaderSP Make(const std::string&name, const JadeOption &opt);
   JadeOption Post(const std::string &url, const JadeOption &opt) override;
 
   //open data device for read

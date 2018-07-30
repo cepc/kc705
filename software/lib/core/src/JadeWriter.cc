@@ -1,10 +1,10 @@
-#include "JadeWrite.hh"
+#include "JadeWriter.hh"
 #include <ctime>
 
 #include "JadeUtils.hh"
 
-using _base_c_ = JadeWrite;
-using _index_c_ = JadeWrite;
+using _base_c_ = JadeWriter;
+using _index_c_ = JadeWriter;
 
 template class DLLEXPORT JadeFactory<_base_c_>;
 template DLLEXPORT
@@ -16,16 +16,16 @@ namespace{
   auto _loading_ = JadeFactory<_base_c_>::Register<_index_c_, const JadeOption&>(typeid(_index_c_));
 }
 
-JadeWrite::JadeWrite(const JadeOption &opt){
+JadeWriter::JadeWriter(const JadeOption &opt){
 }
 
-JadeWrite::~JadeWrite(){
+JadeWriter::~JadeWriter(){
 }
 
-JadeWriteSP JadeWrite::Make(const std::string& name, const JadeOption& opt){  
+JadeWriterSP JadeWriter::Make(const std::string& name, const JadeOption& opt){  
   try{
     std::type_index index = JadeUtils::GetTypeIndex(name);
-    JadeWriteSP wrt =  JadeFactory<JadeWrite>::MakeUnique<const JadeOption&>(index, opt);
+    JadeWriterSP wrt =  JadeFactory<JadeWriter>::MakeUnique<const JadeOption&>(index, opt);
     return wrt;
   }
   catch(...){
@@ -34,19 +34,19 @@ JadeWriteSP JadeWrite::Make(const std::string& name, const JadeOption& opt){
   }
 }
 
-void JadeWrite::Write(JadeDataFrameSP df){
+void JadeWriter::Write(JadeDataFrameSP df){
 }
 
-JadeOption JadeWrite::Post(const std::string &url, const JadeOption &opt){
+JadeOption JadeWriter::Post(const std::string &url, const JadeOption &opt){
   return JadePost::Post(url, opt);
 }
 
 //++++++++++++++++++++++++++++++++++
-//TestWrite.hh
-class TestWrite: public JadeWrite{
+//TestWriter.hh
+class TestWriter: public JadeWriter{
  public:
-  TestWrite(const JadeOption &opt);
-  ~TestWrite() override {}; 
+  TestWriter(const JadeOption &opt);
+  ~TestWriter() override {}; 
   JadeOption Post(const std::string &url, const JadeOption &opt) override;
 
   void Open() override;
@@ -60,19 +60,19 @@ class TestWrite: public JadeWrite{
 };
 
 //+++++++++++++++++++++++++++++++++++++++++
-//TestWrite.cc
+//TestWriter.cc
 namespace{
-  auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(TestWrite)));
-  auto _test_ = JadeFactory<JadeWrite>::Register<TestWrite, const JadeOption&>(typeid(TestWrite));
+  auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(TestWriter)));
+  auto _test_ = JadeFactory<JadeWriter>::Register<TestWriter, const JadeOption&>(typeid(TestWriter));
 }
 
-TestWrite::TestWrite(const JadeOption &opt)
-  :m_opt(opt), m_fd(0), m_disable_file_write(false), JadeWrite(opt){
+TestWriter::TestWriter(const JadeOption &opt)
+  :m_opt(opt), m_fd(0), m_disable_file_write(false), JadeWriter(opt){
   m_disable_file_write = m_opt.GetBoolValue("DISABLE_FILE_WRITE");
   m_path = m_opt.GetStringValue("PATH"); 
 }
 
-void TestWrite::Open(){
+void TestWriter::Open(){
   if(m_disable_file_write)
     return;
   std::time_t time_now = std::time(nullptr);
@@ -89,7 +89,7 @@ void TestWrite::Open(){
   }
 }
 
-void TestWrite::Close(){
+void TestWriter::Close(){
   if(m_disable_file_write)
     return;
   if(m_fd){
@@ -98,7 +98,7 @@ void TestWrite::Close(){
   }
 }
 
-void TestWrite::Write(JadeDataFrameSP df){
+void TestWriter::Write(JadeDataFrameSP df){
   if(m_disable_file_write)
     return;
   if(!df){
@@ -111,7 +111,7 @@ void TestWrite::Write(JadeDataFrameSP df){
   }
 }
 
-JadeOption TestWrite::Post(const std::string &url, const JadeOption &opt){  
+JadeOption TestWriter::Post(const std::string &url, const JadeOption &opt){  
   if(url == "/close"){
     Close();
     return "{\"status\":true}";
@@ -130,9 +130,9 @@ JadeOption TestWrite::Post(const std::string &url, const JadeOption &opt){
     return "{\"status\":true}";
   }
 
-  static const std::string url_base_class("/JadeWrite/");
+  static const std::string url_base_class("/JadeWriter/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
-    return JadeWrite::Post(url.substr(url_base_class.size()-1), opt);
+    return JadeWriter::Post(url.substr(url_base_class.size()-1), opt);
   }
   return JadePost::Post(url, opt);
 }

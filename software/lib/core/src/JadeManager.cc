@@ -46,15 +46,15 @@ JadeManagerSP JadeManager::Make(const std::string& name, const JadeOption& opt){
 
 void JadeManager::MakeComponent(){
   auto rd_opt = m_opt.GetSubOption("JadeRead");
-  m_rd = JadeRead::Make(rd_opt.GetStringValue("type"), rd_opt.GetSubOption("parameter"));
+  m_rd = JadeReader::Make(rd_opt.GetStringValue("type"), rd_opt.GetSubOption("parameter"));
   AddSubPost(m_rd);
   
   auto ctrl_opt = m_opt.GetSubOption("JadeRegCtrl");
   m_ctrl = JadeRegCtrl::Make(ctrl_opt.GetStringValue("type"), ctrl_opt.GetSubOption("parameter"));
   AddSubPost(m_ctrl);
   
-  auto wrt_opt = m_opt.GetSubOption("JadeWrite");
-  m_wrt = JadeWrite::Make(wrt_opt.GetStringValue("type"), wrt_opt.GetSubOption("parameter"));
+  auto wrt_opt = m_opt.GetSubOption("JadeWriter");
+  m_wrt = JadeWriter::Make(wrt_opt.GetStringValue("type"), wrt_opt.GetSubOption("parameter"));
   AddSubPost(m_wrt);
   
   auto flt_opt = m_opt.GetSubOption("JadeFilter");
@@ -273,9 +273,9 @@ class TestManager: public JadeManager{
   void StopDataTaking() override;
 
   JadeRegCtrlSP m_ctrl;
-  JadeReadSP m_rd;
+  JadeReaderSP m_rd;
   JadeFilterSP m_flt;
-  JadeWriteSP m_wrt;
+  JadeWriterSP m_wrt;
   JadeMonitorSP m_mnt;
   JadeOption m_opt;
 };

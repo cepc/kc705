@@ -12,7 +12,7 @@ namespace{
     ;
 }
 
-class EudaqWriter: public JadeWrite {
+class EudaqWriter: public JadeWriter {
 public:
   EudaqWriter(const JadeOption &opt);
   ~EudaqWriter() override;
@@ -28,7 +28,7 @@ private:
 //TestWrite.cc
 namespace{
   auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(EudaqWriter)));
-  auto _test_ = JadeFactory<JadeWrite>::Register<EudaqWriter, const JadeOption&>(typeid(EudaqWriter));
+  auto _test_ = JadeFactory<JadeWriter>::Register<EudaqWriter, const JadeOption&>(typeid(EudaqWriter));
 }
 
 void EudaqWriter::SetProducerCallback(eudaq::Producer *producer){
@@ -36,7 +36,7 @@ void EudaqWriter::SetProducerCallback(eudaq::Producer *producer){
 }
 
 EudaqWriter::EudaqWriter(const JadeOption &opt)
-  :JadeWrite(opt), m_producer(nullptr)
+  :JadeWriter(opt), m_producer(nullptr)
 {
   
 }
@@ -46,9 +46,9 @@ EudaqWriter::~EudaqWriter(){
 }
 
 JadeOption EudaqWriter::Post(const std::string &url, const JadeOption &opt){
-  static const std::string url_base_class("/JadeWrite/");
+  static const std::string url_base_class("/JadeWriter/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
-    return JadeWrite::Post(url.substr(url_base_class.size()-1), opt);
+    return JadeWriter::Post(url.substr(url_base_class.size()-1), opt);
   }
   return JadePost::Post(url, opt);
 }

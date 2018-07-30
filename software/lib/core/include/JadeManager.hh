@@ -6,9 +6,9 @@
 #include "JadeUtils.hh"
 #include "JadeOption.hh"
 #include "JadeDataFrame.hh"
-#include "JadeRead.hh"
+#include "JadeReader.hh"
 #include "JadeFilter.hh"
-#include "JadeWrite.hh"
+#include "JadeWriter.hh"
 #include "JadeMonitor.hh"
 #include "JadeRegCtrl.hh"
 
@@ -52,8 +52,8 @@ class DLLEXPORT JadeManager: public JadePost{
   
   //TODO: weak_ptr
   JadeRegCtrlSP GetRegCtrl() { return m_ctrl; };
-  JadeReadSP GetReader() { return m_rd; };
-  JadeWriteSP GetWriter() { return m_wrt; };
+  JadeReaderSP GetReader() { return m_rd; };
+  JadeWriterSP GetWriter() { return m_wrt; };
   JadeFilterSP GetFilter() { return m_flt; };
   JadeMonitorSP GetMonitor() { return m_mnt; };
   
@@ -72,9 +72,9 @@ class DLLEXPORT JadeManager: public JadePost{
   JadeOption m_opt;
   
   JadeRegCtrlSP m_ctrl;
-  JadeReadSP m_rd;
+  JadeReaderSP m_rd;
   JadeFilterSP m_flt;
-  JadeWriteSP m_wrt;
+  JadeWriterSP m_wrt;
   JadeMonitorSP m_mnt;
   
   bool m_is_running;

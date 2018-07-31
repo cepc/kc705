@@ -75,6 +75,22 @@ std::string TestMonitor::SendCommand(const std::string &cmd, const std::string &
 }
 
 JadeOption TestMonitor::Post(const std::string &url, const JadeOption &opt){  
+  
+  if(url == "/set_print_event_n"){
+    m_ev_print = opt.GetIntValue("PRINT_EVENT_N");
+    return "{\"status\":true}";
+  }
+  
+  if(url == "/set_print_event_discontinuous"){
+    m_enable_print_discon = opt.GetBoolValue("PRINT_EVENT_DISCONTINUOUS");
+    return "{\"status\":true}";
+  }
+
+  if(url == "/set_enable_cds"){
+    m_enable_cds = opt.GetBoolValue("ENABLE_CDS");
+    return "{\"status\":true}";
+  }
+  
   static const std::string url_base_class("/JadeMonitor/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
     return JadeMonitor::Post(url.substr(url_base_class.size()-1), opt);

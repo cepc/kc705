@@ -10,6 +10,7 @@
 using namespace std::chrono_literals;
 
 int main(int argc, char **argv){
+  JadeUtils::PrintTypeIndexMap();
   
   std::cout<<"options: -c <config_file>"<<std::endl;
   std::string config_file = "sample_summer.json";
@@ -40,7 +41,8 @@ int main(int argc, char **argv){
   std::string man_type = opt_man.GetStringValue("type");
   JadeOption opt_man_para = opt_man.GetSubOption("parameter");
   JadeManagerSP pman = JadeManager::Make(man_type, opt_man_para);
-    
+  pman->Init();
+  
   JadeOption opt_sys_test = opt_conf.GetSubOption("SystemTest");
   size_t nsec = opt_sys_test.GetIntValue("SecPerLoop");
   size_t nloop = opt_sys_test.GetIntValue("N_Loops");

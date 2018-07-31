@@ -1,8 +1,7 @@
 #ifndef GUIMONITOR_HH
 #define GUIMONITOR_HH
 
-#include "JadeMonitor.hh"
-#include "JadeOption.hh"
+#include "JadeCore.hh"
 #include <TH1.h>
 #include <TH2.h>
 #include <TRandom.h>
@@ -14,15 +13,18 @@
 #include <vector>
 
 class GUIMonitor : public JadeMonitor {
-  public:
+public:
   GUIMonitor(const JadeOption& options);
-  void Monitor(JadeDataFrameSP df);
-  void Reset();
+  ~GUIMonitor() override{};
+  void Monitor(JadeDataFrameSP df) override;
+  void Reset() override;
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+  
   std::shared_ptr<TH2F> GetADCMap();
   std::shared_ptr<TH2F> GetADCCounts();
   std::vector<std::shared_ptr<TH1F>> GetADCHist();
 
-  private:
+private:
   JadeOption m_opt;
   size_t m_ev_get;
   size_t m_ev_num;
@@ -44,4 +46,5 @@ class GUIMonitor : public JadeMonitor {
   std::vector<std::shared_ptr<TH1F>> m_adc_hist;
   std::vector<std::shared_ptr<TH1F>> m_adc_hist_clone;
 };
+
 #endif

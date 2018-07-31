@@ -39,6 +39,7 @@ private:
   int m_fd;
   bool m_is_fd_read;
   bool m_is_fd_write;
+  std::string m_path;
 };
 
 //+++++++++++++++++++++++++++++++++++++++++
@@ -53,7 +54,9 @@ TestRegCtrl::TestRegCtrl(const JadeOption &opt)
 }
 
 void TestRegCtrl::Open(){
-  std::string path = m_opt.GetStringValue("PATH");
+  if(m_path.empty())
+    m_path = m_opt.GetStringValue("PATH");
+  std::string path = m_path;
   if(m_fd){
     close(m_fd);
     m_fd = 0;
@@ -61,12 +64,12 @@ void TestRegCtrl::Open(){
     m_is_fd_write = false;
   }
 #ifdef _WIN32
-  m_fd = _open(path.c_str(), _O_RDONLY | _O_BINARY);
+  m_fd = _open(m_path.c_str(), _O_RDONLY | _O_BINARY);
 #else
-  m_fd = open(path.c_str(), O_RDONLY);
+  m_fd = open(m_path.c_str(), O_RDONLY);
 #endif
   if(m_fd < 0){
-    std::cerr<<"JadeRegCtrl: Failed to open devfile by read mode: "<<path<<"\n";
+    std::cerr<<"JadeRegCtrl: Failed to open devfile by read mode: "<<m_path<<"\n";
     throw;
   }
   close(m_fd);
@@ -75,12 +78,12 @@ void TestRegCtrl::Open(){
   m_is_fd_write = false;
   
 #ifdef _WIN32
-  m_fd = _open(path.c_str(), _O_WRONLY | _O_BINARY);
+  m_fd = _open(m_path.c_str(), _O_WRONLY | _O_BINARY);
 #else
-  m_fd = open(path.c_str(), O_WRONLY);
+  m_fd = open(m_path.c_str(), O_WRONLY);
 #endif
   if(m_fd < 0){
-    std::cerr<<"JadeRegCtrl: Failed to open devfile by write mode: "<<path<<"\n";
+    std::cerr<<"JadeRegCtrl: Failed to open devfile by write mode: "<<m_path<<"\n";
     throw;
   }
   m_is_fd_read = false;
@@ -104,7 +107,9 @@ void TestRegCtrl::WriteByte(uint16_t addr, uint8_t val){
       m_is_fd_read = false;
       m_is_fd_write = false;
     }
-    std::string path = m_opt.GetStringValue("PATH");
+    if(m_path.empty())
+      m_path = m_opt.GetStringValue("PATH");
+    std::string path = m_path;
 #ifdef _WIN32
     m_fd = _open(path.c_str(), _O_WRONLY | _O_BINARY);
 #else
@@ -146,7 +151,10 @@ uint8_t TestRegCtrl::ReadByte(uint16_t addr){
       m_is_fd_read = false;
       m_is_fd_write = false;
     }
-    std::string path = m_opt.GetStringValue("PATH");
+    if(m_path.empty())
+      m_path = m_opt.GetStringValue("PATH");
+    std::string path = m_path;
+
 #ifdef _WIN32
     m_fd = _open(path.c_str(), _O_RDONLY | _O_BINARY);
 #else
@@ -223,23 +231,10 @@ std::string TestRegCtrl::GetStatus(const std::string &type){
 }
 
 JadeOption TestRegCtrl::Post(const std::string &url, const JadeOption &opt){
-  if(url == "/get_status"){
-    std::string st = GetStatus(opt.GetStringValue("type"));
-    return JadeUtils::FormatString("{\"status\":ture, \"get_status\": %s}", st );
-  }
-
-  if(url == "/open"){
-    Open();
-    m_opt = opt;
-    return "{\"status\":ture}";
-  }
-  
-  if(url == "/close"){
-    Close();
-    m_opt = opt;
-    return "{\"status\":ture}";
-  }
-    
+  if(url == "/set_path"){
+    m_path=opt.GetStringValue("PATH");
+    return "{\"status\":true}";
+  }    
   static const std::string url_base_class("/JadeRegCtrl/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
     return JadeRegCtrl::Post(url.substr(url_base_class.size()-1), opt);

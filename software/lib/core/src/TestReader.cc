@@ -1,30 +1,39 @@
-#include "JadeRead.hh"
+#include "JadeReader.hh"
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
+//+++++++++++++++++++++++++++++++++++++++++
+//TestReader.hh
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+class TestReader: public JadeReader{
+public:
+  TestReader(const JadeOption &opt);
+  ~TestReader() override {};
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
 
-#define FRAME_SIZE (4 + 48 * (4 + 16 * 2 + 4) + 4)
+  std::vector<JadeDataFrameSP> Read(size_t nframe,
+                                    const std::chrono::milliseconds &timeout) override;
+  JadeDataFrameSP Read(const std::chrono::milliseconds &timeout) override;
+  void Open() override;
+  void Close() override;
+private:
+  JadeOption m_opt;
+  int m_fd;
+  std::string m_buf;
+};
 
-JadeRead::JadeRead(const JadeOption& opt)
-    : m_opt(opt)
-    , m_fd(0)
-{
+//+++++++++++++++++++++++++++++++++++++++++
+//TestReader.cc
+namespace{
+  auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(TestReader)));
+  auto _test_ = JadeFactory<JadeReader>::Register<TestReader, const JadeOption&>(typeid(TestReader));
 }
 
-JadeRead::~JadeRead()
-{
-  Reset();
+
+TestReader::TestReader(const JadeOption& opt)
+  : m_opt(opt), m_fd(0), JadeReader(opt){
 }
 
-void JadeRead::Open()
-{
+
+void TestReader::Open(){
   if (m_fd) {
     m_buf.clear();
 #ifdef _WIN32
@@ -42,14 +51,13 @@ void JadeRead::Open()
   m_fd = open(path.c_str(), O_RDONLY);
 #endif
   if (m_fd <= 0) {
-    std::cerr << "JadeRead: Failed to open devfile: " << path << "\n";
+    std::cerr << "JadeReader: Failed to open devfile: " << path << "\n";
     m_fd = 0;
     throw;
   }
 }
 
-void JadeRead::Close()
-{
+void TestReader::Close(){
   m_buf.clear();
   if (m_fd) {
 #ifdef _WIN32
@@ -61,13 +69,8 @@ void JadeRead::Close()
   }
 }
 
-void JadeRead::Reset()
-{
-  Close();
-}
-
 std::vector<JadeDataFrameSP>
-JadeRead::Read(size_t nframe,
+TestReader::Read(size_t nframe,
     const std::chrono::milliseconds& timeout)
 {
   std::vector<JadeDataFrameSP> v_df;
@@ -77,7 +80,8 @@ JadeRead::Read(size_t nframe,
   return v_df;
 }
 
-JadeDataFrameSP JadeRead::Read(const std::chrono::milliseconds& timeout)
+
+JadeDataFrameSP TestReader::Read(const std::chrono::milliseconds& timeout)
 {
   uint32_t size_pack;
   size_pack = sizeof(size_pack);
@@ -117,7 +121,7 @@ JadeDataFrameSP JadeRead::Read(const std::chrono::milliseconds& timeout)
       }
       else {
         if (std::chrono::system_clock::now() > tp_timeout) {
-          std::cerr << "JadeRead: reading timeout\n";
+          std::cerr << "JadeReader: reading timeout\n";
           //TODO: keep remain data, nothrow
           throw;
         }
@@ -133,4 +137,22 @@ JadeDataFrameSP JadeRead::Read(const std::chrono::milliseconds& timeout)
     can_time_out = false;
   }
   return JadeDataFrameSP(new JadeDataFrame(m_buf.substr(0, size_pack)));
+}
+
+JadeOption TestReader::Post(const std::string &url, const JadeOption &opt){    
+  if(url == "/open"){
+    Open();
+    return "{\"status\":ture}";
+  }
+  
+  if(url == "/close"){
+    Close();
+    return "{\"status\":true}";
+  }
+
+  static const std::string url_base_class("/JadeReader/");
+  if( ! url.compare(0, url_base_class.size(), url_base_class) ){
+    return JadeReader::Post(url.substr(url_base_class.size()-1), opt);
+  }
+  return JadePost::Post(url, opt);
 }

@@ -12,6 +12,7 @@ class DLLEXPORT JadeOption{
  public:
   JadeOption();
   JadeOption(const std::string& str);
+  JadeOption(const char* str);
   JadeOption(const json11::Json& js);
   JadeOption(json11::Json&& js); //todo
   std::string DumpString() const;
@@ -21,9 +22,9 @@ class DLLEXPORT JadeOption{
   bool GetBoolValue(const std::string& key = "") const;
   int32_t GetIntValue(const std::string& key = "" ) const;
   double GetFloatValue(const std::string& key = "") const;
+
  private:
   std::shared_ptr<json11::Json> m_json_ptr;
 };
-
 
 #endif

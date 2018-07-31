@@ -23,8 +23,6 @@ class GUIManager : public QObject
   public:
     GUIManager();
     ~GUIManager();
-    std::string get_now_str();
-
     void set_input_data_path(std::string input_path){m_opt_data_input = input_path;}; 
     void set_register_data_path(std::string reg_path){m_opt_reg = reg_path;}; 
     void set_output_data_path(std::string output_path){m_opt_data_output = output_path;}; 
@@ -42,7 +40,7 @@ class GUIManager : public QObject
     size_t get_run_time(){return std::stoul(m_opt_time_run);}; 
     size_t get_ev_print(){return std::stoul(m_opt_ev_print);}; 
     int get_nfiles(){return m_opt_nfiles;};
-    std::shared_ptr<GUIMonitor>get_monitor();
+    std::shared_ptr<GUIMonitor> get_monitor();
  
   public slots:
     void start_run();
@@ -60,7 +58,7 @@ class GUIManager : public QObject
     int m_col;
     int m_row;
     int m_thr;//*
-    JadeManager* m_man;
+    JadeManagerSP m_man;
     std::shared_ptr<GUIMonitor> m_monitor;
 
   signals:

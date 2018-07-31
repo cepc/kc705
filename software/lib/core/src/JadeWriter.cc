@@ -1,8 +1,10 @@
-#include "JadeMonitor.hh"
+#include "JadeWriter.hh"
+#include <ctime>
+
 #include "JadeUtils.hh"
 
-using _base_c_ = JadeMonitor;
-using _index_c_ = JadeMonitor;
+using _base_c_ = JadeWriter;
+using _index_c_ = JadeWriter;
 
 template class DLLEXPORT JadeFactory<_base_c_>;
 template DLLEXPORT
@@ -14,18 +16,16 @@ namespace{
   auto _loading_ = JadeFactory<_base_c_>::Register<_index_c_, const JadeOption&>(typeid(_index_c_));
 }
 
-JadeMonitor::JadeMonitor(const JadeOption& opt){
-  
+JadeWriter::JadeWriter(const JadeOption &opt){
 }
 
-JadeMonitor::~JadeMonitor(){
-  
+JadeWriter::~JadeWriter(){
 }
 
-JadeMonitorSP JadeMonitor::Make(const std::string& name, const JadeOption& opt){  
+JadeWriterSP JadeWriter::Make(const std::string& name, const JadeOption& opt){  
   try{
     std::type_index index = JadeUtils::GetTypeIndex(name);
-    JadeMonitorSP wrt =  JadeFactory<JadeMonitor>::MakeUnique<const JadeOption&>(index, opt);
+    JadeWriterSP wrt =  JadeFactory<JadeWriter>::MakeUnique<const JadeOption&>(index, opt);
     return wrt;
   }
   catch(...){
@@ -34,11 +34,10 @@ JadeMonitorSP JadeMonitor::Make(const std::string& name, const JadeOption& opt){
   }
 }
 
-void JadeMonitor::Monitor(JadeDataFrameSP df){
+void JadeWriter::Write(JadeDataFrameSP df){
 }
 
-JadeOption JadeMonitor::Post(const std::string &url, const JadeOption &opt){
+JadeOption JadeWriter::Post(const std::string &url, const JadeOption &opt){
   return JadePost::Post(url, opt);
 }
-
 

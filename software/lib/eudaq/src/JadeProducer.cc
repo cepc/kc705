@@ -83,9 +83,23 @@ namespace{
 }
 
 void JadeProducer::DoInitialise(){
-  std::string man_type("TestManager");
-  JadeOption man_opt("{}");
-  m_jade_man=JadeManager::Make(man_type, man_opt);
+  auto ini = GetInitConfiguration();
+  std::string json_base64  = ini->Get("JSON_BASE64", "");
+  std::string json_str;
+  if(json_base64.empty()){
+    std::string json_path  = ini->Get("JSON_PATH", "");
+    json_str = JadeUtils::LoadFileToString(json_path);
+  }
+  else{
+    json_str = JadeUtils::Base64_atob(json_base64);
+  }
+  JadeOption opt_conf(json_str);
+  JadeOption opt_man = opt_conf.GetSubOption("JadeManager");
+  std::cout<<opt_man.DumpString()<<std::endl;
+  std::string man_type = opt_man.GetStringValue("type");
+  JadeOption opt_man_para = opt_man.GetSubOption("parameter");
+  m_jade_man = JadeManager::Make(man_type, opt_man_para);
+
   m_jade_man->Init();
   auto writer = m_jade_man->GetWriter();
   auto eudaq_writer = std::dynamic_pointer_cast<EudaqWriter>(writer);

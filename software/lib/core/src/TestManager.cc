@@ -52,7 +52,9 @@ void TestManager::Init(){
 
   //hardware specific
   m_ctrl->Open();
-  m_ctrl->SendCommand("CHIPA1"); //TODO: get it from m_opt
+
+  std::string chip_select = m_opt.GetStringValue("CHIP_SELECT");
+  m_ctrl->SendCommand(chip_select);
   m_ctrl->SendCommand("SET");
   std::this_thread::sleep_for(200ms);
   m_ctrl->Close();

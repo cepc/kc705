@@ -35,42 +35,24 @@ int main(int argc, char **argv){
   std::string config_str = JadeUtils::LoadFileToString(config_file);
   
   JadeOption opt_conf(config_str);
-  JadeOption opt_core = opt_conf.GetSubOption("JadeCore");  
-  JadeOption opt_man = opt_core.GetSubOption("JadeManager");
+  JadeOption opt_man = opt_conf.GetSubOption("JadeManager");
+  std::cout<<opt_man.DumpString()<<std::endl;
   std::string man_type = opt_man.GetStringValue("type");
   JadeOption opt_man_para = opt_man.GetSubOption("parameter");
-  std::cout<<opt_man.DumpString()<<std::endl;
   JadeManagerSP pman = JadeManager::Make(man_type, opt_man_para);
-  
-  
+    
   JadeOption opt_sys_test = opt_conf.GetSubOption("SystemTest");
   size_t nsec = opt_sys_test.GetIntValue("SecPerLoop");
   size_t nloop = opt_sys_test.GetIntValue("N_Loops");
-  std::string chip_address = opt_sys_test.GetStringValue("ChipAddress");
   
-  // pman->DeviceConnect();
-  // pman->DeviceControl(chip_address);
-  // pman->DeviceControl("SET");
-  // std::cout << "Select address: " << chip_address << std::endl;
-  // pman->DeviceDisconnect();
-
   for(size_t i=0; i< nloop; i++){
-    // pman->DeviceConnect();
-    // pman->DeviceControl("STOP");
-    // std::this_thread::sleep_for(1s);
     std::cout<<"=========start at "<<JadeUtils::GetNowStr()<<"======="<< std::endl;
-    // pman->DeviceControl("START");
-    // std::cout<<"========="<<std::endl;
     pman->StartDataTaking();
     std::cout<<"========="<<std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(nsec));
     std::cout<<"========="<<std::endl;
     pman->StopDataTaking();
-    // std::cout<<"========="<<std::endl;
-    // pman->DeviceControl("STOP");
-    // std::this_thread::sleep_for(1s);
     std::cout<<"=========exit at "<<JadeUtils::GetNowStr()<<"======="<< std::endl;
-    // pman->DeviceDisconnect();
   }
   return 0;
 }

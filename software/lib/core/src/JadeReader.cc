@@ -1,5 +1,6 @@
 #include "JadeReader.hh"
 #include "JadeUtils.hh"
+#include "JadeFactory.hh"
 
 #ifdef _WIN32
 #include <io.h>

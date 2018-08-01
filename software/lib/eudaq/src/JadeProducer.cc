@@ -55,10 +55,19 @@ JadeOption EudaqWriter::Post(const std::string &url, const JadeOption &opt){
 
 void EudaqWriter::Write(JadeDataFrameSP df){
   if(m_producer){
-    // df -> ev;
-    
-    // m_producer->SendEvent(std::move(ev));
-  }   
+    auto ev = eudaq::Event::MakeUnique("JadeRaw");
+    ev->SetTriggerN(df->GetFrameCount());
+
+    std::vector<uint16_t> v_info;
+    v_info.push_back(df->GetMatrixSizeX());
+    v_info.push_back(df->GetMatrixSizeY());
+    ev->AddBlock<uint16_t>((uint32_t)0, v_info);
+
+    ev->AddBlock<int16_t>((uint32_t)1, df->Data());
+    if(m_producer)
+      m_producer->SendEvent(std::move(ev));
+  }
+  
 }
 
 class JadeProducer : public eudaq::Producer {

@@ -18,7 +18,7 @@ GUIMonitor::GUIMonitor(const JadeOption& options)
     , m_row(0)
     , m_nbins(10000)
     , m_thr(0) //*
-    , m_last_df({ 0 })
+    , m_last_df()
     , m_enbale_print_events(false)
     , m_monitor_percent(0.5)
 {
@@ -45,16 +45,16 @@ void GUIMonitor::Reset(){
 
 void GUIMonitor::Monitor(JadeDataFrameSP df)
 {
-  if (m_ev_num == 0) {
-    m_last_df = df;
-  } else {
-    df->CDS(*m_last_df);
-    m_last_df = df;
-  }
+  // if (m_ev_num == 0) {
+  //   m_last_df = df;
+  // } else {
+  //   df->CDS(*m_last_df);
+  //   m_last_df = df;
+  // }
 
   if (m_enbale_print_events && m_ev_get != 0 && m_ev_num % m_ev_get == 0) {
     df->Print(std::cout);
-    df->PrintCDS(std::cout);
+    // df->PrintCDS(std::cout);
   }
 
   m_df = df;
@@ -64,9 +64,9 @@ void GUIMonitor::Monitor(JadeDataFrameSP df)
     return;
   }
 
-  if (!m_df->GetCDSStatus()) {
-    return;
-  }
+  // if (!m_df->GetCDSStatus()) {
+  //   return;
+  // }
 
   TRandom rdm;
   auto factor = rdm.Uniform(1);
@@ -75,7 +75,8 @@ void GUIMonitor::Monitor(JadeDataFrameSP df)
     m_adc_map->Reset();
     for (size_t iy = 0; iy < m_ny; iy++)
       for (size_t ix = 0; ix < m_nx; ix++) {
-        auto value = m_df->GetCDSValue(ix, iy);
+        // auto value = m_df->GetCDSValue(ix, iy);
+        auto value = m_df->GetHitValue(ix, iy);
         m_adc_map->SetBinContent(m_nx - ix, m_ny - iy, value);
         if (std::abs(value) > m_thr) {
           m_adc_counts->Fill(m_nx - ix, m_ny - iy);

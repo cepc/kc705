@@ -66,7 +66,7 @@ void TestWriter::Write(JadeDataFrameSP df){
     std::cerr<<"JadeWrite: File is not opened/created before writing\n";
     throw;
   }
-  std::string &rawstring = df->RawDataString();
+  std::string &rawstring = df->RawData();
   if(rawstring.size()){
     std::fwrite(&(rawstring.at(0)), 1, rawstring.size(), m_fd);
   }

@@ -2,6 +2,8 @@
     "SystemTest":{
         "SecPerLoop": 10,
 	"N_Loops": 3
+        //, "DELAY": "_SOMEDELAY_"
+        
     },
     
     "JadeManager":{
@@ -31,7 +33,8 @@
 	        "type":"TestMonitor",
 	        "parameter":{
 		    "PRINT_EVENT_N":40000,
-		    "PRINT_EVENT_DISCONTINUOUS":true
+		    "PRINT_EVENT_DISCONTINUOUS":true,
+                    "ENABLE_CDS":false
 	        }
 	    },
 	    "JadeRegCtrl":{

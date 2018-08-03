@@ -1,5 +1,5 @@
-#ifndef JADE_JADEREAD_HH
-#define JADE_JADEREAD_HH
+#ifndef _JADE_JADEREAD_HH_
+#define _JADE_JADEREAD_HH_
 
 #include "JadeSystem.hh"
 #include "JadeFactory.hh"
@@ -8,6 +8,17 @@
 #include "JadeUtils.hh"
 
 #include "JadeDataFrame.hh"
+
+#ifdef _WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 #include <string>
 #include <chrono>

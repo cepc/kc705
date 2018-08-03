@@ -18,6 +18,7 @@ private:
   JadeOption m_opt;
   int m_fd;
   std::string m_buf;
+  std::string m_path;
 };
 
 //+++++++++++++++++++++++++++++++++++++++++
@@ -43,15 +44,15 @@ void TestReader::Open(){
 #endif
     m_fd = 0;
   }
-
-  std::string path = m_opt.GetStringValue("PATH");
+  if(m_path.empty())
+      m_path = m_opt.GetStringValue("PATH");
 #ifdef _WIN32
-  m_fd = _open(path.c_str(), _O_RDONLY | _O_BINARY);
+  m_fd = _open(m_path.c_str(), _O_RDONLY | _O_BINARY);
 #else
-  m_fd = open(path.c_str(), O_RDONLY);
+  m_fd = open(m_path.c_str(), O_RDONLY);
 #endif
   if (m_fd <= 0) {
-    std::cerr << "JadeReader: Failed to open devfile: " << path << "\n";
+    std::cerr << "JadeReader: Failed to open devfile: " << m_path << "\n";
     m_fd = 0;
     throw;
   }
@@ -139,17 +140,11 @@ JadeDataFrameSP TestReader::Read(const std::chrono::milliseconds& timeout)
   return JadeDataFrameSP(new JadeDataFrame(m_buf.substr(0, size_pack)));
 }
 
-JadeOption TestReader::Post(const std::string &url, const JadeOption &opt){    
-  if(url == "/open"){
-    Open();
-    return "{\"status\":ture}";
-  }
-  
-  if(url == "/close"){
-    Close();
+JadeOption TestReader::Post(const std::string &url, const JadeOption &opt){
+  if(url == "/set_path"){
+    m_path=opt.GetStringValue("PATH");
     return "{\"status\":true}";
   }
-
   static const std::string url_base_class("/JadeReader/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
     return JadeReader::Post(url.substr(url_base_class.size()-1), opt);

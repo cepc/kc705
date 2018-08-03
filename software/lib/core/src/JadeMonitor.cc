@@ -40,5 +40,3 @@ void JadeMonitor::Monitor(JadeDataFrameSP df){
 JadeOption JadeMonitor::Post(const std::string &url, const JadeOption &opt){
   return JadePost::Post(url, opt);
 }
-
-

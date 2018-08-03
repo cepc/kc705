@@ -28,10 +28,12 @@ namespace{
 TestWriter::TestWriter(const JadeOption &opt)
   :m_opt(opt), m_fd(0), m_disable_file_write(false), JadeWriter(opt){
   m_disable_file_write = m_opt.GetBoolValue("DISABLE_FILE_WRITE");
-  m_path = m_opt.GetStringValue("PATH"); 
 }
 
 void TestWriter::Open(){
+  if(m_path.empty())
+    m_path = m_opt.GetStringValue("PATH"); 
+
   if(m_disable_file_write)
     return;
   std::time_t time_now = std::time(nullptr);
@@ -64,31 +66,18 @@ void TestWriter::Write(JadeDataFrameSP df){
     std::cerr<<"JadeWrite: File is not opened/created before writing\n";
     throw;
   }
-  std::string &rawstring = df->RawDataString();
+  std::string &rawstring = df->RawData();
   if(rawstring.size()){
     std::fwrite(&(rawstring.at(0)), 1, rawstring.size(), m_fd);
   }
 }
 
 JadeOption TestWriter::Post(const std::string &url, const JadeOption &opt){  
-  if(url == "/close"){
-    Close();
-    return "{\"status\":true}";
-  }
-
-  if(url == "/open"){
-    Open();
+  if(url == "/set_path"){
+    m_path=opt.GetStringValue("PATH");
     return "{\"status\":true}";
   }
   
-  if(url == "/reload_opt"){
-    Close();
-    m_opt = opt;
-    m_disable_file_write = m_opt.GetBoolValue("DISABLE_FILE_WRITE");
-    m_path = m_opt.GetStringValue("PATH");
-    return "{\"status\":true}";
-  }
-
   static const std::string url_base_class("/JadeWriter/");
   if( ! url.compare(0, url_base_class.size(), url_base_class) ){
     return JadeWriter::Post(url.substr(url_base_class.size()-1), opt);

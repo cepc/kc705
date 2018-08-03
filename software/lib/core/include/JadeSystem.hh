@@ -37,7 +37,7 @@ using std::uint64_t;
 #endif
 
 #else
-
+//TODO: does it work for MacOS, remove?
 #ifdef __APPLE__
 #include <machine/endian.h>
 #if __DARWIN_BYTE_ORDER == __DARWIN_LITTLE_ENDIAN

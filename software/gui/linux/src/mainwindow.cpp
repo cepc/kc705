@@ -134,34 +134,34 @@ void MainWindow::Init_Online_Image()
   ui->Canvas_Plot->getCanvas()->SetFillColor(0);
   ui->Canvas_Plot->getCanvas()->SetGrid();
 
-  static TPad* pad1D[4][4] = { 0 };
   ui->Canvas_Plot->getCanvas()->cd();
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++) {
-      pad1D[i][j] = new TPad(Form("pad1D_%i_%i", i, j), Form("%i_%i_pad", i, j), 0.05 + i * 0.175, 0.02 + j * 0.2375, 0.05 + (i + 1) * 0.175, 0.02 + (j + 1) * 0.2375);
-      pad1D[i][j]->Draw();
-    }
+  //static TPad* pad1D[4][4] = { 0 };
+  //for (int i = 0; i < 4; i++)
+  //  for (int j = 0; j < 4; j++) {
+  //    pad1D[i][j] = new TPad(Form("pad1D_%i_%i", i, j), Form("%i_%i_pad", i, j), 0.05 + i * 0.175, 0.02 + j * 0.2375, 0.05 + (i + 1) * 0.175, 0.02 + (j + 1) * 0.2375);
+  //    pad1D[i][j]->Draw();
+  //  }
 
   static TPad* pad2D1 = 0;
   static TPad* pad2D2 = 0;
-  pad2D1 = new TPad("pad2D1", "First pad", 0.75, 0.52, 0.95, 0.97);
-  pad2D2 = new TPad("pad2D2", "Second pad", 0.75, 0.02, 0.95, 0.47);
+  pad2D1 = new TPad("pad2D1", "First pad", 0.10, 0.02, 0.50, 0.97);
+  pad2D2 = new TPad("pad2D2", "Second pad", 0.55, 0.02, 0.95, 0.97);
   pad2D1->Draw();
   pad2D2->Draw();
 
-  //  Example plots
-  static TH1F* h1f1 = 0;
+  ////  Example plots
+  //static TH1F* h1f1 = 0;
   static TH2F* h2f1 = 0;
   static TH2F* h2f2 = 0;
-  h1f1 = new TH1F("h1f1", "ADC Hist", 2000, -10000, 10000);
-  h1f1->SetFillColor(kViolet + 2);
-  h1f1->SetFillStyle(3001);
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++) {
-      pad1D[i][j]->cd();
-      auto h1f_clone = (TH1F*)h1f1->Clone(Form("h1f_%i_%i", i, j));
-      h1f_clone->Draw();
-    }
+  //h1f1 = new TH1F("h1f1", "ADC Hist", 2000, -10000, 10000);
+  //h1f1->SetFillColor(kViolet + 2);
+  //h1f1->SetFillStyle(3001);
+  //for (int i = 0; i < 4; i++)
+  //  for (int j = 0; j < 4; j++) {
+  //    pad1D[i][j]->cd();
+  //    auto h1f_clone = (TH1F*)h1f1->Clone(Form("h1f_%i_%i", i, j));
+  //    h1f_clone->Draw();
+  //  }
 
   pad2D1->cd();
   h2f1 = new TH2F("h2f1", "ADC_Counts", m_ny, 0, m_ny, m_nx, 0, m_nx);
@@ -184,29 +184,29 @@ void MainWindow::Update_Online_Image()
 {
   if (m_state == "RUNNING") {
 
-    static TPad* pad1D[4][4] = { 0 };
     ui->Canvas_Plot->getCanvas()->cd();
-    for (int i = 0; i < 4; i++)
-      for (int j = 0; j < 4; j++) {
-        pad1D[i][j] = new TPad(Form("pad1D_%i_%i", i, j), Form("%i_%i_pad", i, j), 0.05 + i * 0.175, 0.02 + j * 0.2375, 0.05 + (i + 1) * 0.175, 0.02 + (j + 1) * 0.2375);
-        pad1D[i][j]->Draw();
-      }
+    //static TPad* pad1D[4][4] = { 0 };
+    //for (int i = 0; i < 4; i++)
+    //  for (int j = 0; j < 4; j++) {
+    //    pad1D[i][j] = new TPad(Form("pad1D_%i_%i", i, j), Form("%i_%i_pad", i, j), 0.05 + i * 0.175, 0.02 + j * 0.2375, 0.05 + (i + 1) * 0.175, 0.02 + (j + 1) * 0.2375);
+    //    pad1D[i][j]->Draw();
+    //  }
 
     static TPad* pad2D1 = 0;
     static TPad* pad2D2 = 0;
-    pad2D1 = new TPad("pad2D1", "First pad", 0.75, 0.52, 0.95, 0.97);
-    pad2D2 = new TPad("pad2D2", "Second pad", 0.75, 0.02, 0.95, 0.47);
+    pad2D1 = new TPad("pad2D1", "First pad", 0.10, 0.02, 0.50, 0.97);
+    pad2D2 = new TPad("pad2D2", "Second pad", 0.55, 0.02, 0.95, 0.97);
     pad2D1->Draw();
     pad2D2->Draw();
 
-    for (int i = 0; i < 4; i++)
-      for (int j = 0; j < 4; j++) {
-        pad1D[i][j]->cd();
-        auto h1f = (TH1F*)m_GUIManager->get_monitor()->GetADCHist().at(j * 4 + i)->Clone(Form("ADC_COL_%i", j * 4 + i));
-        h1f->SetFillColor(kViolet + 2);
-        h1f->SetFillStyle(3001);
-        h1f->Draw();
-      }
+    //for (int i = 0; i < 4; i++)
+    //  for (int j = 0; j < 4; j++) {
+    //    pad1D[i][j]->cd();
+    //    auto h1f = (TH1F*)m_GUIManager->get_monitor()->GetADCHist().at(j * 4 + i)->Clone(Form("ADC_COL_%i", j * 4 + i));
+    //    h1f->SetFillColor(kViolet + 2);
+    //    h1f->SetFillStyle(3001);
+    //    h1f->Draw();
+    //  }
 
     pad2D1->cd();
     auto hist2D1 = (TH2F*)m_GUIManager->get_monitor()->GetADCCounts()->Clone("ADC_Counts");

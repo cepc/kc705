@@ -4,7 +4,7 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_nx(48)
+    , m_nx(96)
     , m_ny(16)
     , m_col(0)
     , m_row(0)

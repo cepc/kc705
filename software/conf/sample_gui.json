@@ -6,7 +6,7 @@
       "parameter":{
         "SecPerLoop": 1,
         "N_Loops": 1,
-        "ChipAddress": "CHIPA3"
+        "ChipAddress": "CHIPA1"
       }
     },
     "JadeRead":{

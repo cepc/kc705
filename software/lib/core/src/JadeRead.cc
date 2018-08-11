@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define FRAME_SIZE (4+48*(4+16*2+4)+4)
+#define FRAME_SIZE (4+96*(4+16*2+4)+4)
 
 JadeRead::JadeRead(const JadeOption &opt)
   :m_opt(opt), m_fd(0){

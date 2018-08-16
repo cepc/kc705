@@ -5,8 +5,6 @@
 #include <QObject>
 
 #include "GUIMonitor.hh"
-#include "JadeManager.hh"
-#include "JadeRegCtrl.hh"
 
 #include <chrono>
 #include <ctime>
@@ -17,31 +15,29 @@
 #include <string>
 #include <thread>
 
+
 class GUIManager : public QObject {
   Q_OBJECT
 
-  public:
+public:
   GUIManager();
   ~GUIManager();
-  std::string get_now_str();
-
-  void set_config_path(std::string config_path) { m_opt_config_file = config_path; };
-
+  
+  void set_config_path(std::string config_path){ m_opt_config_file = config_path; };
   std::shared_ptr<GUIMonitor> get_monitor();
-
-  public slots:
+                                           
+public slots:
   void start_run();
   void stop_run();
   void config();
 
-  private:
+private:
   std::string m_opt_config_file;
-  JadeManager* m_man;
-  std::shared_ptr<GUIMonitor> m_mnt;
-
-  signals:
+  JadeManagerSP m_man;
+signals:
   void IsRunning();
   void IsStop();
+  
 };
 
 #endif //GUIManager_HH

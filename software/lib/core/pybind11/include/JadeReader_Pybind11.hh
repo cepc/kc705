@@ -2,11 +2,11 @@
 #define JADE_JADEREAD_PYBIND11_HH
 
 #include "pybind11/pybind11.h"
-#include "JadeRead.hh"
+#include "JadeReader.hh"
 
-class PyJadeRead: public JadeRead{
+class PyJadeReader: public JadeReader{
 public:
-  using JadeRead::JadeRead;
+  using JadeReader::JadeReader;
   static void InitPybind11(pybind11::module &m);  
 };
 

@@ -2,30 +2,46 @@
 #define JADE_JADEREGCTRL_HH
 
 #include "JadeSystem.hh"
+#include "JadeFactory.hh"
 #include "JadeOption.hh"
+#include "JadePost.hh"
+#include "JadeUtils.hh"
+
 
 #include <string>
 #include <map>
 
-class DLLEXPORT JadeRegCtrl{
+class JadeRegCtrl;
+using JadeRegCtrlSP = JadeFactory<JadeRegCtrl>::SP;
+using JadeRegCtrlUP = JadeFactory<JadeRegCtrl>::UP;
+
+#ifndef JADE_DLL_EXPORT
+extern template class DLLEXPORT JadeFactory<JadeRegCtrl>;
+extern template DLLEXPORT
+std::unordered_map<std::type_index, typename JadeFactory<JadeRegCtrl>::UP (*)(const JadeOption&)>&
+JadeFactory<JadeRegCtrl>::Instance<const JadeOption&>();
+#endif
+
+
+class DLLEXPORT JadeRegCtrl: public JadePost{
  public:
   JadeRegCtrl(const JadeOption &opt);
-  virtual ~JadeRegCtrl();
-  virtual void Open();
-  virtual void Close();
-  virtual void Reset();
-  virtual void WriteByte(uint16_t addr, uint8_t val);
-  virtual uint8_t ReadByte(uint16_t addr);
-  void SendCommand(const std::string &cmd);
-  void SendCommand(const std::string &cmd, uint8_t val);
-  std::string GetStatus(const std::string &cmd);
- private:
-  JadeOption m_opt;
-  int m_fd;
-  bool m_is_fd_read;
-  bool m_is_fd_write;
-};
+  ~JadeRegCtrl() override;
+  static JadeRegCtrlSP Make(const std::string& name, const JadeOption &opt);
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;
 
-using JadeRegCtrlSP = std::shared_ptr<JadeRegCtrl>;
+  //open controller device;
+  virtual void Open() {};
+  //close device;
+  virtual void Close() {};
+  //send command with parameter to current openning controller device  
+  virtual std::string SendCommand(const std::string &cmd, const std::string &para) {return "";};
+
+  virtual std::string SendCommand(const std::string &cmd) final{
+    return SendCommand(cmd, "");
+  }
+  //Read configuration  
+  virtual uint8_t ReadByte(uint16_t addr){return 0;}; 
+};
 
 #endif 

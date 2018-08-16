@@ -1,8 +1,10 @@
-#include "JadeRegCtrl.hh"
+#include "JadeWriter.hh"
+#include <ctime>
+
 #include "JadeUtils.hh"
 
-using _base_c_ = JadeRegCtrl;
-using _index_c_ = JadeRegCtrl;
+using _base_c_ = JadeWriter;
+using _index_c_ = JadeWriter;
 
 template class DLLEXPORT JadeFactory<_base_c_>;
 template DLLEXPORT
@@ -14,25 +16,28 @@ namespace{
   auto _loading_ = JadeFactory<_base_c_>::Register<_index_c_, const JadeOption&>(typeid(_index_c_));
 }
 
-JadeRegCtrl::JadeRegCtrl(const JadeOption &opt){
+JadeWriter::JadeWriter(const JadeOption &opt){
 }
 
-JadeRegCtrl::~JadeRegCtrl(){
+JadeWriter::~JadeWriter(){
 }
 
-JadeRegCtrlSP JadeRegCtrl::Make(const std::string& name, const JadeOption& opt){  
+JadeWriterSP JadeWriter::Make(const std::string& name, const JadeOption& opt){  
   try{
     std::type_index index = JadeUtils::GetTypeIndex(name);
-    JadeRegCtrlSP wrt =  JadeFactory<JadeRegCtrl>::MakeUnique<const JadeOption&>(index, opt);
+    JadeWriterSP wrt =  JadeFactory<JadeWriter>::MakeUnique<const JadeOption&>(index, opt);
     return wrt;
   }
   catch(...){
-    std::cout<<"TODO: JadeRegCtrl"<<std::endl;
+    std::cout<<"TODO: JadeWriter"<<std::endl;
     return nullptr;
   }
 }
 
-JadeOption JadeRegCtrl::Post(const std::string &url, const JadeOption &opt){
+void JadeWriter::Write(JadeDataFrameSP df){
+}
+
+JadeOption JadeWriter::Post(const std::string &url, const JadeOption &opt){
   return JadePost::Post(url, opt);
 }
 

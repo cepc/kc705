@@ -22,6 +22,24 @@ JadeOption::JadeOption(const std::string& str){
   }
 }
 
+JadeOption::JadeOption(const char* ch){
+  std::string str(ch);
+  size_t found = str.find_first_not_of(" \t\r\n");
+  if(found != std::string::npos && str[found] !='{'){
+    m_json_ptr = std::make_shared<json11::Json>(str);
+  }
+  else{
+    std::string err_str;
+    m_json_ptr = std::make_shared<json11::Json>(json11::Json::parse(str, err_str));
+    if(!err_str.empty()){
+      std::cerr<<"JadeOption: error<"<<err_str
+	       <<">, unable to parse string: "<<str<<"\n";
+      throw;
+    }
+  }
+}
+
+
 JadeOption::JadeOption(const json11::Json& js)
   :m_json_ptr(new json11::Json(js)){
   
@@ -31,7 +49,6 @@ JadeOption::JadeOption(json11::Json&& js)
   :m_json_ptr(new json11::Json(std::move(js))){
   
 }
-
 
 JadeOption JadeOption::GetSubOption(const std::string& opt) const{
   return (*m_json_ptr)[opt];

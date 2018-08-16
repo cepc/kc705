@@ -1,88 +1,108 @@
 #include "JadeDataFrame.hh"
+#include "JadeFactory.hh"
+#include "JadeUtils.hh"
 
 #ifdef _WIN32
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
+using _base_c_ = JadeDataFrame;
+using _index_c_ = JadeDataFrame;
+
+// template class DLLEXPORT JadeFactory<_base_c_>;
+// template DLLEXPORT
+// std::unordered_map<std::type_index, typename JadeFactory<_base_c_>::UP (*)(const JadeOption&)>&
+// JadeFactory<_base_c_>::Instance<const JadeOption&>();
+
+// namespace{
+//   auto _loading_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(_index_c_)));
+//   auto _loading_ = JadeFactory<_base_c_>::Register<_base_c_, const JadeOption&>(typeid(_index_c_));
+// }
+
+
 JadeDataFrame::JadeDataFrame(std::string&& data)
-  : m_data_raw(std::move(data))
-  , m_is_decoded(false)
-  , m_is_cds(false)
-  , m_offset_x(0)
-  , m_offset_y(0)
-  , m_n_x(0)
-  , m_n_y(0)
-    , m_cds_frame_adc({ 0 })
+    : m_data_raw(std::move(data))
+    , m_is_decoded(false)
+    , m_n_x(0)
+    , m_n_y(0)
 {
 }
 
-JadeDataFrame::JadeDataFrame(const std::string& data)
-  : m_data_raw(data)
-  , m_is_decoded(false)
-  , m_is_cds(false)
-  , m_offset_x(0)
-  , m_offset_y(0)
-  , m_n_x(0)
-  , m_n_y(0)
-    , m_cds_frame_adc({ 0 })
+JadeDataFrame::JadeDataFrame(std::string& data)
+    : m_data_raw(data)
+    , m_is_decoded(false)
+    , m_n_x(0)
+    , m_n_y(0)
 {
+
 }
 
-JadeDataFrame::JadeDataFrame(size_t nraw)
-  : m_is_decoded(false)
-  , m_is_cds(false)
-  , m_offset_x(0)
-  , m_offset_y(0)
-  , m_n_x(0)
-  , m_n_y(0)
-    , m_cds_frame_adc({ 0 })
-{
-  m_data_raw.resize(nraw);
-}
+// JadeDataFrame::JadeDataFrame(size_t nraw)
+//     : m_is_decoded(false)
+//     , m_is_cds(false)
+//     , m_n_x(0)
+//     , m_n_y(0)
+// {
+//   m_data_raw.resize(nraw);
+// }
 
 JadeDataFrame::~JadeDataFrame()
 {
 }
 
-std::string& JadeDataFrame::RawDataString()
-{
+const std::vector<int16_t>& JadeDataFrame::Data() const{
+  return m_data;
+}
+
+const std::string& JadeDataFrame::RawData() const{
   return m_data_raw;
 }
 
-std::string& JadeDataFrame::DescriptionString()
-{
+const std::string& JadeDataFrame::Description() const{
   return m_description;
 }
 
-  std::chrono::system_clock::time_point&
-JadeDataFrame::TimeStamp()
-{
+
+const std::chrono::system_clock::time_point&
+  JadeDataFrame::TimeStamp() const{
   return m_ts;
 }
+
+
+std::vector<int16_t>& JadeDataFrame::Data() {
+  return m_data;
+}
+
+std::string& JadeDataFrame::RawData() {
+  return m_data_raw;
+}
+
+std::string& JadeDataFrame::Description() {
+  return m_description;
+}
+
+
+std::chrono::system_clock::time_point&
+  JadeDataFrame::TimeStamp() {
+  return m_ts;
+}
+
+
 
 uint32_t JadeDataFrame::GetFrameCount() const
 {
   return m_frame_n;
 }
 
-uint32_t JadeDataFrame::GetMatrixLowX() const
-{
-  return m_offset_x;
-}
-
-uint32_t JadeDataFrame::GetMatrixLowY() const
-{
-  return m_offset_y;
-}
 
 uint32_t JadeDataFrame::GetMatrixHighX() const
 {
-  return m_offset_x + m_n_x - 1;
+  return m_n_x - 1;
 }
 
 uint32_t JadeDataFrame::GetMatrixHighY() const
 {
-  return m_offset_y + m_n_y - 1;
+  return m_n_y - 1;
 }
 
 uint32_t JadeDataFrame::GetMatrixSizeX() const
@@ -95,21 +115,10 @@ uint32_t JadeDataFrame::GetMatrixSizeY() const
   return m_n_y;
 }
 
-std::vector<int16_t> JadeDataFrame::GetFrameCDS()
-{
-  return m_cds_frame_adc;
-}
-
-bool JadeDataFrame::GetCDSStatus()
-{
-  return m_is_cds;
-}
-
 void JadeDataFrame::Decode()
 {
   m_is_decoded = true;
   if (m_data_raw.size() != 3848) {
-    std::cout << m_data_raw.size() << std::endl;
     std::cerr << "JadeDataFrame: unable to decode\n";
     throw;
   }
@@ -160,7 +169,7 @@ void JadeDataFrame::Decode()
 
 bool JadeDataFrame::IsInMatrix(size_t x, size_t y) const
 {
-  if (x - m_offset_x < m_n_x && y - m_offset_y < m_n_y && x >= m_offset_x && y >= m_offset_y)
+  if (x < m_n_x && y < m_n_y)
     return true;
   else
     return false;
@@ -168,49 +177,33 @@ bool JadeDataFrame::IsInMatrix(size_t x, size_t y) const
 
 int16_t JadeDataFrame::GetHitValue(size_t x, size_t y) const
 {
-  size_t pos = (x - m_offset_x) + m_n_x * (y - m_offset_y);
+  size_t pos = x + m_n_x * y;
   int16_t val = m_data.at(pos);
   return val;
 }
 
-int16_t JadeDataFrame::GetCDSValue(size_t x, size_t y) const
-{
-  size_t pos = (x - m_offset_x) + m_n_x * (y - m_offset_y);
-  int16_t val = m_cds_frame_adc.at(pos);
-  return val;
-}
-
-std::vector<int16_t> JadeDataFrame::GetFrameData() const
-{
-  return m_data;
-}
 
 void JadeDataFrame::Print(std::ostream& os, size_t ws) const
 {
   os << std::string(ws, ' ') << "{ name:JadeDataFrame,\n";
-  os << std::string(ws + 2, ' ') << "data_raw:"
-    << "TODO"
-    << ",\n";
   os << std::string(ws + 2, ' ') << "is_decoded:" << m_is_decoded << ",\n";
   if (m_is_decoded) {
     os << std::string(ws + 2, ' ') << "description:"
-      << "TODO"
-      << ",\n";
+       << "TODO"
+       << ",\n";
     os << std::string(ws + 2, ' ') << "ts:"
-      << "TODO"
-      << ",\n";
+       << "TODO"
+       << ",\n";
     os << std::string(ws + 2, ' ') << "frame_n:" << m_frame_n << ",\n";
-    os << std::string(ws + 2, ' ') << "offset_x:" << m_offset_x << ",\n";
-    os << std::string(ws + 2, ' ') << "offset_y:" << m_offset_y << ",\n";
     os << std::string(ws + 2, ' ') << "n_x:" << m_n_x << ",\n";
     os << std::string(ws + 2, ' ') << "n_y:" << m_n_y << ",\n";
     if (m_n_x != 0 && m_n_y != 0) {
       os << std::string(ws + 2, ' ') << "data:[\n";
       for (size_t iy = 0; iy < m_n_y; iy++) {
-        os << std::string(ws + 4, ' ') << "{row_y:" << iy + m_offset_y
-          << ",value:[" << GetHitValue(m_offset_x, m_offset_y);
+        os << std::string(ws + 4, ' ') << "{row_y:" << iy
+           << ",value:[" << GetHitValue(0, 0);
         for (size_t ix = 1; ix < m_n_x; ix++) {
-          os << "," << GetHitValue(ix + m_offset_x, iy + m_offset_y);
+          os << "," << GetHitValue(ix, iy);
         }
         os << "]}\n";
       }
@@ -220,29 +213,41 @@ void JadeDataFrame::Print(std::ostream& os, size_t ws) const
   os << std::string(ws, ' ') << "}\n";
 }
 
-void JadeDataFrame::PrintCDS(std::ostream& os, size_t ws) const
-{
-  if (m_is_cds) {
-    os << std::string(ws, ' ') << "{ name:JadeDataFrame,\n";
-    if (m_n_x != 0 && m_n_y != 0) {
-      os << std::string(ws + 2, ' ') << "CDS:[\n";
-      for (size_t iy = 0; iy < m_n_y; iy++) {
-        os << std::string(ws + 4, ' ') << "{row_y:" << iy + m_offset_y
-          << ",value:[" << GetCDSValue(m_offset_x, m_offset_y);
-        for (size_t ix = 1; ix < m_n_x; ix++) {
-          os << "," << GetCDSValue(ix + m_offset_x, iy + m_offset_y);
-        }
-        os << "]}\n";
-      }
-      os << std::string(ws + 2, ' ') << "]\n";
-    }
-  }
-  os << std::string(ws, ' ') << "}\n";
-}
+// JadeDataFrame::CdsAndRemoveRaw(JadeDataFrame& df)
+// {
+//   m_data_raw.clear();
+//   m_description.append(":CDS:NORAW");
+//   //NOTE: a `for loop` might be more efficient.
+//   if(m_is_decoded && df.m_is_decoded)
+//     std::transform(df.m_data.begin(), df.m_data.end(), m_data.begin(), m_cds_frame_adc.begin(),
+//                    std::minus<int16_t>());  
+// }
 
-void JadeDataFrame::CDS(JadeDataFrame& df)
-{
-  m_cds_frame_adc.resize(m_n_x * m_n_y, 0);
-  std::transform(df.m_data.begin(), df.m_data.end(), m_data.begin(), m_cds_frame_adc.begin(), std::minus<int16_t>());
-  m_is_cds = true;
+// JadeDataFrame::CdsAndAppendRaw(JadeDataFrame& df)
+// {
+//   m_data_raw.append(df.RawData());
+//   m_description.append(":CDS:APPENDRAW");
+//   if(m_is_decoded && df.m_is_decoded)
+//     std::transform(df.m_data.begin(), df.m_data.end(), m_data.begin(), m_cds_frame_adc.begin(),
+//                    std::minus<int16_t>());
+// }
+
+JadeDataFrameSP JadeDataFrame::CdsAndReturnNewObject(const JadeDataFrame& earlier,
+                                                     const JadeDataFrame& later){
+  JadeDataFrameSP dfsp(new JadeDataFrame(""));
+  auto &df = *dfsp;
+  auto &data_cds_result = df.Data();
+  auto &data_earlier = earlier.Data();
+  auto &data_later = later.Data();
+  data_cds_result.resize(data_later.size());
+  std::transform(data_later.begin(), data_later.end(), data_earlier.begin(),
+                 data_cds_result.begin(),
+                 std::minus<int16_t>());
+  df.m_is_decoded = later.m_is_decoded;
+  df.m_description = later.m_description+"+CDS";
+  df.m_ts = later.m_ts;
+  df.m_frame_n = later.m_frame_n;
+  df.m_n_x = later.m_n_x;
+  df.m_n_y = later.m_n_y;
+  return dfsp;
 }

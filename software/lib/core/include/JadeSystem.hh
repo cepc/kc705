@@ -37,7 +37,19 @@ using std::uint64_t;
 #endif
 
 #else
-using std::size_t;
+//TODO: does it work for MacOS, remove?
+#ifdef __APPLE__
+#include <machine/endian.h>
+#if __DARWIN_BYTE_ORDER == __DARWIN_LITTLE_ENDIAN
+#define BE16TOH NTOHS
+#define BE32TOH NTOHL
+#define BE64TOH NTOHLL
+#define LE16TOH
+#define LE32TOH
+#define LE64TOH
+#endif
+#else
+
 #include <endian.h>
 #define BE16TOH be16toh
 #define BE32TOH be32toh
@@ -45,7 +57,9 @@ using std::size_t;
 #define LE16TOH le16toh
 #define LE32TOH le32toh
 #define LE64TOH le64toh
+#endif
 
+using std::size_t;
 #define DLLEXPORT
 #endif
 

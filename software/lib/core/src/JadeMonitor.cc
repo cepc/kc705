@@ -1,54 +1,42 @@
 #include "JadeMonitor.hh"
+#include "JadeUtils.hh"
 
-JadeMonitor::JadeMonitor(const JadeOption& opt)
-    : m_opt(opt)
-    , m_ev_n(0)
-    , m_ev_print(0)
-    , m_last_df({ 0 })
-    , m_last_df_n(0)
-    , m_enable_print_discon(false)
-    , m_enable_cds(true)
-{
-  m_ev_print = opt.GetIntValue("PRINT_EVENT_N");
-  m_enable_print_discon = opt.GetBoolValue("PRINT_EVENT_DISCONTINUOUS");
-  m_enable_cds = opt.GetBoolValue("ENABLE_CDS");
+using _base_c_ = JadeMonitor;
+using _index_c_ = JadeMonitor;
+
+template class DLLEXPORT JadeFactory<_base_c_>;
+template DLLEXPORT
+std::unordered_map<std::type_index, typename JadeFactory<_base_c_>::UP (*)(const JadeOption&)>&
+JadeFactory<_base_c_>::Instance<const JadeOption&>();
+
+namespace{
+  auto _loading_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(_index_c_)));
+  auto _loading_ = JadeFactory<_base_c_>::Register<_index_c_, const JadeOption&>(typeid(_index_c_));
 }
 
-JadeMonitor::~JadeMonitor()
-{
+JadeMonitor::JadeMonitor(const JadeOption& opt){
+  
 }
 
-void JadeMonitor::Reset()
-{
-  m_ev_n = 0;
+JadeMonitor::~JadeMonitor(){
+  
 }
 
-void JadeMonitor::Monitor(JadeDataFrameSP df)
-{
-  if (m_enable_cds) {
-    if (m_ev_n == 0) {
-      m_last_df = df;
-    } else {
-      df->CDS(*m_last_df);
-      m_last_df = df;
-    }
+JadeMonitorSP JadeMonitor::Make(const std::string& name, const JadeOption& opt){  
+  try{
+    std::type_index index = JadeUtils::GetTypeIndex(name);
+    JadeMonitorSP wrt =  JadeFactory<JadeMonitor>::MakeUnique<const JadeOption&>(index, opt);
+    return wrt;
   }
-
-  if (m_ev_print != 0 && m_ev_n % m_ev_print == 0) {
-    df->Print(std::cout);
-    if (m_enable_cds) {
-      df->PrintCDS(std::cout);
-    }
+  catch(...){
+    std::cout<<"TODO: JadeMonitor"<<std::endl;
+    return nullptr;
   }
+}
 
-  m_ev_n++;
+void JadeMonitor::Monitor(JadeDataFrameSP df){
+}
 
-  if (m_enable_print_discon) {
-    uint32_t df_n = df->GetFrameCount();
-    if (m_last_df_n != 0 && m_last_df_n + 1 != df_n) {
-      std::cout << "JadeMonitor: data frame counter is discontinuous "
-                << m_last_df_n << " =>  " << df_n << std::endl;
-    }
-    m_last_df_n = df_n;
-  }
+JadeOption JadeMonitor::Post(const std::string &url, const JadeOption &opt){
+  return JadePost::Post(url, opt);
 }

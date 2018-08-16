@@ -12,10 +12,9 @@ void PyJadeDataFrame::InitPybind11(pybind11::module &m){
     });
   
   classdef.def("Decode", &JadeDataFrame::Decode);
-  classdef.def("RawDataString", &JadeDataFrame::RawDataString, pybind11::return_value_policy::reference_internal);
-  classdef.def("DescriptionString", &JadeDataFrame::DescriptionString, pybind11::return_value_policy::reference_internal);
-  classdef.def("TimeStamp", &JadeDataFrame::TimeStamp, pybind11::return_value_policy::reference_internal);
-  classdef.def("GetFrameCount", &JadeDataFrame::GetFrameCount, pybind11::return_value_policy::copy);
+  // classdef.def("RawData", &JadeDataFrame::RawData, pybind11::return_value_policy::reference_internal);
+  // classdef.def("Description", &JadeDataFrame::Description, pybind11::return_value_policy::reference_internal);
+  // classdef.def("TimeStamp", &JadeDataFrame::TimeStamp, pybind11::return_value_policy::reference_internal);
   classdef.def("GetHitValue", &JadeDataFrame::GetHitValue, pybind11::return_value_policy::copy);
   classdef.def("IsInMatrix", &JadeDataFrame::IsInMatrix, pybind11::return_value_policy::copy);
   classdef.def("Print", &JadeDataFrame::Print);  

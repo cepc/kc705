@@ -1,4 +1,4 @@
-#include "JadeManager.hh"
+#include "JadeCore.hh"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -9,17 +9,11 @@
 
 using namespace std::chrono_literals;
 
-std::string get_now_str(){
-    auto now = std::chrono::system_clock::now();
-    auto now_c = std::chrono::system_clock::to_time_t(now);
-    std::stringstream ss;
-    ss<<std::put_time(std::localtime(&now_c), "%c");
-    return ss.str();
-}
-
 int main(int argc, char **argv){
+  JadeUtils::PrintTypeIndexMap();
+  
   std::cout<<"options: -c <config_file>"<<std::endl;
-  std::string config_file = "sample.json";
+  std::string config_file = "sample_summer.json";
   
   for(int i = 1; i < argc; i++){
     std::string opt(argv[i]);
@@ -39,81 +33,34 @@ int main(int argc, char **argv){
     throw;
   }
   
-  std::ifstream ifs(config_file);
-  if(!ifs.good()){
-    std::cerr<<"Unable to open configrue file in PATH: "<<config_file<<"\n";
-    throw;
-  }
+  std::string config_str = JadeUtils::LoadFileToString(config_file);
   
-  std::string config_str;
-  config_str.assign((std::istreambuf_iterator<char>(ifs) ),
-                (std::istreambuf_iterator<char>()));
-
-  JadeOption conf(config_str);
-  JadeOption conf_core = conf.GetSubOption("JadeCore");
+  JadeOption opt_conf(config_str);
+  JadeOption opt_man = opt_conf.GetSubOption("JadeManager");
+  std::cout<<opt_man.DumpString()<<std::endl;
+  std::string man_type = opt_man.GetStringValue("type");
+  JadeOption opt_man_para = opt_man.GetSubOption("parameter");
+  JadeManagerSP pman = JadeManager::Make(man_type, opt_man_para);
+  pman->Init();
   
-  JadeOption conf_man = conf_core.GetSubOption("JadeManager");
-  JadeOption conf_man_para = conf_man.GetSubOption("parameter");
-  JadeOption conf_ctrl = conf_core.GetSubOption("JadeRegCtrl");
-  JadeOption conf_ctrl_para = conf_ctrl.GetSubOption("parameter");
-  JadeOption conf_read = conf_core.GetSubOption("JadeRead");
-  JadeOption conf_read_para = conf_read.GetSubOption("parameter");
-  JadeOption conf_flt = conf_core.GetSubOption("JadeFilter");
-  JadeOption conf_flt_para = conf_flt.GetSubOption("parameter");
-  JadeOption conf_wrt = conf_core.GetSubOption("JadeWrite");
-  JadeOption conf_wrt_para = conf_wrt.GetSubOption("parameter");
-  JadeOption conf_mnt = conf_core.GetSubOption("JadeMonitor");
-  JadeOption conf_mnt_para = conf_mnt.GetSubOption("parameter");
-
-  std::cout<<conf_man_para.DumpString()<<std::endl;
-  std::cout<<conf_ctrl_para.DumpString()<<std::endl;
-  std::cout<<conf_read_para.DumpString()<<std::endl;
-  std::cout<<conf_flt_para.DumpString()<<std::endl;
-  std::cout<<conf_wrt_para.DumpString()<<std::endl;
-  std::cout<<conf_mnt_para.DumpString()<<std::endl;
-  JadeManager pman(conf_man_para);
-  JadeRegCtrlSP pctrl = std::make_shared<JadeRegCtrl>(conf_ctrl_para);
-  JadeReadSP pread = std::make_shared<JadeRead>(conf_read_para);
-  JadeFilterSP pflt = std::make_shared<JadeFilter>(conf_flt_para);
-  JadeWriteSP pwrt = std::make_shared<JadeWrite>(conf_wrt_para);
-  JadeMonitorSP pmnt = std::make_shared<JadeMonitor>(conf_mnt_para);
-
-  size_t nsec = conf_man_para.GetIntValue("SecPerLoop");
-  size_t nloop = conf_man_para.GetIntValue("N_Loops");
-  std::string chip_address = conf_man_para.GetStringValue("ChipAddress"); 
-  std::string delay = conf_man_para.GetStringValue("DELAY"); 
-
-  pman.SetRegCtrl(pctrl);
-  pman.SetReader(pread);
-  pman.SetFilter(pflt);
-  pman.SetWriter(pwrt);
-  pman.SetMonitor(pmnt);
-  pman.DeviceConnect();  
-  pman.DeviceControl(chip_address);
-  pman.DeviceControl(delay);
-  pman.DeviceControl("SET");
-  std::cout << "Select address: " << chip_address << std::endl;
-  std::cout << "DELAY: " << delay << std::endl;
-  pman.DeviceDisconnect();
-
+  JadeOption opt_sys_test = opt_conf.GetSubOption("SystemTest");
+  size_t nsec = opt_sys_test.GetIntValue("SecPerLoop");
+  size_t nloop = opt_sys_test.GetIntValue("N_Loops");
+  
   for(size_t i=0; i< nloop; i++){
-    pman.DeviceConnect();  
-    pman.DeviceControl("STOP");
+    pman->DeviceConnect();
+    pman->DeviceControl("STOP");
     std::this_thread::sleep_for(1s);
-    std::cout<<"=========start at "<<get_now_str()<<"======="<< std::endl;
-    pman.DeviceControl("START");
-    std::cout<<"========="<<std::endl;
-    pman.StartDataTaking();
+    std::cout<<"=========start at "<<JadeUtils::GetNowStr()<<"======="<< std::endl;
+    pman->DeviceControl("START");
+    pman->StartDataTaking();
     std::cout<<"========="<<std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(nsec));
     std::cout<<"========="<<std::endl;
-    pman.StopDataTaking();
-    std::cout<<"========="<<std::endl;
-    pman.DeviceControl("STOP");
-    std::this_thread::sleep_for(1s);
-    std::cout<<"=========exit at "<<get_now_str()<<"======="<< std::endl;
-    pman.DeviceDisconnect();
+    pman->StopDataTaking();
+    pman->DeviceControl("STOP");
+    std::cout<<"=========exit at "<<JadeUtils::GetNowStr()<<"======="<< std::endl;
+    pman->DeviceDisconnect();
   }
   return 0;
-
 }

@@ -122,16 +122,6 @@ void JadeDataFrame::Decode()
     std::cerr << "JadeDataFrame: unable to decode\n";
     throw;
   }
-  const char *p_raw = m_data_raw.data();
-  size_t p_offset = 0;
-  uint32_t len_raw = LE32TOH(*reinterpret_cast<const uint32_t*>
-			      (p_raw+p_offset));
-  if(len_raw != m_data_raw.size()){
-    std::cerr<<"JadeDataFrame: raw data length does not match\n";
-    throw;
-  }
-  p_offset += 4;
-  
   m_n_x = 16;
   m_n_y = 96;
   m_data.clear();
@@ -192,9 +182,6 @@ int16_t JadeDataFrame::GetHitValue(size_t x, size_t y) const
   return val;
 }
 
-std::vector<int16_t> JadeDataFrame::GetFrameData() const{
-  return m_data;
-}
 
 void JadeDataFrame::Print(std::ostream& os, size_t ws) const
 {

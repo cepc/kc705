@@ -241,6 +241,12 @@ void JadeManager::StartThread(){
     throw;
   }
   
+  m_wrt->Open();
+  // while(DeviceStatus("RUN_MODE") != "STARTED"){
+  //   ;
+  // }
+  //m_ctrl->SendCommand("START");
+   
   m_is_running = true;
   m_fut_async_rd = std::async(std::launch::async,
 			      &JadeManager::AsyncReading, this);
@@ -268,10 +274,36 @@ void JadeManager::StopThread(){
   
   if(m_fut_async_mnt.valid())
     m_fut_async_mnt.get();
-
+  std::cout<<">>>>>>>>>>>>>>>>>>end of mnt"<<std::endl;
   m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
   m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
   m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
+  m_wrt->Close();
+}
+
+void JadeManager::Reset(){
+  m_is_running = false;
+  if(m_fut_async_rd.valid())
+    m_fut_async_rd.get();
+  if(m_fut_async_flt.valid())
+    m_fut_async_flt.get();
+  if(m_fut_async_wrt.valid())
+    m_fut_async_wrt.get();
+  if(m_fut_async_mnt.valid())
+    m_fut_async_mnt.get();
+  m_qu_ev_to_flt=decltype(m_qu_ev_to_flt)();
+  m_qu_ev_to_wrt=decltype(m_qu_ev_to_wrt)();
+  m_qu_ev_to_mnt=decltype(m_qu_ev_to_mnt)();
+  if(m_ctrl)
+    m_ctrl->Reset();
+  if(m_rd)
+    m_rd->Reset();
+  if(m_flt)
+    m_flt->Reset();
+  if(m_wrt)
+    m_wrt->Reset();
+  if(m_mnt)
+    m_mnt->Reset();
 }
 
 JadeOption JadeManager::Post(const std::string &url, const JadeOption &opt){

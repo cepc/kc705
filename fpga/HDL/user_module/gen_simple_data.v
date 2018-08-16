@@ -20,13 +20,18 @@ end
 
 
 // Generate Dummy Data 
-reg  [15:0] data = 16'h0;
+reg  [11:0] data = 12'h0;
+reg  [3:0] frame_cnt = 4'h0;
+
 always @( posedge CLK )
 begin
     if ( cnt == 6'h0 )
-        data <= 16'h0;   
+    begin
+        data <= 12'h0;
+        frame_cnt <= frame_cnt + 4'h1;   
+    end
     else
-        data <= data + 16'h1;
+        data <=  data + 12'h1;
 end
 
 // Generate SR_OUT Pulse
@@ -40,7 +45,7 @@ begin
 end
 
 
-assign DATA_OUT = data;
+assign DATA_OUT = {frame_cnt , data};
 assign SR_OUT   = sr_out_reg;
 
 endmodule

@@ -6,116 +6,126 @@ using _index_c_ = JadeFilter;
 
 template class DLLEXPORT JadeFactory<_base_c_>;
 template DLLEXPORT
-std::unordered_map<std::type_index, typename JadeFactory<_base_c_>::UP (*)(const JadeOption&)>&
-JadeFactory<_base_c_>::Instance<const JadeOption&>();
+    std::unordered_map<std::type_index, typename JadeFactory<_base_c_>::UP (*)(const JadeOption&)>&
+    JadeFactory<_base_c_>::Instance<const JadeOption&>();
 
-namespace{
-  auto _loading_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(_index_c_)));
-  auto _loading_ = JadeFactory<_base_c_>::Register<_index_c_, const JadeOption&>(typeid(_index_c_));
+namespace {
+auto _loading_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(_index_c_)));
+auto _loading_ = JadeFactory<_base_c_>::Register<_index_c_, const JadeOption&>(typeid(_index_c_));
 }
 
 using namespace std::chrono_literals;
 
-JadeFilter::JadeFilter(const JadeOption &opt){
+JadeFilter::JadeFilter(const JadeOption& opt)
+{
 }
 
-JadeFilter::~JadeFilter(){  
+JadeFilter::~JadeFilter()
+{
 }
 
-JadeFilterSP JadeFilter::Make(const std::string& name, const JadeOption& opt){  
-  try{
+JadeFilterSP JadeFilter::Make(const std::string& name, const JadeOption& opt)
+{
+  try {
     std::type_index index = JadeUtils::GetTypeIndex(name);
-    JadeFilterSP wrt =  JadeFactory<JadeFilter>::MakeUnique<const JadeOption&>(index, opt);
+    JadeFilterSP wrt = JadeFactory<JadeFilter>::MakeUnique<const JadeOption&>(index, opt);
     return wrt;
-  }
-  catch(...){
-    std::cout<<"TODO: JadeFilter"<<std::endl;
+  } catch (...) {
+    std::cout << "TODO: JadeFilter" << std::endl;
     return nullptr;
   }
 }
 
-JadeDataFrameSP JadeFilter::Filter(JadeDataFrameSP df){
+JadeDataFrameSP JadeFilter::Filter(JadeDataFrameSP df)
+{
   return df;
 }
 
-JadeOption JadeFilter::Post(const std::string &url, const JadeOption &opt){
+JadeOption JadeFilter::Post(const std::string& url, const JadeOption& opt)
+{
   return JadePost::Post(url, opt);
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++
 //TestFilter.hh
-class TestFilter: public JadeFilter{
- public:
-  TestFilter(const JadeOption &opt);
-  ~TestFilter() override {};
-  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+class TestFilter : public JadeFilter {
+  public:
+  TestFilter(const JadeOption& opt);
+  ~TestFilter() override{};
+  JadeOption Post(const std::string& url, const JadeOption& opt) override;
   JadeDataFrameSP Filter(JadeDataFrameSP df) override;
   void Reset() override;
 };
 
 //+++++++++++++++++++++++++++++++++++++++++
 //TestFilter.cc
-namespace{
-  auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(TestFilter)));
-  auto _test_ = JadeFactory<JadeFilter>::Register<TestFilter, const JadeOption&>(typeid(TestFilter));
+namespace {
+auto _test_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(TestFilter)));
+auto _test_ = JadeFactory<JadeFilter>::Register<TestFilter, const JadeOption&>(typeid(TestFilter));
 }
 
-TestFilter::TestFilter(const JadeOption &opt)
-  :JadeFilter(opt){
+TestFilter::TestFilter(const JadeOption& opt)
+    : JadeFilter(opt)
+{
 }
 
-JadeDataFrameSP TestFilter::Filter(JadeDataFrameSP df){
+JadeDataFrameSP TestFilter::Filter(JadeDataFrameSP df)
+{
   return df;
 }
 
-void TestFilter::Reset(){
-
+void TestFilter::Reset()
+{
 }
 
-JadeOption TestFilter::Post(const std::string &url, const JadeOption &opt){
+JadeOption TestFilter::Post(const std::string& url, const JadeOption& opt)
+{
   static const std::string url_base_class("/JadeFilter/");
-  if( ! url.compare(0, url_base_class.size(), url_base_class) ){
-    return JadeFilter::Post(url.substr(url_base_class.size()-1), opt);
+  if (!url.compare(0, url_base_class.size(), url_base_class)) {
+    return JadeFilter::Post(url.substr(url_base_class.size() - 1), opt);
   }
   return JadePost::Post(url, opt);
 }
 
-
 //++++++++++++++++++++++++++++++++++++++++++++++++++++
 //CdsFilter.hh
-class CdsFilter: public JadeFilter{
- public:
-  CdsFilter(const JadeOption &opt);
-  ~CdsFilter() override {};
-  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+class CdsFilter : public JadeFilter {
+  public:
+  CdsFilter(const JadeOption& opt);
+  ~CdsFilter() override{};
+  JadeOption Post(const std::string& url, const JadeOption& opt) override;
   JadeDataFrameSP Filter(JadeDataFrameSP df) override;
   void Reset() override;
 
-private:
+  private:
   JadeDataFrameSP m_df_last;
 };
 
 //+++++++++++++++++++++++++++++++++++++++++
 //CdsFilter.cc
-namespace{
-  auto _cds_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(CdsFilter)));
-  auto _cds_ = JadeFactory<JadeFilter>::Register<TestFilter, const JadeOption&>(typeid(CdsFilter));
+namespace {
+auto _cds_index_ = JadeUtils::SetTypeIndex(std::type_index(typeid(CdsFilter)));
+auto _cds_ = JadeFactory<JadeFilter>::Register<TestFilter, const JadeOption&>(typeid(CdsFilter));
 }
 
-CdsFilter::CdsFilter(const JadeOption &opt)
-  :JadeFilter(opt){
+CdsFilter::CdsFilter(const JadeOption& opt)
+    : JadeFilter(opt)
+{
 }
 
-JadeDataFrameSP CdsFilter::Filter(JadeDataFrameSP df){
-  if(m_df_last) {
+JadeDataFrameSP CdsFilter::Filter(JadeDataFrameSP df)
+{
+  if (m_df_last) {
     m_df_last = df;
-    std::cout<<"first data arrives"<<std::endl;
+    std::cout << "first data arrives" << std::endl;
     return nullptr;
   }
 
-  if(m_df_last->GetFrameCount() +1 != df->GetFrameCount()){
+  //if(m_df_last->GetFrameCount() +1 != df->GetFrameCount()){
+  auto trigger_serial_order = df->GetTriggerSerialOrder();
+  if (trigger_serial_order == 0) {
     m_df_last = df;
-    std::cout<<"FrameCount mismatch, skipped"<<std::endl;
+    std::cout << "FrameCount mismatch, skipped" << std::endl;
     return nullptr;
   }
 
@@ -125,14 +135,16 @@ JadeDataFrameSP CdsFilter::Filter(JadeDataFrameSP df){
   return df_cds;
 }
 
-void CdsFilter::Reset(){
+void CdsFilter::Reset()
+{
   m_df_last;
 }
 
-JadeOption CdsFilter::Post(const std::string &url, const JadeOption &opt){
+JadeOption CdsFilter::Post(const std::string& url, const JadeOption& opt)
+{
   static const std::string url_base_class("/JadeFilter/");
-  if( ! url.compare(0, url_base_class.size(), url_base_class) ){
-    return JadeFilter::Post(url.substr(url_base_class.size()-1), opt);
+  if (!url.compare(0, url_base_class.size(), url_base_class)) {
+    return JadeFilter::Post(url.substr(url_base_class.size() - 1), opt);
   }
   return JadePost::Post(url, opt);
 }

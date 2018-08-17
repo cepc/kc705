@@ -39,13 +39,13 @@ JadeManagerSP JadeManager::Make(const std::string& name, const JadeOption& opt){
     return wrt;
   }
   catch(...){
-    std::cout<<"TODO"<<std::endl;
+    std::cout<<"TODO: JadeManager"<<std::endl;
     return nullptr;
   }
 }
 
 void JadeManager::MakeComponent(){
-  auto rd_opt = m_opt.GetSubOption("JadeRead");
+  auto rd_opt = m_opt.GetSubOption("JadeReader");
   m_rd = JadeReader::Make(rd_opt.GetStringValue("type"), rd_opt.GetSubOption("parameter"));
   AddSubPost(m_rd);
   
@@ -81,8 +81,8 @@ void JadeManager::Init(){
 }
 
 void JadeManager::StartDataTaking(){
-  m_rd->Open();
-  m_ctrl->Open();
+  //m_rd->Open();
+  //m_ctrl->Open();
   m_wrt->Open();
   m_flt->Reset();
   m_mnt->Reset();
@@ -91,9 +91,26 @@ void JadeManager::StartDataTaking(){
 
 void JadeManager::StopDataTaking(){
   StopThread();
+  //m_rd->Close();
+  //m_ctrl->Close();
+  m_wrt->Close();
+}
+
+void JadeManager::DeviceConnect()
+{
+  m_rd->Open();
+  m_ctrl->Open();
+}
+
+void JadeManager::DeviceDisconnect()
+{
   m_rd->Close();
   m_ctrl->Close();
-  m_wrt->Close();
+}
+
+void JadeManager::DeviceControl(const std::string &cmd)
+{
+  m_ctrl->SendCommand(cmd);
 }
 
 uint64_t JadeManager::AsyncReading(){

@@ -118,12 +118,12 @@ uint32_t JadeDataFrame::GetMatrixSizeY() const
 void JadeDataFrame::Decode()
 {
   m_is_decoded = true;
-  if (m_data_raw.size() != 1928) {
+  if (m_data_raw.size() != 3848) {
     std::cerr << "JadeDataFrame: unable to decode\n";
     throw;
   }
   m_n_x = 16;
-  m_n_y = 48;
+  m_n_y = 96;
   m_data.clear();
   m_data.resize(m_n_x * m_n_y, 0);
   const char* p_raw = m_data_raw.data();

@@ -29,7 +29,7 @@ JadeWriterSP JadeWriter::Make(const std::string& name, const JadeOption& opt){
     return wrt;
   }
   catch(...){
-    std::cout<<"TODO"<<std::endl;
+    std::cout<<"TODO: JadeWriter"<<std::endl;
     return nullptr;
   }
 }

@@ -27,7 +27,7 @@ JadeRegCtrlSP JadeRegCtrl::Make(const std::string& name, const JadeOption& opt){
     return wrt;
   }
   catch(...){
-    std::cout<<"TODO"<<std::endl;
+    std::cout<<"TODO: JadeRegCtrl"<<std::endl;
     return nullptr;
   }
 }

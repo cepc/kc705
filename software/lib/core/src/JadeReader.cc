@@ -36,12 +36,13 @@ JadeReader::~JadeReader(){
 
 JadeReaderSP JadeReader::Make(const std::string& name, const JadeOption& opt){  
   try{
+    std::cout << "JadeReader name: " << name << std::endl;
     std::type_index index = JadeUtils::GetTypeIndex(name);
     JadeReaderSP wrt =  JadeFactory<JadeReader>::MakeUnique<const JadeOption&>(index, opt);
     return wrt;
   }
   catch(...){
-    std::cout<<"TODO"<<std::endl;
+    std::cout<<"TODO: JadeReader"<<std::endl;
     return nullptr;
   }
 }

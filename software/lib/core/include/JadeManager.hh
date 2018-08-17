@@ -38,7 +38,7 @@ class DLLEXPORT JadeManager: public JadePost{
 
   //do the system initialize: 
   virtual void Init();
-  //start data taking: open file, start device, start threads     
+  //start data taking: open write file,  start device, start threads     
   virtual void StartDataTaking();
   //stop data taking: stop threads, stop device, close file
   virtual void StopDataTaking();
@@ -48,6 +48,12 @@ class DLLEXPORT JadeManager: public JadePost{
   virtual std::string SendCommand(const std::string &cmd) final{
     return SendCommand(cmd, "");
   }
+  // open read and registion file
+  virtual void DeviceConnect();
+  // close read and registion file
+  virtual void DeviceDisconnect();
+  // regcrtl config
+  virtual void DeviceControl(const std::string &cmd);
 
   
   //TODO: weak_ptr

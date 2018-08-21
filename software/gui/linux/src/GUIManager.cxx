@@ -16,6 +16,10 @@ GUIManager::~GUIManager()
 
 void GUIManager::start_run()
 {
+  m_man->DeviceConnect();
+  m_man->DeviceControl("STOP");
+  std::this_thread::sleep_for(1s);
+  m_man->DeviceControl("START");
   m_man->StartDataTaking();
   emit IsRunning();
 }
@@ -24,6 +28,9 @@ void GUIManager::stop_run()
 {
   emit IsStop();
   m_man->StopDataTaking();
+  m_man->DeviceControl("STOP");
+  std::this_thread::sleep_for(1s);
+  m_man->DeviceDisconnect();
 }
 
 void GUIManager::config(){
@@ -33,10 +40,10 @@ void GUIManager::config(){
   JadeOption opt_man(opt_conf.GetSubOption("JadeManager"));
   std::string man_type=opt_man.GetStringValue("type");
   
-  if(man_type != "GUIManager"){
-    std::cerr<<"it is not GUIManager \n";
-    throw;
-  }
+  //if(man_type != "GUIManager"){
+  //  std::cerr<<"it is not GUIManager \n";
+  //  throw;
+  //}
   
   m_man = JadeManager::Make(man_type, opt_man.GetSubOption("parameter"));
   m_man->Init();
@@ -50,8 +57,8 @@ std::shared_ptr<GUIMonitor> GUIManager::get_monitor(){
     std::cerr<<"GUIManager: WARNING, the returned monitor is not GUI devivation "<<std::endl;
     return nullptr;
   }
-  if( guimon.use_count() > 2){
-    std::cerr<<"GUIManager: WARNING, guimon.use_count() > 2  "<<std::endl;
-  }
+  //if( guimon.use_count() > 2){
+  //  std::cerr<<"GUIManager: WARNING, guimon.use_count() > 2  "<<std::endl;
+  //}
   return guimon;
 }

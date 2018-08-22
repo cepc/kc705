@@ -115,6 +115,16 @@ uint32_t JadeDataFrame::GetMatrixSizeY() const
   return m_n_y;
 }
 
+uint32_t JadeDataFrame::GetTriggerN() const
+{
+  return m_trigger_n;
+}
+
+uint32_t JadeDataFrame::GetExtension() const
+{
+  return m_extension;
+}
+
 uint32_t JadeDataFrame::GetTriggerSerialOrder() const
 {
   return m_trigger_n;
@@ -257,6 +267,7 @@ void JadeDataFrame::Print(std::ostream& os, size_t ws) const
 JadeDataFrameSP JadeDataFrame::CdsAndReturnNewObject(const JadeDataFrame& earlier,
     const JadeDataFrame& later)
 {
+
   JadeDataFrameSP dfsp(new JadeDataFrame(""));
   auto& df = *dfsp;
   auto& data_cds_result = df.Data();
@@ -266,8 +277,11 @@ JadeDataFrameSP JadeDataFrame::CdsAndReturnNewObject(const JadeDataFrame& earlie
   std::transform(data_later.begin(), data_later.end(), data_earlier.begin(),
       data_cds_result.begin(),
       std::minus<int16_t>());
-  df.m_is_decoded = later.m_is_decoded;
+  df.m_is_decoded = true;
   df.m_description = later.m_description + "+CDS";
+  df.m_ts = later.m_ts;
+  df.m_trigger_n = later.m_trigger_n;
+  df.m_extension = later.m_extension;
   df.m_ts = later.m_ts;
   df.m_frame_n = later.m_frame_n;
   df.m_n_x = later.m_n_x;

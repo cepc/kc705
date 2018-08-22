@@ -5,6 +5,9 @@
 #include "IMPL/TrackerDataImpl.h"
 #include "UTIL/CellIDEncoder.h"
 
+
+#define PLANE_ID_OFFSET_LICO 200
+
 class JadeRawEvent2LCEventConverter: public eudaq::LCEventConverter{
   typedef std::vector<uint8_t>::const_iterator datait;
 public:
@@ -32,12 +35,6 @@ bool JadeRawEvent2LCEventConverter::Converting(eudaq::EventSPC d1, eudaq::LCEven
   uint16_t x_n_pixel = *data_info;
   uint16_t y_n_pixel = *(data_info+1);
   uint32_t n_pixel = x_n_pixel * y_n_pixel;
-  
-  std::vector<uint8_t> block_decoded = ev->GetBlock(1);
-  uint16_t *data_decoded = reinterpret_cast<uint16_t*>( block_decoded.data());
-  if(block_decoded.size() || block_decoded.size() != n_pixel *2 ){
-    EUDAQ_THROW("Unknown data, pixel size mismatch");
-  }
 
   lcio::LCCollectionVec *zsDataCollection = nullptr;
   auto p_col_names = d2->getCollectionNames();
@@ -49,24 +46,33 @@ bool JadeRawEvent2LCEventConverter::Converting(eudaq::EventSPC d1, eudaq::LCEven
   else{
     zsDataCollection = new lcio::LCCollectionVec(lcio::LCIO::TRACKERDATA);
     d2->addCollection(zsDataCollection, "zsdata_jade");
-  }
+  }  
+  
+  for(auto bn: block_n_list){
+    if(bn == 0){
+      //info block
+      continue;
+    }  
+    std::vector<uint8_t> block_decoded = ev->GetBlock(bn);
+    uint16_t *data_decoded = reinterpret_cast<uint16_t*>( block_decoded.data());
+    if(block_decoded.size() || block_decoded.size() != n_pixel *2 ){
+      EUDAQ_THROW("Unknown data, pixel size mismatch");
+    }
 
-  lcio::CellIDEncoder<lcio::TrackerDataImpl> zsDataEncoder("sensorID:7,sparsePixelType:5",
+    lcio::CellIDEncoder<lcio::TrackerDataImpl> zsDataEncoder("sensorID:7,sparsePixelType:5",
                                                            zsDataCollection);
-  //NOTE: is "sensorID:7,sparsePixelType:5" going to be overwritten?
-  //the meaning sparsePixelType
-  zsDataEncoder["sensorID"] = 100;
-  zsDataEncoder["sparsePixelType"] = 2;
-  auto zsFrame = new lcio::TrackerDataImpl;
-  zsDataEncoder.setCellID(zsFrame);
+    zsDataEncoder["sensorID"] = PLANE_ID_OFFSET_LICO + bn;
+    zsDataEncoder["sparsePixelType"] = 2;
+    auto zsFrame = new lcio::TrackerDataImpl;
+    zsDataEncoder.setCellID(zsFrame);
 
-  for(uint32_t i = 0; i< n_pixel; i++){    
-    zsFrame->chargeValues().push_back(i%x_n_pixel);//x
-    zsFrame->chargeValues().push_back(i/x_n_pixel);//y
-    zsFrame->chargeValues().push_back(*(data_decoded+i));//signal
-    zsFrame->chargeValues().push_back(0);//time
+    for(uint32_t i = 0; i< n_pixel; i++){    
+      zsFrame->chargeValues().push_back(i%x_n_pixel);//x
+      zsFrame->chargeValues().push_back(i/x_n_pixel);//y
+      zsFrame->chargeValues().push_back(*(data_decoded+i));//signal
+      zsFrame->chargeValues().push_back(0);//time
+    }
+    zsDataCollection->push_back(zsFrame);
   }
-
-  zsDataCollection->push_back(zsFrame);
   return true; 
 }

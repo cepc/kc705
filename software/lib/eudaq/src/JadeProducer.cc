@@ -147,6 +147,8 @@ void JadeProducer::DoStartRun(){
 
 void JadeProducer::DoStopRun(){
   m_jade_man->StopDataTaking();
+
+  std::cout<< "xxxxxxxxxxxxxxxxxxxxxxxx" <<std::endl;
 }
 
 void JadeProducer::DoReset(){

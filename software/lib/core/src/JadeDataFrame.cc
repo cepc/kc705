@@ -20,29 +20,21 @@ using _index_c_ = JadeDataFrame;
 // }
 
 JadeDataFrame::JadeDataFrame(std::string&& data)
-    : m_data_raw(std::move(data))
-    , m_is_decoded(false)
-    , m_n_x(0)
+  : m_data_raw(std::move(data))
+  , m_is_decoded(false)
+  , m_n_x(0)
     , m_n_y(0)
 {
 }
 
 JadeDataFrame::JadeDataFrame(std::string& data)
-    : m_data_raw(data)
-    , m_is_decoded(false)
-    , m_n_x(0)
+  : m_data_raw(data)
+  , m_is_decoded(false)
+  , m_n_x(0)
     , m_n_y(0)
 {
 }
 
-// JadeDataFrame::JadeDataFrame(size_t nraw)
-//     : m_is_decoded(false)
-//     , m_is_cds(false)
-//     , m_n_x(0)
-//     , m_n_y(0)
-// {
-//   m_data_raw.resize(nraw);
-// }
 
 JadeDataFrame::~JadeDataFrame()
 {
@@ -84,7 +76,7 @@ std::string& JadeDataFrame::Description()
   return m_description;
 }
 
-std::chrono::system_clock::time_point&
+  std::chrono::system_clock::time_point&
 JadeDataFrame::TimeStamp()
 {
   return m_ts;
@@ -125,16 +117,6 @@ uint32_t JadeDataFrame::GetExtension() const
   return m_extension;
 }
 
-uint32_t JadeDataFrame::GetTriggerSerialOrder() const
-{
-  return m_trigger_n;
-}
-
-uint32_t JadeDataFrame::GetTriggerExtension() const
-{
-  return m_extension;
-}
-
 void JadeDataFrame::Decode()
 {
   m_is_decoded = true;
@@ -145,14 +127,20 @@ void JadeDataFrame::Decode()
   const char* p_raw = m_data_raw.data();
   size_t p_offset = 0;
   uint32_t len_raw = LE32TOH(*reinterpret_cast<const uint32_t*>(p_raw + p_offset));
-  if (len_raw != m_data_raw.size()) {
+  // Matrix A: size=1936
+  // Matrix B: size=3856
+  if(len_raw == 1936){
+    m_n_x = 16;
+    m_n_y = 48;
+  }else if(len_raw == 3856){
+    m_n_x = 16;
+    m_n_y = 96;
+  }else if (len_raw != m_data_raw.size()) {
     std::cerr << "JadeDataFrame: raw data length does not match\n";
     throw;
   }
-  p_offset += 4;
+  p_offset +=4;
 
-  m_n_x = 16;
-  m_n_y = 48;
   m_data.clear();
   m_data.resize(m_n_x * m_n_y, 0);
 
@@ -162,9 +150,9 @@ void JadeDataFrame::Decode()
     throw;
   }
   p_offset += 4;
-  m_trigger_n = LE16TOH(*reinterpret_cast<const uint16_t*>(p_raw + p_offset));
-  p_offset += 2;
   m_extension = LE16TOH(*reinterpret_cast<const uint16_t*>(p_raw + p_offset));
+  p_offset += 2;
+  m_trigger_n = LE16TOH(*reinterpret_cast<const uint16_t*>(p_raw + p_offset));
   p_offset += 2;
 
   int16_t* p_data = m_data.data();
@@ -221,11 +209,11 @@ void JadeDataFrame::Print(std::ostream& os, size_t ws) const
   os << std::string(ws + 2, ' ') << "is_decoded:" << m_is_decoded << ",\n";
   if (m_is_decoded) {
     os << std::string(ws + 2, ' ') << "description:"
-       << "TODO"
-       << ",\n";
+      << "TODO"
+      << ",\n";
     os << std::string(ws + 2, ' ') << "ts:"
-       << "TODO"
-       << ",\n";
+      << "TODO"
+      << ",\n";
     os << std::string(ws + 2, ' ') << "frame_n:" << m_frame_n << ",\n";
     os << std::string(ws + 2, ' ') << "n_x:" << m_n_x << ",\n";
     os << std::string(ws + 2, ' ') << "n_y:" << m_n_y << ",\n";
@@ -233,7 +221,7 @@ void JadeDataFrame::Print(std::ostream& os, size_t ws) const
       os << std::string(ws + 2, ' ') << "data:[\n";
       for (size_t iy = 0; iy < m_n_y; iy++) {
         os << std::string(ws + 4, ' ') << "{row_y:" << iy
-           << ",value:[" << GetHitValue(0, 0);
+          << ",value:[" << GetHitValue(0, 0);
         for (size_t ix = 1; ix < m_n_x; ix++) {
           os << "," << GetHitValue(ix, iy);
         }

@@ -28,8 +28,12 @@ CdsFilter::CdsFilter(const JadeOption& opt)
 }
 
 JadeDataFrameSP CdsFilter::Filter(JadeDataFrameSP df){
-  if(m_df_last){
-    df->GetTriggerN() != m_df_last->GetTriggerN();
+  if(!m_df_last){
+      m_df_last = df;
+      return nullptr;
+  }
+  
+  if(df->GetTriggerN() != m_df_last->GetTriggerN()){
     if(df->GetExtension()!= 0){
       std::cerr<<"CdsFilter: in the first dataframe of new triiger number, the extension word is not zero\n";
       throw;
@@ -37,11 +41,10 @@ JadeDataFrameSP CdsFilter::Filter(JadeDataFrameSP df){
     m_df_last = df;
     return nullptr;
   }
-  
+
   JadeDataFrameSP df_cds = JadeDataFrame::CdsAndReturnNewObject(*m_df_last, *df);
   m_df_last = df;
-  return df_cds;
-  
+  return df_cds;  
 }
 
 void CdsFilter::Reset()

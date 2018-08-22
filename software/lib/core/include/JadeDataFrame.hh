@@ -48,9 +48,6 @@ class DLLEXPORT JadeDataFrame {
   uint32_t GetExtension() const;
   void Print(std::ostream& os, size_t ws = 0) const;
 
-  uint32_t GetTriggerSerialOrder() const;
-  uint32_t GetTriggerExtension() const;
-
  private:
   bool m_is_decoded;
   std::string m_data_raw;

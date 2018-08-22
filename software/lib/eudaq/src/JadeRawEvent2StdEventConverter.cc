@@ -2,7 +2,7 @@
 #include "eudaq/RawEvent.hh"
 
 #define PLANE_NUMBER_OFFSET 200
-#define SIGNAL_THRESHOLD 1000
+#define SIGNAL_THRESHOLD 60
 class JadeRawEvent2StdEventConverter: public eudaq::StdEventConverter{
 public:
   bool Converting(eudaq::EventSPC d1, eudaq::StdEventSP d2, eudaq::ConfigSPC conf) const override;

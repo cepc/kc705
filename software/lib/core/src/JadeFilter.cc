@@ -18,7 +18,6 @@ using namespace std::chrono_literals;
 
 JadeFilter::JadeFilter(const JadeOption& opt)
 {
-  std::cout<<"++++++++++++++++++ 2"<<std::endl;
 }
 
 JadeFilter::~JadeFilter()

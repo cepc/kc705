@@ -61,6 +61,8 @@ void EudaqWriter::Write(JadeDataFrameSP df){
     std::vector<uint16_t> v_info;
     v_info.push_back(df->GetMatrixSizeX());
     v_info.push_back(df->GetMatrixSizeY());
+    v_info.push_back(df->GetTriggerExtension());
+    v_info.push_back(df->GetTriggerSerialOrder());
     ev->AddBlock<uint16_t>((uint32_t)0, v_info);
 
     ev->AddBlock<int16_t>((uint32_t)1, df->Data());

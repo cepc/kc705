@@ -48,10 +48,6 @@ class DLLEXPORT JadeManager: public JadePost{
   virtual std::string SendCommand(const std::string &cmd) final{
     return SendCommand(cmd, "");
   }
-  // open read and registion file
-  virtual void DeviceConnect();
-  // close read and registion file
-  virtual void DeviceDisconnect();
   // regcrtl config
   virtual void DeviceControl(const std::string &cmd);
 

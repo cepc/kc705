@@ -14,8 +14,6 @@ class TestManager : public JadeManager {
   void StartDataTaking() override;
   void StopDataTaking() override;
   std::string SendCommand(const std::string& cmd, const std::string& para) override;
-  void DeviceConnect() override;
-  void DeviceDisconnect() override;
   void DeviceControl(const std::string &cmd) override;
 
   JadeRegCtrlSP m_ctrl;
@@ -70,18 +68,6 @@ void TestManager::Init()
   m_ctrl->Close();
 }
 
-void TestManager::DeviceConnect()
-{
-  m_rd->Open();
-  m_ctrl->Open();
-}
-
-void TestManager::DeviceDisconnect()
-{
-  m_rd->Close();
-  m_ctrl->Close();
-}
-
 void TestManager::DeviceControl(const std::string &cmd)
 {
   m_ctrl->SendCommand(cmd);
@@ -89,16 +75,16 @@ void TestManager::DeviceControl(const std::string &cmd)
 
 void TestManager::StartDataTaking()
 {
-  //m_rd->Open();
-  //m_ctrl->Open();
+  m_rd->Open();
+  m_ctrl->Open();
   m_wrt->Open();
   m_flt->Reset();
   m_mnt->Reset();
 
-  ////hardware specific
-  //m_ctrl->SendCommand("STOP");
-  //std::this_thread::sleep_for(1s);
-  //m_ctrl->SendCommand("START");
+  //hardware specific
+  m_ctrl->SendCommand("STOP");
+  std::this_thread::sleep_for(1s);
+  m_ctrl->SendCommand("START");
 
   //Can threads start before the device's startup?
   StartThread();
@@ -106,13 +92,13 @@ void TestManager::StartDataTaking()
 
 void TestManager::StopDataTaking()
 {
-  //hardware specific
-  //m_ctrl->SendCommand("STOP");
-
   //Can threads terminate before the device's shutdown?
   StopThread();
-  //m_rd->Close();
-  //m_ctrl->Close();
+  
+  //hardware specific
+  m_ctrl->SendCommand("STOP");
+  m_rd->Close();
+  m_ctrl->Close();
   m_wrt->Close();
 }
 

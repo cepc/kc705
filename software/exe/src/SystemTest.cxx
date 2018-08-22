@@ -48,19 +48,13 @@ int main(int argc, char **argv){
   size_t nloop = opt_sys_test.GetIntValue("N_Loops");
   
   for(size_t i=0; i< nloop; i++){
-    pman->DeviceConnect();
-    pman->DeviceControl("STOP");
-    std::this_thread::sleep_for(1s);
     std::cout<<"=========start at "<<JadeUtils::GetNowStr()<<"======="<< std::endl;
-    pman->DeviceControl("START");
     pman->StartDataTaking();
     std::cout<<"========="<<std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(nsec));
     std::cout<<"========="<<std::endl;
     pman->StopDataTaking();
-    pman->DeviceControl("STOP");
     std::cout<<"=========exit at "<<JadeUtils::GetNowStr()<<"======="<< std::endl;
-    pman->DeviceDisconnect();
   }
   return 0;
 

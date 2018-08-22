@@ -135,6 +135,8 @@ void JadeDataFrame::Decode()
   const char* p_raw = m_data_raw.data();
   size_t p_offset = 0;
   uint32_t len_raw = LE32TOH(*reinterpret_cast<const uint32_t*>(p_raw + p_offset));
+  // Matrix A: size=1936 
+  // Matrix B: size=3856
   if(len_raw == 1936){
     m_n_x = 16;
     m_n_y = 48;

@@ -25,6 +25,8 @@ bool JadeRawEvent2StdEventConverter::Converting(eudaq::EventSPC d1, eudaq::StdEv
   uint16_t *data_info = reinterpret_cast<uint16_t*>( block_info.data());
   uint16_t x_n_pixel = *data_info;
   uint16_t y_n_pixel = *(data_info+1);
+  uint32_t trigger_id = *(data_info+2);
+  uint16_t serial_order = *(data_info+3);
   uint32_t n_pixel = x_n_pixel * y_n_pixel;
   
   std::vector<uint8_t> block_decoded = ev->GetBlock(1);

@@ -16,10 +16,6 @@ GUIManager::~GUIManager()
 
 void GUIManager::start_run()
 {
-  m_man->DeviceConnect();
-  m_man->DeviceControl("STOP");
-  std::this_thread::sleep_for(1s);
-  m_man->DeviceControl("START");
   m_man->StartDataTaking();
   emit IsRunning();
 }
@@ -28,9 +24,7 @@ void GUIManager::stop_run()
 {
   emit IsStop();
   m_man->StopDataTaking();
-  m_man->DeviceControl("STOP");
   std::this_thread::sleep_for(1s);
-  m_man->DeviceDisconnect();
 }
 
 void GUIManager::config(){

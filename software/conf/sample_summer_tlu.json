@@ -1,6 +1,6 @@
 {
   "SystemTest":{
-    "SecPerLoop": 10,
+    "SecPerLoop": 60,
     "N_Loops": 1
   },
   "JadeManager":{
@@ -15,14 +15,14 @@
         }
       },
       "JadeWriter":{
-        "type":"TestWriter",
+        "type":"CdsWriter",
         "parameter":{
           "PATH":"/home/cepcdaq/data/test_producer",
           "DISABLE_FILE_WRITE":false
         }
       },
       "JadeFilter":{
-        "type":"TestFilter",
+        "type":"CdsFilter",
         "parameter":{
           "something": "somthing"
         }
@@ -30,7 +30,7 @@
       "JadeMonitor":{
         "type":"TestMonitor",
         "parameter":{
-          "PRINT_EVENT_N":2000,
+          "PRINT_EVENT_N":10000,
           "PRINT_EVENT_DISCONTINUOUS":false,
           "ENABLE_CDS":true
         }

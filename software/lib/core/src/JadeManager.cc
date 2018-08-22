@@ -81,8 +81,8 @@ void JadeManager::Init(){
 }
 
 void JadeManager::StartDataTaking(){
-  //m_rd->Open();
-  //m_ctrl->Open();
+  m_rd->Open();
+  m_ctrl->Open();
   m_wrt->Open();
   m_flt->Reset();
   m_mnt->Reset();
@@ -91,21 +91,9 @@ void JadeManager::StartDataTaking(){
 
 void JadeManager::StopDataTaking(){
   StopThread();
-  //m_rd->Close();
-  //m_ctrl->Close();
-  m_wrt->Close();
-}
-
-void JadeManager::DeviceConnect()
-{
-  m_rd->Open();
-  m_ctrl->Open();
-}
-
-void JadeManager::DeviceDisconnect()
-{
   m_rd->Close();
   m_ctrl->Close();
+  m_wrt->Close();
 }
 
 void JadeManager::DeviceControl(const std::string &cmd)

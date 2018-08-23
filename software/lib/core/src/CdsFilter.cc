@@ -27,27 +27,24 @@ CdsFilter::CdsFilter(const JadeOption& opt)
 {
 }
 
-JadeDataFrameSP CdsFilter::Filter(JadeDataFrameSP df)
-{
-  //std::cout<<"filtering"<<std::endl;
-  //if (!m_df_last) {
-  //  m_df_last = df;
-  //  std::cout << "first data arrives" << std::endl;
-  //  return nullptr;
-  //}
-
-  //if(m_df_last->GetFrameCount() +1 != df->GetFrameCount()){
-  auto trigger_serial_order = df->GetTriggerSerialOrder();
-  if (trigger_serial_order == 0) {
+JadeDataFrameSP CdsFilter::Filter(JadeDataFrameSP df){
+  if(!m_df_last){
+      m_df_last = df;
+      return nullptr;
+  }
+  
+  if(df->GetTriggerN() != m_df_last->GetTriggerN()){
+    if(df->GetExtension()!= 0){
+      std::cerr<<"CdsFilter: in the first dataframe of new triiger number, the extension word is not zero\n";
+      throw;
+    }
     m_df_last = df;
-    //std::cout << "FrameCount mismatch, skipped" << std::endl;
     return nullptr;
   }
 
-  //TODO, reuse the memory of m_df_last, since it will be delelted soon
   JadeDataFrameSP df_cds = JadeDataFrame::CdsAndReturnNewObject(*m_df_last, *df);
   m_df_last = df;
-  return df_cds;
+  return df_cds;  
 }
 
 void CdsFilter::Reset()

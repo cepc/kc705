@@ -183,4 +183,7 @@ std::string TestManager::SendCommand(const std::string& cmd, const std::string& 
         JadeUtils::FormatString("{\"PRINT_EVENT_N\":%u}", std::stoul(para)));
     return "";
   }
+
+  std::cout<<"TestManager:: no match command processing"<<std::endl;
+  return "";
 }

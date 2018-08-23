@@ -44,11 +44,11 @@ class DLLEXPORT JadeDataFrame {
   uint32_t GetMatrixHighY() const;
   uint32_t GetMatrixSizeX() const; //x row, y column
   uint32_t GetMatrixSizeY() const;
-  uint32_t GetTriggerSerialOrder() const;
-  uint32_t GetTriggerExtension() const;
+  uint32_t GetTriggerN() const;
+  uint32_t GetExtension() const;
   void Print(std::ostream& os, size_t ws = 0) const;
 
-  private:
+ private:
   bool m_is_decoded;
   std::string m_data_raw;
   std::string m_description;

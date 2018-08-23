@@ -35,14 +35,6 @@ JadeDataFrame::JadeDataFrame(std::string& data)
 {
 }
 
-// JadeDataFrame::JadeDataFrame(size_t nraw)
-//     : m_is_decoded(false)
-//     , m_is_cds(false)
-//     , m_n_x(0)
-//     , m_n_y(0)
-// {
-//   m_data_raw.resize(nraw);
-// }
 
 JadeDataFrame::~JadeDataFrame()
 {
@@ -115,12 +107,12 @@ uint32_t JadeDataFrame::GetMatrixSizeY() const
   return m_n_y;
 }
 
-uint32_t JadeDataFrame::GetTriggerSerialOrder() const
+uint32_t JadeDataFrame::GetTriggerN() const
 {
   return m_trigger_n;
 }
 
-uint32_t JadeDataFrame::GetTriggerExtension() const
+uint32_t JadeDataFrame::GetExtension() const
 {
   return m_extension;
 }
@@ -135,7 +127,7 @@ void JadeDataFrame::Decode()
   const char* p_raw = m_data_raw.data();
   size_t p_offset = 0;
   uint32_t len_raw = LE32TOH(*reinterpret_cast<const uint32_t*>(p_raw + p_offset));
-  // Matrix A: size=1936 
+  // Matrix A: size=1936
   // Matrix B: size=3856
   if(len_raw == 1936){
     m_n_x = 16;
@@ -147,7 +139,7 @@ void JadeDataFrame::Decode()
     std::cerr << "JadeDataFrame: raw data length does not match\n";
     throw;
   }
-  p_offset += 4;
+  p_offset +=4;
 
   m_data.clear();
   m_data.resize(m_n_x * m_n_y, 0);
@@ -158,9 +150,9 @@ void JadeDataFrame::Decode()
     throw;
   }
   p_offset += 4;
-  m_trigger_n = LE16TOH(*reinterpret_cast<const uint16_t*>(p_raw + p_offset));
-  p_offset += 2;
   m_extension = LE16TOH(*reinterpret_cast<const uint16_t*>(p_raw + p_offset));
+  p_offset += 2;
+  m_trigger_n = LE16TOH(*reinterpret_cast<const uint16_t*>(p_raw + p_offset));
   p_offset += 2;
 
   int16_t* p_data = m_data.data();
@@ -263,6 +255,7 @@ void JadeDataFrame::Print(std::ostream& os, size_t ws) const
 JadeDataFrameSP JadeDataFrame::CdsAndReturnNewObject(const JadeDataFrame& earlier,
     const JadeDataFrame& later)
 {
+
   JadeDataFrameSP dfsp(new JadeDataFrame(""));
   auto& df = *dfsp;
   auto& data_cds_result = df.Data();
@@ -272,8 +265,11 @@ JadeDataFrameSP JadeDataFrame::CdsAndReturnNewObject(const JadeDataFrame& earlie
   std::transform(data_later.begin(), data_later.end(), data_earlier.begin(),
       data_cds_result.begin(),
       std::minus<int16_t>());
-  df.m_is_decoded = later.m_is_decoded;
+  df.m_is_decoded = true;
   df.m_description = later.m_description + "+CDS";
+  df.m_ts = later.m_ts;
+  df.m_trigger_n = later.m_trigger_n;
+  df.m_extension = later.m_extension;
   df.m_ts = later.m_ts;
   df.m_frame_n = later.m_frame_n;
   df.m_n_x = later.m_n_x;

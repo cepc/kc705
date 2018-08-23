@@ -17,11 +17,13 @@ public:
   EudaqWriter(const JadeOption &opt);
   ~EudaqWriter() override;
   void Write(JadeDataFrameSP df) override;
-  JadeOption Post(const std::string &url, const JadeOption &opt) override;
+  void Close() override;
 
+  JadeOption Post(const std::string &url, const JadeOption &opt) override;  
   void SetProducerCallback(eudaq::Producer *producer);
 private:
   eudaq::Producer *m_producer;
+  eudaq::EventUP m_evup_to_send;
 };
 
 //+++++++++++++++++++++++++++++++++++++++++
@@ -53,23 +55,37 @@ JadeOption EudaqWriter::Post(const std::string &url, const JadeOption &opt){
   return JadePost::Post(url, opt);
 }
 
+void EudaqWriter::Close(){
+  m_evup_to_send.reset();
+}
+
 void EudaqWriter::Write(JadeDataFrameSP df){
-  if(m_producer){
-    auto ev = eudaq::Event::MakeUnique("JadeRaw");
-    ev->SetTriggerN(df->GetFrameCount());
-
-    std::vector<uint16_t> v_info;
-    v_info.push_back(df->GetMatrixSizeX());
-    v_info.push_back(df->GetMatrixSizeY());
-    v_info.push_back(df->GetTriggerExtension());
-    v_info.push_back(df->GetTriggerSerialOrder());
-    ev->AddBlock<uint16_t>((uint32_t)0, v_info);
-
-    ev->AddBlock<int16_t>((uint32_t)1, df->Data());
-    if(m_producer)
-      m_producer->SendEvent(std::move(ev));
+  if(!m_producer){
+    std::cerr<<"EudaqWriter: ERROR, eudaq producer is not avalible";
+    throw;
   }
   
+  if(m_evup_to_send){ //1st CDS frame exists in  evup
+    if(m_evup_to_send->GetTriggerN() == df->GetTriggerN()){
+      m_evup_to_send->AddBlock<int16_t>((uint32_t)2, df->Data());
+      m_producer->SendEvent(std::move(m_evup_to_send));
+      return;
+    }
+    else{ 
+      std::cout<<"EudaqWriter: WARNING, current CDS has different trigger number to the existing CDS"<<std::endl;
+      // m_producer->SendEvent(std::move(m_evup_to_send));
+      throw;
+    }
+  }
+  
+  m_evup_to_send = eudaq::Event::MakeUnique("JadeRaw");
+  m_evup_to_send->SetTriggerN(df->GetTriggerN());
+  
+  std::vector<uint16_t> v_info;
+  v_info.push_back(df->GetMatrixSizeX());
+  v_info.push_back(df->GetMatrixSizeY());
+  m_evup_to_send->AddBlock<uint16_t>((uint32_t)0, v_info);
+  m_evup_to_send->AddBlock<int16_t>((uint32_t)1, df->Data());
 }
 
 class JadeProducer : public eudaq::Producer {
@@ -131,6 +147,8 @@ void JadeProducer::DoStartRun(){
 
 void JadeProducer::DoStopRun(){
   m_jade_man->StopDataTaking();
+
+  std::cout<< "xxxxxxxxxxxxxxxxxxxxxxxx" <<std::endl;
 }
 
 void JadeProducer::DoReset(){

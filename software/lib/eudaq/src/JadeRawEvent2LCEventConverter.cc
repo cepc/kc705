@@ -6,7 +6,7 @@
 #include "UTIL/CellIDEncoder.h"
 
 
-#define PLANE_ID_OFFSET_LICO 200
+#define PLANE_ID_OFFSET_LICO 50
 
 class JadeRawEvent2LCEventConverter: public eudaq::LCEventConverter{
   typedef std::vector<uint8_t>::const_iterator datait;
@@ -55,7 +55,7 @@ bool JadeRawEvent2LCEventConverter::Converting(eudaq::EventSPC d1, eudaq::LCEven
     }  
     std::vector<uint8_t> block_decoded = ev->GetBlock(bn);
     uint16_t *data_decoded = reinterpret_cast<uint16_t*>( block_decoded.data());
-    if(block_decoded.size() || block_decoded.size() != n_pixel *2 ){
+    if(! block_decoded.size() || block_decoded.size() != n_pixel *2 ){
       EUDAQ_THROW("Unknown data, pixel size mismatch");
     }
 

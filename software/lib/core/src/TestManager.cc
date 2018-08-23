@@ -62,8 +62,12 @@ void TestManager::Init()
   std::string chip_select = m_opt.GetStringValue("CHIP_SELECT");
   m_ctrl->SendCommand(chip_select);
   std::cout << chip_select << std::endl;
+  std::string delay = m_opt.GetStringValue("DELAY");
+  m_ctrl->SendCommand(delay);
+  std::cout << delay << std::endl;
   m_ctrl->SendCommand("SET");
   std::cout << "Read back chip address setting: " << unsigned(m_ctrl->ReadByte(0x08)) << std::endl;
+  std::cout << "Read back delay setting: " << unsigned(m_ctrl->ReadByte(0x05)) << std::endl;
   std::this_thread::sleep_for(200ms);
   m_ctrl->Close();
 }

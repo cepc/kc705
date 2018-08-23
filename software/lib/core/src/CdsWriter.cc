@@ -66,6 +66,7 @@ void CdsWriter::Write(JadeDataFrameSP df){
     std::cerr<<"JadeWrite: File is not opened/created before writing\n";
     throw;
   }
+  
   auto& data = df->Data();
   if(data.size()){
     std::fwrite(reinterpret_cast<char*>(&(data[0])), 2, data.size(), m_fd);

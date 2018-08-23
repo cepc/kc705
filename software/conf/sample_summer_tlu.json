@@ -15,7 +15,7 @@
         }
       },
       "JadeWriter":{
-        "type":"CdsWriter",
+        "type":"EudaqWriter",
         "parameter":{
           "PATH":"/home/cepcdaq/data/test_producer",
           "DISABLE_FILE_WRITE":false

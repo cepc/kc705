@@ -82,7 +82,8 @@ In the file *kc705/software/conf/sample_summer_tlu.json*, it has the settings of
     "type":"TestManager",
     "parameter":{
       "version":2,
-      "CHIP_SELECT":"CHIPA1",
+      "CHIP_SELECT":"SECTOR1",
+      "DELAY": "DELAY0",
       "JadeReader":{
         "type":"TestReader",
         "parameter":{
@@ -131,45 +132,57 @@ In the file *kc705/software/conf/sample_summer_tlu.json*, it has the settings of
               "address":4,
               "default_val":15
             },
-            "CHIPA1":{
+            "SECTOR1":{
               "address":8,
               "default_val":0
             },
-            "CHIPA2":{
+            "SECTOR2":{
               "address":8,
               "default_val":1
             },
-            "CHIPA3":{
+            "SECTOR3":{
               "address":8,
               "default_val":2
             },
-            "CHIPA4":{
+            "SECTOR4":{
               "address":8,
               "default_val":3
             },
-            "CHIPA5":{
+            "SECTOR5":{
               "address":8,
               "default_val":4
             },
-            "CHIPA6":{
+            "SECTOR6":{
               "address":8,
               "default_val":5
             },
-            "CHIPA7":{
+            "SECTOR7":{
               "address":8,
               "default_val":6
             },
-            "CHIPA8":{
+            "SECTOR8":{
               "address":8,
               "default_val":7
             },
-            "CHIPA9":{
+            "SECTOR9":{
               "address":8,
               "default_val":8
             },
-            "CHIPA10":{
+            "SECTOR10":{
               "address":8,
               "default_val":9
+            },
+            "DELAY0":{
+              "address":5,
+              "default_val":0
+            },
+            "DELAY1":{
+              "address":5,
+              "default_val":1
+            },
+            "DELAY2":{
+              "address":5,
+              "default_val":2
             }
           },
           "status_list":{
